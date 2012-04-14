@@ -91,7 +91,7 @@ Chef::Log::Formatter.show_time = true
             }
         }
         def jsonFile = new File(shell.pathJoin(context.getServiceDirectory(), "chef_client.json"))
-        jsonFile.withWriter() { it.write(initJson.toJson()) }
+        jsonFile.withWriter() { it.write(JsonOutput.toJson(initJson)) }
         shell.sudo("chef-client -j ${jsonFile.getPath()}")
     }
     def runSolo(ArrayList runList) {
@@ -104,8 +104,8 @@ Chef::Log::Formatter.show_time = true
         """
         def chef_solo = which("chef-solo")
         assert ! chef_solo.isEmpty()
-        jsonFile = new File(shell.pathJoin([context.getServiceDirectory(), "bootstrap_server.json"]))
-        jsonFile.text = initJson.toJson()
+        def jsonFile = new File(shell.pathJoin(context.getServiceDirectory(), "bootstrap_server.json"))
+        jsonFile.text = JsonOutput.toJson(initJson)
         shell.sudo("""${chef_solo} -c ${context.getServiceDirectory()}/solo.rb -j ${jsonFile} -r ${config.bootstrapCookbooksUrl}""")
     }
     def runListToInitialJson(ArrayList runList) {
@@ -126,7 +126,7 @@ Chef::Log::Formatter.show_time = true
             }
 
         }
-        shell.sudo("""${osConfig.installDir}/${osConfig.installer}""", false)
+        shell.sudo("""${osConfig.installDir}/${osConfig.installer}""")
     }
     def rvm() {
         // not implemented yet
