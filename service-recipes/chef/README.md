@@ -1,6 +1,8 @@
 # Common Chef service files
 This folder contains common files and a base service recipe for Chef based services. The idea is using `extend` to include this recipe and supporting files.
 
+The closure style code is in the CLASSPATH branch due to a bug with the classpath used in the GSC. It does work when putting the built jar in the usmlib dir (see CLASSPATH branch README).
+
 ## The ChefBootstrap class
 The ChefBootstrap class is used to bootstrap chef. Use the `getBootsrap` factory method to obtain a class instance.
 <strong>Factory method</strong>

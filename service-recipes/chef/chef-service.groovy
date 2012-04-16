@@ -4,10 +4,6 @@ service {
         install "chef_install.groovy"
     }
     customCommands([
-        "run_chef": { 
-            bootstrap = ChefBootstrap.getBootstrap(
-                serverURL:context.attributes.thisApplication["chefServerURL"]
-            ).getBootstrap().runClient()
-        }
+        "run_chef": "chef_run.groovy"
     ])
 }
