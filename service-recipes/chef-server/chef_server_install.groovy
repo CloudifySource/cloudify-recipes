@@ -13,5 +13,5 @@ bootstrap.runSolo([
 
 
 // eventually we will want to use a global attribute
-// context.attributes.thisApplication["validation.pem"] = new File("/etc/chef/validation.pem").text
+context.attributes.thisApplication["chef_validation.pem"] = shell.sudoReadFile("/etc/chef/validation.pem")
 
