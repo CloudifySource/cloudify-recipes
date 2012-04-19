@@ -56,3 +56,7 @@ def static sudoWriteFile(fileName, content) {
 def static pathJoin(Object... args) {
     return args*.asType(String).join(File.separator)
 }
+
+def static sudoReadFile(filename) {
+    return shellOut("sudo cat ${filename}")
+}
