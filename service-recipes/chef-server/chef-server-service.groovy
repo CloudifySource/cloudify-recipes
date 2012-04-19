@@ -14,7 +14,7 @@
 * limitations under the License.
 *******************************************************************************/
 service {
-    extend "../../../cloudify-recipes/service-recipes/chef"
+    extend "../chef"
 	name "chef_server"
 	type "WEB_SERVER"
 	numInstances 1

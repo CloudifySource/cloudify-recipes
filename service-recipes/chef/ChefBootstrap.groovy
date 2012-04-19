@@ -12,6 +12,7 @@ class ChefBootstrap {
     def context
     def installFlavor
     def opscode_gpg_key_url = "http://apt.opscode.com/packages@opscode.com.gpg.key"
+    def validationCert
 
     def static getBootstrap(options=[:]) {
         def os = OperatingSystem.getInstance()
@@ -31,6 +32,8 @@ class ChefBootstrap {
         context = ServiceContextFactory.getServiceContext()
         installFlavor = "fatBinary"
         config = new ConfigSlurper().parse(new File("chef.properties").toURL())
+        chefServerURL = config.serverURL
+        validationCert = config.validationCert
         osConfig = os.isWin32() ? config.win32 : config.unix
         options.each {k, v ->
             switch(k) {
@@ -77,7 +80,11 @@ file_backup_path  "/var/chef/backup"
 pid_file           "/var/run/chef/client.pid"
 Chef::Log::Formatter.show_time = true
 """)
-        shell.sudo("cp ${System.properties["user.home"]}/gs-files/validation.pem /etc/chef/validation.pem")
+        if (validationCert) {
+            shell.sudoWriteFile("/etc/chef/validation.pem", validationCert)
+        } else {
+            shell.sudo("cp ${System.properties["user.home"]}/gs-files/validation.pem /etc/chef/validation.pem")
+        }
     }
     def runClient(ArrayList runList) {
         runClient(runListToInitialJson(runList))

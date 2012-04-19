@@ -1,21 +1,9 @@
 service {
     lifecycle {
-        preInstall { 
-            ChefBootstrap.getBootstrap(
-                serverURL:context.attributes.thisApplication["chefServerURL"]
-            ).install()
-        }
-        install {
-            bootstrap = ChefBootstrap.getBootstrap(
-                serverURL:context.attributes.thisApplication["chefServerURL"]
-            ).getBootstrap().runClient(runList) // override the runList somewhere.
-        }
+        preInstall "chef_preInstall.groovy" 
+        install "chef_install.groovy"
     }
     customCommands([
-        "run_chef": { 
-            bootstrap = ChefBootstrap.getBootstrap(
-                serverURL:context.attributes.thisApplication["chefServerURL"]
-            ).getBootstrap().runClient()
-        }
+        "run_chef": "chef_run.groovy"
     ])
 }
