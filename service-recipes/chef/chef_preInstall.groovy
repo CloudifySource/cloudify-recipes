@@ -1,1 +1,1 @@
-ChefBootstrap.getBootstrap().install()
+ChefBootstrap.getBootstrap(installFlavor: "gem").install()
