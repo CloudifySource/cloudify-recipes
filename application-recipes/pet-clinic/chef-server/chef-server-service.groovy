@@ -14,7 +14,7 @@
 * limitations under the License.
 *******************************************************************************/
 service {
-    extend "../chef"
+    extend "../../../service-recipes/chef"
 	name "chef-server"
 	type "WEB_SERVER"
 	numInstances 1
