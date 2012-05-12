@@ -1,0 +1,18 @@
+<!--
+This is a minimal configuration file cc_config.xml of the BOINC core client.
+For a complete list of all available options and logging flags and their
+meaning see: http://boinc.berkeley.edu/trac/wiki/ClientMessages
+-->
+<cc_config>
+  <log_flags>
+    <task>1</task>
+    <file_xfer>1</file_xfer>
+    <sched_ops>1</sched_ops>
+  </log_flags>
+  <options>
+    <abort_jobs_on_exit>1</abort_jobs_on_exit>
+    <exit_before_start>0</exit_before_start>
+    <exit_when_idle>0</exit_when_idle>
+    <allow_multiple_clients>0</allow_multiple_clients>
+  </options>
+</cc_config>
