@@ -1,4 +1,5 @@
 import org.cloudifysource.dsl.context.ServiceContextFactory
+import shell
 
 def context = ServiceContextFactory.getServiceContext() 
 
