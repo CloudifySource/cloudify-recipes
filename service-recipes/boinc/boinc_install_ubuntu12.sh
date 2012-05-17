@@ -22,11 +22,11 @@ sudo rm -rf /etc/boinc-client
 
 #workaround for ubuntu 12.04 repository lock
 #see http://setiathome.berkeley.edu/forum_thread.php?id=67864&nowrap=true#1229806
-sudo apt-get -y install python-software-properties
-sudo add-apt-repository ppa:costamagnagianfranco/boinc
+sudo apt-get install -y python-software-properties
+sudo add-apt-repository -y ppa:costamagnagianfranco/boinc
 
-sudo apt-get -y update
-sudo apt-get -y install boinc-client || error_exit $? "Failed installing boinc-client"
+sudo apt-get update -y
+sudo apt-get install -y boinc-client || error_exit $? "Failed installing boinc-client"
 
 cp /etc/default/boinc-client conf_boic-client || error_exit $? "Failed copying boinc-client config"
 
