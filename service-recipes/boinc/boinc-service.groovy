@@ -39,8 +39,8 @@ service {
     exec("${boinccmdPath} --quit")
  }
 
- def getTasks = { 
-    exec("${boinccmdPath} --get_tasks")
+ def getState = { 
+    exec("${boinccmdPath} --get_state")
  }
 
  def boinc = {
@@ -58,13 +58,21 @@ service {
  }
 
  lifecycle {
-	  install ([
-	    "Linux" : "boinc_install_ubuntu12.sh",
-	  ])
+    preInstall {
+      if (config.weakAccountKey.contains("WEAK")) {
+	throw new IllegalStateException(
+            "Please vist " + config.projectUrl+"/weak_auth.php to get your weak account "+
+            "key and paste it into  boinc-service.properties");
+      }
+    }
+  
+    install ([
+      "Linux" : "boinc_install_ubuntu12.sh",
+    ])
 	
-	  start ([
-	    "Linux" : "boinc_start.sh",
-	  ])
+    start ([
+      "Linux" : "boinc_start.sh",
+    ])
 
     startDetectionTimeoutSecs 240
     startDetection {
@@ -82,22 +90,23 @@ service {
       }
     }
 
-	  postStart {
+    postStart {
 
       if (getProjectStatus(config.projectUrl).contains(config.projectUrl)) {
         projectDetach(config.projectUrl)
       }
       projectAttach(config.projectUrl,config.weakAccountKey)
      
-	    setRunMode "always"
-		}
+      setRunMode "always"
+    }
 
-	  preStop {
-		  quit
-	  }
+    preStop {
+	 quit
+    }
 
     def lastMetricsTimestamp = 0;
     def lastMetrics = [];
+
     monitors {
       def periodMillis = System.currentTimeMillis() - lastMetricsTimestamp;
       if (periodMillis < config.monitorThrottelingSeconds * 1000) {
@@ -105,23 +114,27 @@ service {
          return lastMetrics;
       }
        
-      tasks = getTasks()
-      activeTasks = tasks.count("active_task_state: 1")
+      state = getState()
+      // state parsing assumes one project
+      hostTotalCredit = state.find(/.*host_total_credit:(.*)/);
+      activeTasks = state.count("active_task_state: 1")
 
 			lastMetrics= [
-				"Active Tasks":activeTasks
+                                "Active Tasks":activeTasks,
+                                "Host Total Credit":hostTotalCredit
 			]
 			lastMetricsTimestamp = System.currentTimeMillis();
 			return lastMetrics;
-	  }
-  }
+   }
+ }
 
   userInterface {
     metricGroups = ([
       metricGroup {
         name "boinc"
         metrics([
-          "Active Tasks"
+          "Active Tasks",
+          "Host Total Credit"
         ])
       }
     ])
@@ -131,6 +144,16 @@ service {
       name "Active Tasks"
         widgets ([
            balanceGauge{metric = "Active Tasks"},
+           barLineChart{
+             metric "Active Tasks"
+             axisYUnit Unit.REGULAR
+           }
+        ])
+    },
+    widgetGroup {
+      name "Host Total Credit"
+        widgets ([
+           balanceGauge{metric = "Host Total Credit"},
            barLineChart{
              metric "Active Tasks"
              axisYUnit Unit.REGULAR
