@@ -116,15 +116,16 @@ service {
        
       state = getState()
       // state parsing assumes one project
-      hostTotalCredit = state.find(/.*host_total_credit:(.*)/);
+      hostTotalCredit = state.find(/.*host_total_credit:(.*)/) {
+	match,credit -> credit as Double
+      }
       activeTasks = state.count("active_task_state: 1")
-
-			lastMetrics= [
-                                "Active Tasks":activeTasks,
-                                "Host Total Credit":hostTotalCredit
-			]
-			lastMetricsTimestamp = System.currentTimeMillis();
-			return lastMetrics;
+      lastMetrics= [
+                "Active Tasks":activeTasks,
+                "Host Total Credit":hostTotalCredit
+      ]
+      lastMetricsTimestamp = System.currentTimeMillis();
+      return lastMetrics;
    }
  }
 
