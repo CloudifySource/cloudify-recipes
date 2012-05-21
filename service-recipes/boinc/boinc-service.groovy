@@ -61,7 +61,7 @@ service {
     preInstall {
       if (config.weakAccountKey.contains("WEAK")) {
 	throw new IllegalStateException(
-            "Please vist " + config.projectUrl+"/weak_auth.php to get your weak account "+
+            "Please vist " + config.projectUrl+" to get your weak account "+
             "key and paste it into  boinc-service.properties");
       }
     }
