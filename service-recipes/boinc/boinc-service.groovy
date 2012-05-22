@@ -71,7 +71,7 @@ service {
     ])
 	
     start ([
-      "Linux" : "boinc_start.sh",
+      "Linux" : "/usr/bin/boinc"
     ])
 
     startDetectionTimeoutSecs 240
