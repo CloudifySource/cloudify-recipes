@@ -10,6 +10,7 @@ class ChefBootstrap {
     def os
     def chefBinPath
     def context = null
+    def chefVersion = null
     def installFlavor
     def opscode_gpg_key_url = "http://apt.opscode.com/packages@opscode.com.gpg.key"
     def validationCert
@@ -36,6 +37,7 @@ class ChefBootstrap {
                 case "installFlavor": installFlavor = v; break
                 case "validationCert": validationCert = v; break
                 case "context": context = v; break
+                case "chefVersion": chefVersion = v; break
             }
         }
         if (context.is(null)) {
@@ -45,6 +47,8 @@ class ChefBootstrap {
         osConfig = os.isWin32() ? config.win32 : config.unix
         chefServerURL = chefServerURL ?: config.serverURL
         validationCert = validationCert ?: config.validationCert
+        chefVersion = chefVersion ?: config.chefVersion
+        installFlavor = installFlavor ?: config.installFlavor
     }
     def install() {
         if (which("chef-solo").isEmpty()) {
@@ -63,7 +67,11 @@ class ChefBootstrap {
         }
     }
     def gemInstall() {
-        shell.sudo("gem install chef -y --no-rdoc --no-ri")
+        def opts = "-y --no-rdoc --no-ri"
+        if (!chefVersion.is(null)) {
+            opts = "-v ${chefVersion} " + opts
+        }
+        shell.sudo("gem install chef ${opts}")
     }
     def mkChefDirs() {
         shell.sudo("mkdir -p /etc/chef")

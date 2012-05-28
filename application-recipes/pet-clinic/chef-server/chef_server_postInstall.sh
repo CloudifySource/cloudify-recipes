@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /bin/bash -e
 cd ~
 export DEBIAN_FRONTEND=noninteractive
 export DEBIAN_PRIORITY=critical

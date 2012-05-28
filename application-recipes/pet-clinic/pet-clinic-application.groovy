@@ -5,7 +5,7 @@ application {
     }
     service {
         name = "app"
-        dependsOn = ["chef-server", "mysql"]
+        dependsOn = ["mysql", "chef-server"]
     }
     service {
         name = "mysql"

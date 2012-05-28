@@ -9,6 +9,11 @@ bootstrap.runSolo([
         "server_url": "http://localhost:4000",
         "init_style": "runit"
     ],
+    "chef_packages": [
+        "chef": [
+            "version": "0.10.8"
+        ]
+    ],
     "run_list": ["recipe[build-essential]", "recipe[chef-server::rubygems-install]", "recipe[chef-server::apache-proxy]" ]
 ])
 

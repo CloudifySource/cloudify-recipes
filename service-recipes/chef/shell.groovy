@@ -46,7 +46,7 @@ def static sudo(java.util.ArrayList command, env=[:]) {
 }
 
 def static sudoWriteFile(fileName, content) {
-    def tmpDir = new File(pathJoin(System.getProperty("java.io.tmpdir"), this.class.name))
+    def tmpDir = new File(pathJoin(System.getProperty("java.io.tmpdir"), "shell"))
     tmpDir.mkdir()
     def tmpFile = new File(pathJoin(tmpDir.getPath(), new File(fileName).getName()))
     tmpFile.withWriter() {it.write(content)}
