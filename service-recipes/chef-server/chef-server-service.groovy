@@ -14,17 +14,17 @@
 * limitations under the License.
 *******************************************************************************/
 service {
-    extend "../chef"
+	extend "../chef"
 	name "chef-server"
 	type "WEB_SERVER"
 	numInstances 1
-    compute {
-        template "MEDIUM_LINUX_CHEF_SERVER"
-    }
+	compute {
+        	template "MEDIUM_LINUX_CHEF_SERVER"
+    	}
 	lifecycle{
-        preInstall "chef_server_preInstall.groovy"
-        install "chef_server_install.groovy"
-        postInstall "chef_server_postInstall.sh"
+        	preInstall "chef_server_preInstall.groovy"
+        	install "chef_server_install.groovy"
+        	postInstall "chef_server_postInstall.sh"
 		start "run.groovy"
 
 		startDetectionTimeoutSecs 240
@@ -32,5 +32,4 @@ service {
 			ServiceUtils.isPortOccupied(4000)
 		}
 	}
-
 }
