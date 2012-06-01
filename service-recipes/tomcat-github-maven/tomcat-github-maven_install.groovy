@@ -60,14 +60,14 @@ serverXmlFile.write(serverXmlText)
 if (!serviceContext.isLocalCloud()) {
  new AntBuilder().sequential { 
   echo("copying ssh keys")
-  mkdir(dir:"${home}/.ssh")
-  copy(todir: "${home}/ssh", file:"id_rsa", overwrite:false)
-  copy(todir: "${home}/ssh", file:"id_rsa.pub", overwrite:false)
+  mkdir(dir:"${userHomeDir}/.ssh")
+  copy(todir: "${userHomeDir}/ssh", file:"id_rsa", overwrite:false)
+  copy(todir: "${userHomeDir}/ssh", file:"id_rsa.pub", overwrite:false)
  }
 }
 
 new AntBuilder().sequential {
- echo("installing maven v${mavenVesion}")
+ echo("installing maven v${mavenVersion}")
  get(src:config.mavenDownloadUrl, dest:"${installDir}/${config.mavenZipFilename}", skipexisting:true)
  unzip(src:"${installDir}/${config.mavenZipFilename}", dest:"${home}", overwrite:true)
  move(file:"${home}/${config.mavenUnzipFolder}", tofile:"${serviceContext.serviceDirectory}")
