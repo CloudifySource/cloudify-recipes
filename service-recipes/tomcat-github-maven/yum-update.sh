@@ -11,5 +11,5 @@ function error_exit {
 	exit ${1}
 }
 
-sudo yum -y update || error_exit $? "Failed to update yum"
+sudo yum -y update --security || error_exit $? "Failed to update yum"
 sudo yum -y install git || error_exit $? "Failed to install git"
