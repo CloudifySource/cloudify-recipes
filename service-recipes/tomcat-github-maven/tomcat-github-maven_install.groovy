@@ -67,7 +67,7 @@ if (!serviceContext.isLocalCloud()) {
 }
 
 new AntBuilder().sequential {
- echo("installing maven v${mavenVersion}")
+ echo("installing maven v${config.mavenVersion}")
  get(src:config.mavenDownloadUrl, dest:"${installDir}/${config.mavenZipFilename}", skipexisting:true)
  unzip(src:"${installDir}/${config.mavenZipFilename}", dest:"${home}", overwrite:true)
  move(file:"${home}/${config.mavenUnzipFolder}", tofile:"${serviceContext.serviceDirectory}")
@@ -75,18 +75,18 @@ new AntBuilder().sequential {
 }
 
 new AntBuilder().sequential {
- echo("downloading source code from ${applicationSrcUrl}")
+ echo("downloading source code from ${config.applicationSrcUrl}")
  exec(executable:"git", dir:"${home}") {
   arg("clone")
-  arg("${applicationSrcUrl}")
+  arg("${config.applicationSrcUrl}")
  }
  echo("building war file")
- exec(executable:"${installDir}/${config.mavenUnzipFolder}/bin/mvn", dir:"${applicationSrcFolder}") {
+ exec(executable:"${installDir}/${config.mavenUnzipFolder}/bin/mvn", dir:"${config.applicationSrcFolder}") {
   arg(value:"clean")
   arg(value:"package")
  }
  echo("deploying war file")
- copy(todir: "${home}/webapps", file:"${home}/${applicationSrcFolder}/target/${config.applicationWarFilename}", overwrite:true)
+ copy(todir: "${home}/webapps", file:"${home}/${config.applicationSrcFolder}/target/${config.applicationWarFilename}", overwrite:true)
 }
 
 println "Installation complete"
