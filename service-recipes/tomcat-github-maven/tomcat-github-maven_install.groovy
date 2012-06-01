@@ -77,8 +77,8 @@ new AntBuilder().sequential {
 new AntBuilder().sequential {
  echo("downloading source code from ${config.applicationSrcUrl}")
  exec(executable:"git", dir:"${home}") {
-  arg("clone")
-  arg("${config.applicationSrcUrl}")
+  arg(value:"clone")
+  arg(value:"${config.applicationSrcUrl}")
  }
  echo("building war file")
  exec(executable:"${installDir}/${config.mavenUnzipFolder}/bin/mvn", dir:"${config.applicationSrcFolder}") {
