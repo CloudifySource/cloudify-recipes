@@ -21,9 +21,10 @@ service {
 	}
 
 	lifecycle {
-		install "../../../../tools/groovy/bin/groovy tomcat-github-maven_install.groovy"
-		start "../../../../tools/groovy/bin/groovy tomcat_start.groovy"
-		preStop "../../../../tools/groovy/bin/groovy tomcat_stop.groovy"
+		preInstall "yum-update.sh"
+		install "tomcat-github-maven_install.groovy"
+		start "tomcat_start.groovy"
+		preStop "tomcat_stop.groovy"
 		startDetectionTimeoutSecs 240
 		startDetection {
 			println "tomcat-service.groovy(startDetection): arePortsFree http=${currHttpPort} ajp=${currAjpPort} ..."
