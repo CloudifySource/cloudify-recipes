@@ -57,14 +57,6 @@ serverXmlText = serverXmlText.replace("port=\"${config.shutdownPort}\"", shutdow
 serverXmlText = serverXmlText.replace('unpackWARs="true"', 'unpackWARs="false"')
 serverXmlFile.write(serverXmlText)
 
-new AntBuilder().sequential {
- echo("installing git")
- exec(executable:"sh", osfamily:"unix") {
-  arg(value:"-c")
-  arg(value:"sudo apt-get install -y git")
- }
-}
-
 if (!serviceContext.isLocalCloud()) {
  new AntBuilder().sequential { 
   echo("copying ssh keys")
