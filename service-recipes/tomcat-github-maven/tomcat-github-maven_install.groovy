@@ -57,12 +57,24 @@ serverXmlText = serverXmlText.replace("port=\"${config.shutdownPort}\"", shutdow
 serverXmlText = serverXmlText.replace('unpackWARs="true"', 'unpackWARs="false"')
 serverXmlFile.write(serverXmlText)
 
-if (!serviceContext.isLocalCloud()) {
+def privateKeyFilename="id_rsa"
+def privateKeySourceFolder=".ssh"
+def privateKeyTargetFolder="${userHomeDir}/.ssh"
+def privateKeyInstalled = new File("${privateKeyTargetFolder}/${privateKeyFilename}").exists();
+if (!privateKeyInstalled) {
+
+ if (!new File("${privateKeySourceFolder}/${privateKeyFilename}").exists()) {
+  throw new java.io.FileNotFoundException("place add a private key to the recipe for accessing github: ${privateKeySourceFolder}/${privateKeyFilename}");
+ }
+ 
  new AntBuilder().sequential { 
-  echo("copying ssh keys")
+  echo("installing private ssh key")
   mkdir(dir:"${userHomeDir}/.ssh")
-  copy(todir: "${userHomeDir}/ssh", file:"id_rsa", overwrite:false)
-  copy(todir: "${userHomeDir}/ssh", file:"id_rsa.pub", overwrite:false)
+  copy(todir: privateKeyTargetFolder, overwrite:true) {
+	fileset(dir: privateKeySourceFolder)
+  }
+  
+  chmod(dir: privateKeyTargetFolder, perm:"600", includes:"**/*")
  }
 }
 
@@ -78,6 +90,7 @@ new AntBuilder().sequential {
  echo("downloading source code from ${config.applicationSrcUrl}")
  exec(executable:"git", dir:"${home}") {
   arg(value:"clone")
+  arg(value:"-q")
   arg(value:"${config.applicationSrcUrl}")
  }
  echo("building war file")
