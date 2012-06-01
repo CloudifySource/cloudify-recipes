@@ -1,11 +1,11 @@
 import org.cloudifysource.dsl.context.ServiceContextFactory
 import java.util.concurrent.TimeUnit
 
-def config=new ConfigSlurper().parse(new File("tomcat-service.properties").toURL())
-
 def serviceContext = ServiceContextFactory.getServiceContext()
 def instanceID = serviceContext.getInstanceId()
-println "tomcat_start.groovy: This tomcat instance ID is ${instanceID}"
+def serviceName = serviceContext.getServiceName()
+println "tomcat_start.groovy: This ${serviceName} instance ID is ${instanceID}"
+def config=new ConfigSlurper().parse(new File("${serviceName}-service.properties").toURL())
 
 def home= serviceContext.attributes.thisInstance["home"]
 println "tomcat_start.groovy: tomcat(${instanceID}) home ${home}"
