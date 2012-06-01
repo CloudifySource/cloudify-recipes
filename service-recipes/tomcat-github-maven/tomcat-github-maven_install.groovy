@@ -82,19 +82,22 @@ new AntBuilder().sequential {
  echo("installing maven v${config.mavenVersion}")
  get(src:config.mavenDownloadUrl, dest:"${installDir}/${config.mavenZipFilename}", skipexisting:true)
  unzip(src:"${installDir}/${config.mavenZipFilename}", dest:"${home}", overwrite:true)
- move(file:"${home}/${config.mavenUnzipFolder}", tofile:"${serviceContext.serviceDirectory}")
- chmod(dir:"${home}/bin", perm:'+x', includes:"*.sh")
+ chmod(dir:"${home}/${config.mavenUnzipFolder}/bin", perm:'+x', excludes:"*.bat")
 }
+
+def mvn="${home}/${config.mavenUnzipFolder}/bin/mvn"
 
 new AntBuilder().sequential {
  echo("downloading source code from ${config.applicationSrcUrl}")
- exec(executable:"git", dir:"${home}") {
+ exec(executable:"git") {
   arg(value:"clone")
   arg(value:"-q")
+  arg(value:"-v")
   arg(value:"${config.applicationSrcUrl}")
+  arg(value:"${home}/${config.applicationSrcFolder}")
  }
  echo("building war file")
- exec(executable:"${installDir}/${config.mavenUnzipFolder}/bin/mvn", dir:"${config.applicationSrcFolder}") {
+ exec(executable:mvn, dir:"${home}/${config.applicationSrcFolder}") {
   arg(value:"clean")
   arg(value:"package")
  }
