@@ -22,11 +22,17 @@ def instanceID = serviceContext.getInstanceId()
 println "Installing tomcat-github-maven..."
 
 def home = "${serviceContext.serviceDirectory}/${config.name}"
-def script = "${home}/bin/catalina"
-
 serviceContext.attributes.thisInstance["home"] = "${home}"
-serviceContext.attributes.thisInstance["script"] = "${script}"
 println "tomcat(${instanceID}) home is ${home}"
+
+def script = "${home}/bin/catalina"
+serviceContext.attributes.thisInstance["script"] = "${script}"
+
+def mvn="${home}/${config.mavenUnzipFolder}/bin/mvn"
+serviceContext.attributes.thisInstance["mvn"] = "${mvn}"
+
+def git="${home}/usr/libexec/git-core/git"
+serviceContext.attributes.thisInstance["git"] = "${git}"
 
 userHomeDir = System.properties["user.home"]
 installDir = "${userHomeDir}/.cloudify/${config.serviceName}" + instanceID
@@ -85,9 +91,6 @@ new AntBuilder().sequential {
  chmod(dir:"${home}/${config.mavenUnzipFolder}/bin", perm:'+x', excludes:"*.bat")
 }
 
-def mvn="${home}/${config.mavenUnzipFolder}/bin/mvn"
-def git="${home}/usr/libexec/git-core/git"
-
 new AntBuilder().sequential {
  echo("installing git v${config.gitVersion}")
  get(src:config.gitDownloadUrl, dest:"${installDir}/${config.gitRpmFilename}", skipexisting:true)
@@ -104,13 +107,6 @@ new AntBuilder().sequential {
   arg(value:"${config.applicationSrcUrl}")
   arg(value:"${home}/${config.applicationSrcFolder}")
  }
- echo("building war file")
- exec(executable:mvn, dir:"${home}/${config.applicationSrcFolder}") {
-  arg(value:"clean")
-  arg(value:"package")
- }
- echo("deploying war file")
- copy(todir: "${home}/webapps", file:"${home}/${config.applicationSrcFolder}/target/${config.applicationWarFilename}", overwrite:true)
 }
 
 println "Installation complete"
