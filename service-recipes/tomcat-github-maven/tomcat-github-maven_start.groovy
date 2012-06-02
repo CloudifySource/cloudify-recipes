@@ -1,5 +1,5 @@
 import org.cloudifysource.dsl.context.ServiceContextFactory
-import java.util.concurrent.TimeUnit
+import java.util.concurrent.*
 
 def serviceContext = ServiceContextFactory.getServiceContext()
 def instanceID = serviceContext.getInstanceId()
@@ -35,11 +35,11 @@ def mvn = {mvnargs ->
  }
 }
 
-def update= {
+def update= { githead->
 
  git("checkout -q master")
  git("pull")
- git("branch -f build ${->serviceContext.attributes.thisInstance["git-head"]}")
+ git("branch -f build ${githead}")
  git("checkout -q build")
  mvn("clean package")
  
@@ -51,7 +51,21 @@ def update= {
 
 println "tomcat_start.groovy: tomcat(${instanceID}) home ${home}"
 
-update()
+def gitHead = null
+CountDownLatch latch = new CountDownLatch(1)
+def executor = Executors.newSingleThreadScheduledExecutor();
+executor.scheduleAtFixedRate({
+    //update git if head configuration changed
+	def currentGitHead = serviceContext.attributes.thisInstance["git-head"]
+	if (gitHead == null || !gitHead.equals(currentGitHead)) {
+		gitHead = currentGitHead;
+		update(gitHead);
+		latch.countDown();
+	} 
+},0,10,TimeUnit.SECONDS)
+
+println "waiting for initial war deployment to complete"
+latch.await()
 
 def script= serviceContext.attributes.thisInstance["script"]
 println "tomcat_start.groovy: tomcat(${instanceID}) script ${script}"
@@ -82,3 +96,4 @@ new AntBuilder().sequential {
 		arg(value:"run")
 	}
 }
+executor.shutdown();

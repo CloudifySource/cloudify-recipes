@@ -31,6 +31,10 @@ service {
 		}
 	}
 
+	customCommands ([
+		"update" : { gitHead -> context.attributes.thisInstance["git-head"]=gitHead }
+	])
+	
 	plugins([
 		plugin {
 			name "jmx"
