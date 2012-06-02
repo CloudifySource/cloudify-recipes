@@ -21,7 +21,6 @@ service {
 	}
 
 	lifecycle {
-		preInstall "yum-update.sh"
 		install "tomcat-github-maven_install.groovy"
 		start "tomcat-github-maven_start.groovy"
 		preStop "tomcat_stop.groovy"
