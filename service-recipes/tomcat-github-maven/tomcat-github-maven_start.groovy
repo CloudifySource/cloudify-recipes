@@ -8,23 +8,42 @@ println "tomcat_start.groovy: This ${serviceName} instance ID is ${instanceID}"
 def config=new ConfigSlurper().parse(new File("${serviceName}-service.properties").toURL())
 
 def home= serviceContext.attributes.thisInstance["home"]
-def git= serviceContext.attributes.thisInstance["git"]
-def mvn= serviceContext.attributes.thisInstance["mvn"]
+def gitexec= serviceContext.attributes.thisInstance["git"]
+def mvnexec= serviceContext.attributes.thisInstance["mvn"]
+
+serviceContext.attributes.thisInstance["git-head"]=config.gitHead;
+
+def git = { gitargs ->
+ new AntBuilder().sequential {
+	echo("git ${gitargs}")
+	exec(executable:gitexec, dir:"${home}/${config.applicationSrcFolder}", failonerror:true) {
+	   for (gitarg in gitargs.split(" ")) {
+		arg(value:gitarg)
+	   }
+	  }
+ }
+}
+
+def mvn = {mvnargs ->
+ new AntBuilder().sequential {
+  echo("mvn ${mvnargs}")
+  exec(executable:mvnexec, dir:"${home}/${config.applicationSrcFolder}", failonerror:true) {
+   for (mvnarg in mvnargs.split(" ")) {
+    arg(value:mvnarg)
+   }
+  }
+ }
+}
 
 def update= {
 
- new AntBuilder().sequential {
- exec(executable:"${git}", failonerror:true) {
-   arg(value:"checkout")
-   arg(value:"-q")
-   arg(value:"master")
-  }
+ git("checkout -q master")
+ git("pull")
+ git("branch -f build ${->serviceContext.attributes.thisInstance["git-head"]}")
+ git("checkout -q build")
+ mvn("clean package")
  
- echo("building war file")
-  exec(executable:mvn, dir:"${home}/${config.applicationSrcFolder}", failonerror:true) {
-   arg(value:"clean")
-   arg(value:"package")
-  }
+ new AntBuilder().sequential {
   echo("deploying war file")
   copy(todir: "${home}/webapps", file:"${home}/${config.applicationSrcFolder}/target/${config.applicationWarFilename}", overwrite:true)
  }
