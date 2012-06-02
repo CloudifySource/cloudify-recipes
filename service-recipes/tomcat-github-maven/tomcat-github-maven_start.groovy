@@ -14,14 +14,14 @@ def mvn= serviceContext.attributes.thisInstance["mvn"]
 def update= {
 
  new AntBuilder().sequential {
- exec(executable:"${git}") {
+ exec(executable:"${git}", failonerror:true) {
    arg(value:"checkout")
    arg(value:"-q")
    arg(value:"master")
   }
  
  echo("building war file")
-  exec(executable:mvn, dir:"${home}/${config.applicationSrcFolder}") {
+  exec(executable:mvn, dir:"${home}/${config.applicationSrcFolder}", failonerror:true) {
    arg(value:"clean")
    arg(value:"package")
   }
@@ -48,14 +48,14 @@ currJmxPort=config.jmxPort+portIncrement
 println "tomcat_start.groovy: Replacing default jmx port with port ${currJmxPort}"
 
 new AntBuilder().sequential {
-	exec(executable:"${script}.sh", osfamily:"unix") {
+	exec(executable:"${script}.sh", osfamily:"unix", failonerror:true) {
         env(key:"CATALINA_HOME", value: "${home}")
         env(key:"CATALINA_BASE", value: "${home}")
         env(key:"CATALINA_TMPDIR", value: "${home}/temp")
 		env(key:"CATALINA_OPTS", value:"-Dcom.sun.management.jmxremote.port=${currJmxPort} -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false")
 		arg(value:"run")
 	}
-	exec(executable:"${script}.bat", osfamily:"windows") { 
+	exec(executable:"${script}.bat", osfamily:"windows", failonerror:true) { 
         env(key:"CATALINA_HOME", value: "${home}")
         env(key:"CATALINA_BASE", value: "${home}")
         env(key:"CATALINA_TMPDIR", value: "${home}/temp")

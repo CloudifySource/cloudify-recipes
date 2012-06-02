@@ -94,13 +94,13 @@ new AntBuilder().sequential {
 new AntBuilder().sequential {
  echo("installing git v${config.gitVersion}")
  get(src:config.gitDownloadUrl, dest:"${installDir}/${config.gitRpmFilename}", skipexisting:true)
- exec(executable:"sh", dir:"${home}") {
+ exec(executable:"sh", dir:"${home}", failonerror:true) {
 	arg(value:"-c")
 	arg(value:"rpm2cpio ${installDir}/${config.gitRpmFilename} | cpio -idmv")
  }
  
  echo("downloading source code from ${config.applicationSrcUrl}")
- exec(executable:"${git}") {
+ exec(executable:"${git}", failonerror:true) {
   arg(value:"clone")
   arg(value:"-q")
   arg(value:"-v")
