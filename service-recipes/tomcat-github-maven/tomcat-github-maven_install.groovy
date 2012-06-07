@@ -14,6 +14,7 @@
 * limitations under the License.
 *******************************************************************************/
 import org.cloudifysource.dsl.context.ServiceContextFactory
+import org.cloudifysource.dsl.utils.ServiceUtils;
 
 def config = new ConfigSlurper().parse(new File("tomcat-github-maven-service.properties").toURL())
 def serviceContext = ServiceContextFactory.getServiceContext()
@@ -30,9 +31,6 @@ serviceContext.attributes.thisInstance["script"] = "${script}"
 
 def mvn="${home}/${config.mavenUnzipFolder}/bin/mvn"
 serviceContext.attributes.thisInstance["mvn"] = "${mvn}"
-
-def git="${home}/usr/libexec/git-core/git"
-serviceContext.attributes.thisInstance["git"] = "${git}"
 
 userHomeDir = System.properties["user.home"]
 installDir = "${userHomeDir}/.cloudify/${config.serviceName}" + instanceID
@@ -91,16 +89,35 @@ new AntBuilder().sequential {
  chmod(dir:"${home}/${config.mavenUnzipFolder}/bin", perm:'+x', excludes:"*.bat")
 }
 
-new AntBuilder().sequential {
- echo("installing git v${config.gitVersion}")
- get(src:config.gitDownloadUrl, dest:"${installDir}/${config.gitRpmFilename}", skipexisting:true)
- exec(executable:"sh", dir:"${home}", failonerror:true) {
-	arg(value:"-c")
-	arg(value:"rpm2cpio ${installDir}/${config.gitRpmFilename} | cpio -idmv")
+def gitexec
+
+if (ServiceUtils.isWindows()) {
+ new AntBuilder().sequential {
+  echo("installing git")
+  get(src:config.gitExeDownloadUrl, dest:"${installDir}/${config.gitExeFilename}", skipexisting:true)
+  exec(executable:"${installDir}/${config.gitExeFilename}", dir:"${home}", failonerror:true) {
+  	arg(value:"/VERYSILENT")
+  	arg(value:"/DIR=\"git\"")
+  }
  }
- 
+ gitexec="${home}/git/bin/git"
+}
+else {
+ new AntBuilder().sequential {
+  echo("installing git")
+  get(src:config.gitRpmDownloadUrl, dest:"${installDir}/${config.gitRpmFilename}", skipexisting:true)
+  exec(executable:"sh", dir:"${home}", failonerror:true) {
+  	arg(value:"-c")
+  	arg(value:"rpm2cpio ${installDir}/${config.gitRpmFilename} | cpio -idmv")
+  }
+ }
+ gitexec="${home}/usr/libexec/git-core/git"
+} 
+
+ serviceContext.attributes.thisInstance["git"] = "${gitexec}"
+new AntBuilder().sequential {
  echo("downloading source code from ${config.applicationSrcUrl}")
- exec(executable:"${git}", failonerror:true) {
+ exec(executable:"${gitexec}", failonerror:true) {
   arg(value:"clone")
   arg(value:"-q")
   arg(value:"-v")
@@ -108,6 +125,5 @@ new AntBuilder().sequential {
   arg(value:"${home}/${config.applicationSrcFolder}")
  }
 }
-
 println "Installation complete"
 
