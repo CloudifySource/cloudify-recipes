@@ -36,7 +36,9 @@ userHomeDir = System.properties["user.home"]
 installDir = "${userHomeDir}/.cloudify/${config.serviceName}" + instanceID
 applicationWar = "${installDir}/${config.warName}"
 
-new AntBuilder().sequential {	
+def ant = new AntBuilder()
+
+ant.sequential {
 	mkdir(dir:"${installDir}")
 	get(src:"${config.downloadPath}", dest:"${installDir}/${config.zipName}", skipexisting:true)
 	unzip(src:"${installDir}/${config.zipName}", dest:"${home}", overwrite:true)
@@ -69,45 +71,54 @@ if (!new File("${privateKeyFolder}/${privateKeyFilename}").exists()) {
 }
 
 if (!ServiceUtils.isWindows()) {
- new AntBuilder().sequential { 
+ ant.sequential { 
   echo("modifying private ssh key file permissions")
   chmod(dir: privateKeyFolder, perm:"600", includes:"**/*")
  }
 }
 
-new AntBuilder().sequential { 
+ant.sequential { 
  echo("installing maven v${config.mavenVersion}")
  get(src:config.mavenDownloadUrl, dest:"${installDir}/${config.mavenZipFilename}", skipexisting:true)
  unzip(src:"${installDir}/${config.mavenZipFilename}", dest:"${home}", overwrite:true)
+
+
+
+
+
+
+
+
  chmod(dir:"${home}/${config.mavenUnzipFolder}/bin", perm:'+x', excludes:"*.bat")
+
+
 }
+
 if (!(new File(mvnexec).exists())) {
 	throw new FileNotFoundException(mvnexec + " does not exist");
 }
 
 
+
 def gitexec
 
 if (ServiceUtils.isWindows()) {
- new AntBuilder().sequential {
+ ant.echo("installing 7zip")
+ ant.get(src:config.sevenZADownloadUrl, dest:"${installDir}/${config.sevenZAFilename}", skipexisting:true)
+ ant.unzip(src:"${installDir}/${config.sevenZAFilename}", dest:"${home}/../${config.sevenZAUnzipFolder}", overwrite:true)
   
-  echo("installing 7zip")
-  get(src:config.sevenZADownloadUrl, dest:"${installDir}/${config.sevenZAFilename}", skipexisting:true)
-  unzip(src:"${installDir}/${config.sevenZAFilename}", dest:"${home}/../${config.sevenZAUnzipFolder}", overwrite:true)
-  
-  echo("installing git")
-  get(src:config.gitZipDownloadUrl, dest:"${installDir}/${config.gitZipFilename}", skipexisting:true)
-  exec(executable:"${home}/../${config.sevenZAUnzipFolder}/7za.exe", dir:"${home}/..", failonerror:true) {
+ ant.echo("installing git")
+ ant.get(src:config.gitZipDownloadUrl, dest:"${installDir}/${config.gitZipFilename}", skipexisting:true)
+ ant.exec(executable:"${home}/../${config.sevenZAUnzipFolder}/7za.exe", dir:"${home}/..", failonerror:true) {
   	arg(value:"x")     // extract with directories
   	arg(value:"-y")    // answer yes
 	arg(value:"-ogit") //output folder git
 	arg(value:"${installDir}/${config.gitZipFilename}")
-  }
  }
  gitexec="${home}/../git/bin/git"
 }
 else {
- new AntBuilder().sequential {
+ ant.sequential {
   echo("installing git")
   get(src:config.gitRpmDownloadUrl, dest:"${installDir}/${config.gitRpmFilename}", skipexisting:true)
   exec(executable:"sh", dir:"${home}", failonerror:true) {
@@ -121,11 +132,15 @@ else {
 if (!(new File(gitexec).exists())) {
 	throw new FileNotFoundException(gitexec + " does not exist");
 }
+
  serviceContext.attributes.thisInstance["git"] = "${gitexec}"
-new AntBuilder().sequential {
+ant.sequential {
  echo("downloading source code from ${config.applicationSrcUrl}")
+
  exec(executable:"${gitexec}", failonerror:true) {
   env(key:"HOME", value: "${serviceContext.serviceDirectory}") //looks for ~/.ssh
+
+
   arg(value:"clone")
   arg(value:"-q")
   arg(value:"-v")
