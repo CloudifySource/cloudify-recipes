@@ -26,8 +26,9 @@ service {
 		preStop "tomcat_stop.groovy"
 		startDetectionTimeoutSecs 240
 		startDetection {
-			println "tomcat-service.groovy(startDetection): arePortsFree http=${currHttpPort} ajp=${currAjpPort} ..."
-			!ServiceUtils.arePortsFree([currHttpPort, currAjpPort] )
+			started = !ServiceUtils.arePortsFree([currHttpPort, currAjpPort] )
+			println "startDetection: http=${currHttpPort} ajp=${currAjpPort} started=${started}"
+			return started
 		}
 	}
 
