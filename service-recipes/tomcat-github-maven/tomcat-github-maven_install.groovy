@@ -29,8 +29,8 @@ println "tomcat(${instanceID}) home is ${home}"
 def script = "${home}/bin/catalina"
 serviceContext.attributes.thisInstance["script"] = "${script}"
 
-def mvn="${home}/${config.mavenUnzipFolder}/bin/mvn"
-serviceContext.attributes.thisInstance["mvn"] = "${mvn}"
+def mvnexec="${home}/${config.mavenUnzipFolder}/bin/mvn"
+serviceContext.attributes.thisInstance["mvn"] = "${mvnexec}"
 
 userHomeDir = System.properties["user.home"]
 installDir = "${userHomeDir}/.cloudify/${config.serviceName}" + instanceID
@@ -81,6 +81,10 @@ new AntBuilder().sequential {
  unzip(src:"${installDir}/${config.mavenZipFilename}", dest:"${home}", overwrite:true)
  chmod(dir:"${home}/${config.mavenUnzipFolder}/bin", perm:'+x', excludes:"*.bat")
 }
+if (!(new File(mvnexec).exists())) {
+	throw new FileNotFoundException(mvnexec + " does not exist");
+}
+
 
 def gitexec
 
@@ -114,6 +118,9 @@ else {
  gitexec="${home}/usr/libexec/git-core/git"
 } 
 
+if (!(new File(gitexec).exists())) {
+	throw new FileNotFoundException(gitexec + " does not exist");
+}
  serviceContext.attributes.thisInstance["git"] = "${gitexec}"
 new AntBuilder().sequential {
  echo("downloading source code from ${config.applicationSrcUrl}")
@@ -125,6 +132,10 @@ new AntBuilder().sequential {
   arg(value:"${config.applicationSrcUrl}")
   arg(value:"${home}/${config.applicationSrcFolder}")
  }
+}
+def pom = "${home}/${config.applicationSrcFolder}/pom.xml"
+if (!(new File(pom).exists())) {
+	throw new java.io.FileNotFoundException(pom + " does not exist");
 }
 println "Installation complete"
 
