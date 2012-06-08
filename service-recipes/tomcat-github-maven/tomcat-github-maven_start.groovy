@@ -1,5 +1,7 @@
 import org.cloudifysource.dsl.context.ServiceContextFactory
+import org.cloudifysource.dsl.utils.ServiceUtils;
 import java.util.concurrent.*
+
 
 def serviceContext = ServiceContextFactory.getServiceContext()
 def instanceID = serviceContext.getInstanceId()
@@ -10,28 +12,46 @@ def config=new ConfigSlurper().parse(new File("${serviceName}-service.properties
 def home= serviceContext.attributes.thisInstance["home"]
 def gitexec= serviceContext.attributes.thisInstance["git"]
 def mvnexec= serviceContext.attributes.thisInstance["mvn"]
+def ant = new AntBuilder()
 
 serviceContext.attributes.thisInstance["git-head"]=config.gitHead;
 
 def git = { gitargs ->
- new AntBuilder().sequential {
+ ant.sequential {
 	echo("git ${gitargs}")
 	exec(executable:gitexec, dir:"${home}/${config.applicationSrcFolder}", failonerror:true) {
-    env(key:"HOME", value: "${home}/..") //looks for ~/.ssh
-	   for (gitarg in gitargs.split(" ")) {
-		arg(value:gitarg)
-	   }
-	  }
+     env(key:"HOME", value: "${serviceContext.serviceDirectory}") //looks for ~/.ssh
+     env(key:"HOMEDRIVE", value: "${serviceContext.serviceDirectory}")
+     env(key:"USERPROFILE", value: "${serviceContext.serviceDirectory}")
+	 for (gitarg in gitargs.split(" ")) {
+	  arg(value:gitarg)
+	 }
+	}
+	echo("done")
  }
 }
 
 def mvn = {mvnargs ->
- new AntBuilder().sequential {
-  echo("mvn ${mvnargs}")
-  exec(executable:mvnexec, dir:"${home}/${config.applicationSrcFolder}", failonerror:true) {
-   for (mvnarg in mvnargs.split(" ")) {
-    arg(value:mvnarg)
+ if (ServiceUtils.isWindows()) {
+ 
+  ant.sequential {
+   echo("cmd /c \"${mvnexec} ${mvnargs}\"")
+   exec(executable:"cmd", dir:"${home}/${config.applicationSrcFolder}", failonerror:true) {
+    arg(value:"/c")
+	arg(value:"\"${mvnexec} ${mvnargs}\"")
    }
+   echo("done")
+  }
+ }
+ else {
+  ant.sequential {
+   echo("${mvnexec} ${mvnargs}")
+   exec(executable:mvnexec, dir:"${home}/${config.applicationSrcFolder}", failonerror:true) {
+    for (mvnarg in mvnargs.split(" ")) {
+     arg(value:mvnarg)
+    }
+   }
+   echo("done")
   }
  }
 }
@@ -43,11 +63,8 @@ def update= { githead->
  git("branch -f build ${githead}")
  git("checkout -q build")
  mvn("clean package")
- 
- new AntBuilder().sequential {
-  echo("deploying war file")
-  copy(todir: "${home}/webapps", file:"${home}/${config.applicationSrcFolder}/target/${config.applicationWarFilename}", overwrite:true)
- }
+ ant.echo("deploying war file")
+ ant.copy(todir: "${home}/webapps", file:"${home}/${config.applicationSrcFolder}/target/${config.applicationWarFilename}", overwrite:true)
 }
 
 println "tomcat_start.groovy: tomcat(${instanceID}) home ${home}"
@@ -55,14 +72,21 @@ println "tomcat_start.groovy: tomcat(${instanceID}) home ${home}"
 def gitHead = null
 CountDownLatch latch = new CountDownLatch(1)
 def executor = Executors.newSingleThreadScheduledExecutor();
-executor.scheduleAtFixedRate({
+executor.scheduleWithFixedDelay({
+    try {
     //update git if head configuration changed
 	def currentGitHead = serviceContext.attributes.thisInstance["git-head"]
 	if (gitHead == null || !gitHead.equals(currentGitHead)) {
+		update(currentGitHead);
 		gitHead = currentGitHead;
-		update(gitHead);
 		latch.countDown();
 	} 
+	} catch (Throwable t) {
+		System.err.println("Error updating git: "+t);
+        StackTraceUtils.printSanitizedStackTrace(t,System.err);
+		System.err.println("Sleeping for 1 minute before retrying");
+		sleep(60)
+	}
 },0,10,TimeUnit.SECONDS)
 
 println "waiting for initial war deployment to complete"
@@ -81,7 +105,7 @@ if (serviceContext.isLocalCloud()) {
 currJmxPort=config.jmxPort+portIncrement
 println "tomcat_start.groovy: Replacing default jmx port with port ${currJmxPort}"
 
-new AntBuilder().sequential {
+ant.sequential {
 	exec(executable:"${script}.sh", osfamily:"unix", failonerror:true) {
         env(key:"CATALINA_HOME", value: "${home}")
         env(key:"CATALINA_BASE", value: "${home}")
