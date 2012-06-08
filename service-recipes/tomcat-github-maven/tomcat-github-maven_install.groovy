@@ -62,27 +62,19 @@ serverXmlText = serverXmlText.replace('unpackWARs="true"', 'unpackWARs="false"')
 serverXmlFile.write(serverXmlText)
 
 def privateKeyFilename="id_rsa"
-def privateKeySourceFolder=".ssh"
-def privateKeyTargetFolder="${userHomeDir}/.ssh"
-def privateKeyInstalled = new File("${privateKeyTargetFolder}/${privateKeyFilename}").exists();
-if (!privateKeyInstalled) {
+def privateKeyFolder="${home}/../.ssh"
 
- if (!new File("${privateKeySourceFolder}/${privateKeyFilename}").exists()) {
-  throw new java.io.FileNotFoundException("place add a private key to the recipe for accessing github: ${privateKeySourceFolder}/${privateKeyFilename}");
- }
- 
- new AntBuilder().sequential { 
-  echo("installing private ssh key")
-  mkdir(dir:"${userHomeDir}/.ssh")
-  copy(todir: privateKeyTargetFolder, overwrite:true) {
-	fileset(dir: privateKeySourceFolder)
-  }
-  
-  chmod(dir: privateKeyTargetFolder, perm:"600", includes:"**/*")
- }
+if (!new File("${privateKeyFolder}/${privateKeyFilename}").exists()) {
+ throw new java.io.FileNotFoundException("place add a private key to the recipe for accessing github: ${privateKeySourceFolder}/${privateKeyFilename}")
 }
 
-new AntBuilder().sequential {
+if (!ServiceUtils.isWindows()) {
+new AntBuilder().sequential { 
+ echo("modifying private ssh key file permissions")
+ chmod(dir: privateKeyFolder, perm:"600", includes:"**/*")
+}
+
+new AntBuilder().sequential { 
  echo("installing maven v${config.mavenVersion}")
  get(src:config.mavenDownloadUrl, dest:"${installDir}/${config.mavenZipFilename}", skipexisting:true)
  unzip(src:"${installDir}/${config.mavenZipFilename}", dest:"${home}", overwrite:true)
@@ -118,6 +110,7 @@ else {
 new AntBuilder().sequential {
  echo("downloading source code from ${config.applicationSrcUrl}")
  exec(executable:"${gitexec}", failonerror:true) {
+  env(key:"HOME", value: "${home}/..") //looks for ~/.ssh
   arg(value:"clone")
   arg(value:"-q")
   arg(value:"-v")

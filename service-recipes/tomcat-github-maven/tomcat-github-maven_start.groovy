@@ -17,6 +17,7 @@ def git = { gitargs ->
  new AntBuilder().sequential {
 	echo("git ${gitargs}")
 	exec(executable:gitexec, dir:"${home}/${config.applicationSrcFolder}", failonerror:true) {
+    env(key:"HOME", value: "${home}/..") //looks for ~/.ssh
 	   for (gitarg in gitargs.split(" ")) {
 		arg(value:gitarg)
 	   }
