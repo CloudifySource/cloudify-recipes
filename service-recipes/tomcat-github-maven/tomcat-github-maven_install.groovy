@@ -86,14 +86,21 @@ def gitexec
 
 if (ServiceUtils.isWindows()) {
  new AntBuilder().sequential {
+  
+  echo("installing 7zip")
+  get(src:config.sevenZADownloadUrl, dest:"${installDir}/${config.sevenZAFilename}", skipexisting:true)
+  unzip(src:"${installDir}/${config.sevenZAFilename}", dest:"${home}/../${config.sevenZAUnzipFolder}", overwrite:true)
+  
   echo("installing git")
-  get(src:config.gitExeDownloadUrl, dest:"${installDir}/${config.gitExeFilename}", skipexisting:true)
-  exec(executable:"${installDir}/${config.gitExeFilename}", dir:"${home}", failonerror:true) {
-  	arg(value:"/VERYSILENT")
-  	arg(value:"/DIR=\"git\"")
+  get(src:config.gitZipDownloadUrl, dest:"${installDir}/${config.gitZipFilename}", skipexisting:true)
+  exec(executable:"${home}/../${config.sevenZAUnzipFolder}/7za.exe", dir:"${home}/..", failonerror:true) {
+  	arg(value:"x")     // extract with directories
+  	arg(value:"-y")    // answer yes
+	arg(value:"-ogit") //output folder git
+	arg(value:"${installDir}/${config.gitZipFilename}")
   }
  }
- gitexec="${home}/git/bin/git"
+ gitexec="${home}/../git/bin/git"
 }
 else {
  new AntBuilder().sequential {
@@ -111,7 +118,7 @@ else {
 new AntBuilder().sequential {
  echo("downloading source code from ${config.applicationSrcUrl}")
  exec(executable:"${gitexec}", failonerror:true) {
-  env(key:"HOME", value: "${home}/..") //looks for ~/.ssh
+  env(key:"HOME", value: "${serviceContext.serviceDirectory}") //looks for ~/.ssh
   arg(value:"clone")
   arg(value:"-q")
   arg(value:"-v")
