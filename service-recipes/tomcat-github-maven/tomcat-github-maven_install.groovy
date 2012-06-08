@@ -69,9 +69,10 @@ if (!new File("${privateKeyFolder}/${privateKeyFilename}").exists()) {
 }
 
 if (!ServiceUtils.isWindows()) {
-new AntBuilder().sequential { 
- echo("modifying private ssh key file permissions")
- chmod(dir: privateKeyFolder, perm:"600", includes:"**/*")
+ new AntBuilder().sequential { 
+  echo("modifying private ssh key file permissions")
+  chmod(dir: privateKeyFolder, perm:"600", includes:"**/*")
+ }
 }
 
 new AntBuilder().sequential { 
