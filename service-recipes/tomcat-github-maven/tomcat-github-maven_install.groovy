@@ -81,23 +81,11 @@ ant.sequential {
  echo("installing maven v${config.mavenVersion}")
  get(src:config.mavenDownloadUrl, dest:"${installDir}/${config.mavenZipFilename}", skipexisting:true)
  unzip(src:"${installDir}/${config.mavenZipFilename}", dest:"${home}", overwrite:true)
-
-
-
-
-
-
-
-
  chmod(dir:"${home}/${config.mavenUnzipFolder}/bin", perm:'+x', excludes:"*.bat")
-
-
 }
-
 if (!(new File(mvnexec).exists())) {
 	throw new FileNotFoundException(mvnexec + " does not exist");
 }
-
 
 
 def gitexec
@@ -115,7 +103,7 @@ if (ServiceUtils.isWindows()) {
 	arg(value:"-ogit") //output folder git
 	arg(value:"${installDir}/${config.gitZipFilename}")
  }
- gitexec="${home}/../git/bin/git"
+ gitexec="${home}/../git/bin/git.exe"
 }
 else {
  ant.sequential {
@@ -132,15 +120,14 @@ else {
 if (!(new File(gitexec).exists())) {
 	throw new FileNotFoundException(gitexec + " does not exist");
 }
-
- serviceContext.attributes.thisInstance["git"] = "${gitexec}"
+serviceContext.attributes.thisInstance["git"] = "${gitexec}"
 ant.sequential {
  echo("downloading source code from ${config.applicationSrcUrl}")
-
+ delete(dir:"${home}/${config.applicationSrcFolder}")
  exec(executable:"${gitexec}", failonerror:true) {
   env(key:"HOME", value: "${serviceContext.serviceDirectory}") //looks for ~/.ssh
-
-
+  env(key:"HOMEDRIVE", value: "${serviceContext.serviceDirectory}")
+  env(key:"USERPROFILE", value: "${serviceContext.serviceDirectory}")
   arg(value:"clone")
   arg(value:"-q")
   arg(value:"-v")
