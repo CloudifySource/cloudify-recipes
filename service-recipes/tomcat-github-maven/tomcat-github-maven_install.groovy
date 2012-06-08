@@ -29,9 +29,6 @@ println "tomcat(${instanceID}) home is ${home}"
 def script = "${home}/bin/catalina"
 serviceContext.attributes.thisInstance["script"] = "${script}"
 
-def mvnexec="${home}/${config.mavenUnzipFolder}/bin/mvn"
-serviceContext.attributes.thisInstance["mvn"] = "${mvnexec}"
-
 userHomeDir = System.properties["user.home"]
 installDir = "${userHomeDir}/.cloudify/${config.serviceName}" + instanceID
 applicationWar = "${installDir}/${config.warName}"
@@ -81,11 +78,23 @@ ant.sequential {
  echo("installing maven v${config.mavenVersion}")
  get(src:config.mavenDownloadUrl, dest:"${installDir}/${config.mavenZipFilename}", skipexisting:true)
  unzip(src:"${installDir}/${config.mavenZipFilename}", dest:"${home}", overwrite:true)
- chmod(dir:"${home}/${config.mavenUnzipFolder}/bin", perm:'+x', excludes:"*.bat")
 }
+
+def mvnexec
+if (ServiceUtils.isWindows()) {
+ mvnexec="${home}/${config.mavenUnzipFolder}/bin/mvn.bat"
+}
+else {
+ ant.sequential { 
+  chmod(dir:"${home}/${config.mavenUnzipFolder}/bin", perm:'+x', excludes:"*.bat")
+ }
+ mvnexec="${home}/${config.mavenUnzipFolder}/bin/mvn"
+}
+
 if (!(new File(mvnexec).exists())) {
 	throw new FileNotFoundException(mvnexec + " does not exist");
 }
+serviceContext.attributes.thisInstance["mvn"] = "${mvnexec}"
 
 
 def gitexec
