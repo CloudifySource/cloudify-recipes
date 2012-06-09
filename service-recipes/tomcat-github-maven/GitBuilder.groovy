@@ -36,17 +36,30 @@ class GitBuilder {
 		println "git working directory changed to ${this.workingDir}"
 	}
 	
-	void installGit() {
-	 def privateKeyFilename="id_rsa"
-	 def privateKeyFolder="${context.serviceDirectory}/.ssh"
-
-	 if (!new File("${privateKeyFolder}/${privateKeyFilename}").exists()) {
-	  throw new java.io.FileNotFoundException("place add a private key to the recipe for accessing github: ${privateKeySourceFolder}/${privateKeyFilename}")
+	void validateSshKeysInRecipe() {
+     def privateKeyFilename="id_rsa"	 
+	 if (!new File("${context.serviceDirectory}/.ssh/${privateKeyFilename}").exists()) {
+	   throw new java.io.FileNotFoundException("place add a private key to the recipe for accessing github: ${privateKeySourceFolder}/${privateKeyFilename}")
 	 }
-
-	 if (!ServiceUtils.isWindows()) {
+	}
+	
+	void installGit() {
+	 
+	 if (ServiceUtils.isWindows()) {
+	   //windows uses git portable which is configured to use ssh keys directly from recipe folder
+	   validateSshKeysInRecipe()
+	 }
+	 else if (!context.isLocalCloud()) {
+	  // install ssh keys on linux cloud machines
+	  validateSshKeysInRecipe()
+	  def privateKeyTargetFolder="${System.properties["user.home"]}/.ssh"
+	  ant.echo("installing ssh keys")
+      ant.mkdir(dir:privateKeyTargetFolder)
+      ant.copy(todir: privateKeyTargetFolder, overwrite:true) {
+       fileset(dir: "${context.serviceDirectory}/.ssh")
+      }
 	  ant.echo("modifying private ssh key file permissions")
-	  ant.chmod(dir: privateKeyFolder, perm:"600", includes:"**/*")
+	  ant.chmod(dir: privateKeyTargetFolder, perm:"600", includes:"**/*")
 	 }
 	 
 	 ant.mkdir(dir:installDir)
@@ -82,15 +95,26 @@ class GitBuilder {
 
 	private void git(gitargs) {
 	    ant.echo("git ${gitargs}")
-		ant.exec(executable:gitexec, dir:workingDir, failonerror:true) {
-		 env(key:"HOME", value: "${context.serviceDirectory}") //looks for ~/.ssh
-		 env(key:"HOMEDRIVE", value: "${context.serviceDirectory}")
-		 env(key:"USERPROFILE", value: "${context.serviceDirectory}")
-         for (gitarg in gitargs.split(" ")) {
-		   if (gitarg) {
-			arg(value:gitarg)
-		   }
-		 }
+		if (ServiceUtils.isWindows()) {
+			ant.exec(executable:gitexec, dir:workingDir, failonerror:true) {
+			 env(key:"HOME", value: "${context.serviceDirectory}") //looks for ~/.ssh
+			 env(key:"HOMEDRIVE", value: "${context.serviceDirectory}")
+			 env(key:"USERPROFILE", value: "${context.serviceDirectory}")
+			 for (gitarg in gitargs.split(" ")) {
+			   if (gitarg) {
+				arg(value:gitarg)
+			   }
+			 }
+			}
+		}
+		else {
+			ant.exec(executable:gitexec, dir:workingDir, failonerror:true) {
+			 for (gitarg in gitargs.split(" ")) {
+			   if (gitarg) {
+				arg(value:gitarg)
+			   }
+			 }
+			}
 		}
 		ant.echo("done")
 	}
