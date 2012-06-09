@@ -42,7 +42,7 @@ def update= { githead->
  //build and deploy
  mvn.cleanPackage(skipTests:false)
  ant.echo "deploying war file"
- def outputWar="${serviceContext.serviceDirectory}/${config.applicationSrcFolder}/target/${config.applicationWarFilename}"
+ def outputWar="${serviceContext.serviceDirectory}/${config.applicationSrcFolder}/${config.applicationTargetWar}"
  ant.copy todir: "${home}/webapps", file:outputWar, overwrite:true
 }
 
