@@ -9,12 +9,13 @@ service {
 	numInstances 1
 	minAllowedInstances 1
 	maxAllowedInstances 2
-	
+
+	def tomcatConfig=new ConfigSlurper().parse(new File("${context.serviceDirectory}/tomcat.properties").toURL())
+
 	def portIncrement =  context.isLocalCloud() ? context.getInstanceId()-1 : 0		
-	
-	def currJmxPort = jmxPort + portIncrement
-	def currHttpPort = port + portIncrement
-	def currAjpPort = ajpPort + portIncrement
+	def currJmxPort = tomcatConfig.jmxPort + portIncrement
+	def currHttpPort = tomcatConfig.port + portIncrement
+	def currAjpPort = tomcatConfig.ajpPort + portIncrement
 	
 	compute {
 		template "SMALL_LINUX"

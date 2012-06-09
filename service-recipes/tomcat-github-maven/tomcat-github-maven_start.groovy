@@ -14,19 +14,20 @@ class CustomThreadFactory implements ThreadFactory {
     }
 }
 
-def serviceContext = ServiceContextFactory.getServiceContext()
-def instanceID = serviceContext.getInstanceId()
-def serviceName = serviceContext.getServiceName()
+def context = ServiceContextFactory.getServiceContext()
+def instanceID = context.getInstanceId()
+def serviceName = context.getServiceName()
 println "tomcat_start.groovy: This ${serviceName} instance ID is ${instanceID}"
 def config=new ConfigSlurper().parse(new File("${serviceName}-service.properties").toURL())
+def tomcatConfig=new ConfigSlurper().parse(new File("${context.serviceDirectory}/tomcat.properties").toURL())
 
-def home= serviceContext.attributes.thisInstance["home"]
+def home= context.attributes.thisInstance["home"]
 
 def ant = new AntBuilder()
-def git = new GitBuilder(workingDir:"${serviceContext.serviceDirectory}/${config.applicationSrcFolder}")
-def mvn = new MavenBuilder(workingDir:"${serviceContext.serviceDirectory}/${config.applicationSrcFolder}")
+def git = new GitBuilder(workingDir:"${context.serviceDirectory}/${config.applicationSrcFolder}")
+def mvn = new MavenBuilder(workingDir:"${context.serviceDirectory}/${config.applicationSrcFolder}")
 
-serviceContext.attributes.thisInstance["git-head"]=config.gitHead;
+context.attributes.thisInstance["git-head"]=config.gitHead;
 
 def update= { githead->
 
@@ -42,7 +43,7 @@ def update= { githead->
  //build and deploy
  mvn.cleanPackage(skipTests:false)
  ant.echo "deploying war file"
- def outputWar="${serviceContext.serviceDirectory}/${config.applicationSrcFolder}/${config.applicationTargetWar}"
+ def outputWar="${context.serviceDirectory}/${config.applicationSrcFolder}/${config.applicationTargetWar}"
  ant.copy todir: "${home}/webapps", file:outputWar, overwrite:true
 }
 
@@ -54,7 +55,7 @@ def executor = Executors.newSingleThreadScheduledExecutor(new CustomThreadFactor
 executor.scheduleWithFixedDelay({
     try {
     //update git if head configuration changed
-	def currentGitHead = serviceContext.attributes.thisInstance["git-head"]
+	def currentGitHead = context.attributes.thisInstance["git-head"]
 	if (gitHead == null || !gitHead.equals(currentGitHead)) {
 		update(currentGitHead);
 		gitHead = currentGitHead;
@@ -72,17 +73,17 @@ executor.scheduleWithFixedDelay({
 println "waiting for initial war deployment to complete"
 latch.await()
 
-def script= serviceContext.attributes.thisInstance["script"]
+def script= context.attributes.thisInstance["script"]
 println "tomcat_start.groovy: tomcat(${instanceID}) script ${script}"
 
 println "tomcat_start.groovy executing ${script}"
 
 portIncrement = 0
-if (serviceContext.isLocalCloud()) {
+if (context.isLocalCloud()) {
   portIncrement = instanceID - 1  
 }
 
-currJmxPort=config.jmxPort+portIncrement
+currJmxPort=tomcatConfig.jmxPort+portIncrement
 println "tomcat_start.groovy: Replacing default jmx port with port ${currJmxPort}"
 
 ant.sequential {
