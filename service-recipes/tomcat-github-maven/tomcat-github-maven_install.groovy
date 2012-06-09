@@ -87,7 +87,7 @@ if (!(new File(mvnexec).exists())) {
 serviceContext.attributes.thisInstance["mvn"] = "${mvnexec}"
 
 ant.echo("downloading source code from ${config.applicationSrcUrl}")
-git.clone(config.applicationSrcUrl,"${serviceContext.serviceDirectory}/${config.applicationSrcFolder}")
+git.clone(config.applicationSrcUrl,"${serviceContext.serviceDirectory}/${config.applicationSrcFolder}", verbose:true)
 
 def pom = "${serviceContext.serviceDirectory}/${config.applicationSrcFolder}/pom.xml"
 if (!(new File(pom).exists())) {

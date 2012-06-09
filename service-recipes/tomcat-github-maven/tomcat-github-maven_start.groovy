@@ -43,10 +43,16 @@ def mvn = {mvnargs ->
 
 def update= { githead->
 
- git.git("checkout -q master")
- git.git("pull")
- git.git("branch -f build ${githead}")
- git.git("checkout -q build")
+ //update from remote repository
+ git.checkout "master"
+ git.fetch "origin"
+ git.merge "origin/master"
+ 
+ //create a branch for the specified commit ${githead}
+ git.branch "build", githead, force:true
+ git.checkout "build"
+ 
+ //build and deploy
  mvn("clean package")
  ant.echo("deploying war file")
  ant.copy(todir: "${home}/webapps", file:"${serviceContext.serviceDirectory}/${config.applicationSrcFolder}/target/${config.applicationWarFilename}", overwrite:true)

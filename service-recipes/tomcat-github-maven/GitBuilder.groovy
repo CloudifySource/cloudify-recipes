@@ -80,33 +80,65 @@ class GitBuilder {
 	 context.attributes.thisInstance["git"] = "${gitexec}"
 	}
 
-	void git(gitargs) {
-	 
-		ant.echo("git ${gitargs}")
+	private void git(gitargs) {
+	    ant.echo("git ${gitargs}")
 		ant.exec(executable:gitexec, dir:workingDir, failonerror:true) {
 		 env(key:"HOME", value: "${context.serviceDirectory}") //looks for ~/.ssh
 		 env(key:"HOMEDRIVE", value: "${context.serviceDirectory}")
 		 env(key:"USERPROFILE", value: "${context.serviceDirectory}")
-		 for (gitarg in gitargs.split(" ")) {
-		  arg(value:gitarg)
+         for (gitarg in gitargs.split(" ")) {
+		   if (gitarg) {
+			arg(value:gitarg)
+		   }
 		 }
 		}
 		ant.echo("done")
 	}
 	
 	void clone(repository,directory) {
-	 
-		ant.echo("git clone ${repository} ${directory}")
-		ant.exec(executable:gitexec, dir:workingDir, failonerror:true) {
-		 env(key:"HOME", value: "${context.serviceDirectory}") //looks for ~/.ssh
-		 env(key:"HOMEDRIVE", value: "${context.serviceDirectory}")
-		 env(key:"USERPROFILE", value: "${context.serviceDirectory}")
-		 arg(value:"clone")
-		 arg(value:"-q")
-         arg(value:"-v")
-		 arg(value:repository)
-		 arg(value:directory)
-		}
-		ant.echo("done")
+		clone([:],repository,directory)
+	}
+	
+	void clone(props,repository,directory) {
+	    def gitflags= props.verbose?"--verbose":""
+		def gitargs = "clone ${gitflags} ${repository} ${directory}"
+		git(gitargs)
+	}
+	
+	void checkout(branch) {
+		checkout([:],branch)
+	}
+	
+	void checkout(props,branch) {
+		def gitargs = "checkout ${branch}"
+		git(gitargs)
+	}
+	
+	void fetch(repository) {
+		fetch([:], repository)
+	}
+	
+	void fetch(props, repository) {
+		def gitargs="fetch ${repository}"
+		git(gitargs)
+	}
+	
+	void merge(commit) {
+		merge([:], commit)
+	}
+	
+	void merge(props, commit) {
+		def gitargs="merge ${commit}"
+		git(gitargs)
+	}
+	
+	void branch(name,commit) {
+		branch([:], name,commit)
+	}
+	
+	void branch(props, name, commit) {
+		def gitflags= props.force?"--force":""
+		def gitargs="branch ${gitflags} ${name} ${commit}"
+		git(gitargs)
 	}
 }
