@@ -2,7 +2,6 @@ import org.cloudifysource.dsl.context.ServiceContextFactory
 import org.cloudifysource.dsl.utils.ServiceUtils;
 import java.util.concurrent.*
 
-
 def serviceContext = ServiceContextFactory.getServiceContext()
 def instanceID = serviceContext.getInstanceId()
 def serviceName = serviceContext.getServiceName()
@@ -10,33 +9,19 @@ println "tomcat_start.groovy: This ${serviceName} instance ID is ${instanceID}"
 def config=new ConfigSlurper().parse(new File("${serviceName}-service.properties").toURL())
 
 def home= serviceContext.attributes.thisInstance["home"]
-def gitexec= serviceContext.attributes.thisInstance["git"]
+
 def mvnexec= serviceContext.attributes.thisInstance["mvn"]
 def ant = new AntBuilder()
+def git = new GitBuilder(workingDir:"${serviceContext.serviceDirectory}/${config.applicationSrcFolder}")
 
 serviceContext.attributes.thisInstance["git-head"]=config.gitHead;
-
-def git = { gitargs ->
- ant.sequential {
-	echo("git ${gitargs}")
-	exec(executable:gitexec, dir:"${home}/${config.applicationSrcFolder}", failonerror:true) {
-     env(key:"HOME", value: "${serviceContext.serviceDirectory}") //looks for ~/.ssh
-     env(key:"HOMEDRIVE", value: "${serviceContext.serviceDirectory}")
-     env(key:"USERPROFILE", value: "${serviceContext.serviceDirectory}")
-	 for (gitarg in gitargs.split(" ")) {
-	  arg(value:gitarg)
-	 }
-	}
-	echo("done")
- }
-}
 
 def mvn = {mvnargs ->
  if (ServiceUtils.isWindows()) {
  
   ant.sequential {
    echo("cmd /c \"${mvnexec} ${mvnargs}\"")
-   exec(executable:"cmd", dir:"${home}/${config.applicationSrcFolder}", failonerror:true) {
+   exec(executable:"cmd", dir:"${serviceContext.serviceDirectory}/${config.applicationSrcFolder}", failonerror:true) {
     arg(value:"/c")
 	arg(value:"\"${mvnexec} ${mvnargs}\"")
    }
@@ -46,7 +31,7 @@ def mvn = {mvnargs ->
  else {
   ant.sequential {
    echo("${mvnexec} ${mvnargs}")
-   exec(executable:mvnexec, dir:"${home}/${config.applicationSrcFolder}", failonerror:true) {
+   exec(executable:mvnexec, dir:"${serviceContext.serviceDirectory}/${config.applicationSrcFolder}", failonerror:true) {
     for (mvnarg in mvnargs.split(" ")) {
      arg(value:mvnarg)
     }
@@ -58,13 +43,13 @@ def mvn = {mvnargs ->
 
 def update= { githead->
 
- git("checkout -q master")
- git("pull")
- git("branch -f build ${githead}")
- git("checkout -q build")
+ git.git("checkout -q master")
+ git.git("pull")
+ git.git("branch -f build ${githead}")
+ git.git("checkout -q build")
  mvn("clean package")
  ant.echo("deploying war file")
- ant.copy(todir: "${home}/webapps", file:"${home}/${config.applicationSrcFolder}/target/${config.applicationWarFilename}", overwrite:true)
+ ant.copy(todir: "${home}/webapps", file:"${serviceContext.serviceDirectory}/${config.applicationSrcFolder}/target/${config.applicationWarFilename}", overwrite:true)
 }
 
 println "tomcat_start.groovy: tomcat(${instanceID}) home ${home}"
@@ -83,9 +68,10 @@ executor.scheduleWithFixedDelay({
 	} 
 	} catch (Throwable t) {
 		System.err.println("Error updating git: "+t);
-        StackTraceUtils.printSanitizedStackTrace(t,System.err);
+        //t = StackTraceUtils.sanitizeStackTrace(t);
+		t.printStackTrace(System.err)
 		System.err.println("Sleeping for 1 minute before retrying");
-		sleep(60)
+		sleep(60*1000)
 	}
 },0,10,TimeUnit.SECONDS)
 

@@ -14,7 +14,7 @@
 * limitations under the License.
 *******************************************************************************/
 import org.cloudifysource.dsl.context.ServiceContextFactory
-import org.cloudifysource.dsl.utils.ServiceUtils;
+import org.cloudifysource.dsl.utils.ServiceUtils
 
 def config = new ConfigSlurper().parse(new File("tomcat-github-maven-service.properties").toURL())
 def serviceContext = ServiceContextFactory.getServiceContext()
@@ -34,9 +34,10 @@ installDir = "${userHomeDir}/.cloudify/${config.serviceName}" + instanceID
 applicationWar = "${installDir}/${config.warName}"
 
 def ant = new AntBuilder()
+def git = new GitBuilder()
 
 ant.sequential {
-	mkdir(dir:"${installDir}")
+	mkdir(dir:installDir)
 	get(src:"${config.downloadPath}", dest:"${installDir}/${config.zipName}", skipexisting:true)
 	unzip(src:"${installDir}/${config.zipName}", dest:"${home}", overwrite:true)
 	move(file:"${home}/${config.name}", tofile:"${home}")
@@ -60,22 +61,11 @@ serverXmlText = serverXmlText.replace("port=\"${config.shutdownPort}\"", shutdow
 serverXmlText = serverXmlText.replace('unpackWARs="true"', 'unpackWARs="false"')
 serverXmlFile.write(serverXmlText)
 
-def privateKeyFilename="id_rsa"
-def privateKeyFolder="${home}/../.ssh"
-
-if (!new File("${privateKeyFolder}/${privateKeyFilename}").exists()) {
- throw new java.io.FileNotFoundException("place add a private key to the recipe for accessing github: ${privateKeySourceFolder}/${privateKeyFilename}")
-}
-
-if (!ServiceUtils.isWindows()) {
- ant.sequential { 
-  echo("modifying private ssh key file permissions")
-  chmod(dir: privateKeyFolder, perm:"600", includes:"**/*")
- }
-}
+git.installGit()
 
 ant.sequential { 
  echo("installing maven v${config.mavenVersion}")
+ mkdir(dir:installDir)
  get(src:config.mavenDownloadUrl, dest:"${installDir}/${config.mavenZipFilename}", skipexisting:true)
  unzip(src:"${installDir}/${config.mavenZipFilename}", dest:"${home}", overwrite:true)
 }
@@ -96,55 +86,10 @@ if (!(new File(mvnexec).exists())) {
 }
 serviceContext.attributes.thisInstance["mvn"] = "${mvnexec}"
 
+ant.echo("downloading source code from ${config.applicationSrcUrl}")
+git.clone(config.applicationSrcUrl,"${serviceContext.serviceDirectory}/${config.applicationSrcFolder}")
 
-def gitexec
-
-if (ServiceUtils.isWindows()) {
- ant.echo("installing 7zip")
- ant.get(src:config.sevenZADownloadUrl, dest:"${installDir}/${config.sevenZAFilename}", skipexisting:true)
- ant.unzip(src:"${installDir}/${config.sevenZAFilename}", dest:"${home}/../${config.sevenZAUnzipFolder}", overwrite:true)
-  
- ant.echo("installing git")
- ant.get(src:config.gitZipDownloadUrl, dest:"${installDir}/${config.gitZipFilename}", skipexisting:true)
- ant.exec(executable:"${home}/../${config.sevenZAUnzipFolder}/7za.exe", dir:"${home}/..", failonerror:true) {
-  	arg(value:"x")     // extract with directories
-  	arg(value:"-y")    // answer yes
-	arg(value:"-ogit") //output folder git
-	arg(value:"${installDir}/${config.gitZipFilename}")
- }
- gitexec="${home}/../git/bin/git.exe"
-}
-else {
- ant.sequential {
-  echo("installing git")
-  get(src:config.gitRpmDownloadUrl, dest:"${installDir}/${config.gitRpmFilename}", skipexisting:true)
-  exec(executable:"sh", dir:"${home}", failonerror:true) {
-  	arg(value:"-c")
-  	arg(value:"rpm2cpio ${installDir}/${config.gitRpmFilename} | cpio -idmv")
-  }
- }
- gitexec="${home}/usr/libexec/git-core/git"
-} 
-
-if (!(new File(gitexec).exists())) {
-	throw new FileNotFoundException(gitexec + " does not exist");
-}
-serviceContext.attributes.thisInstance["git"] = "${gitexec}"
-ant.sequential {
- echo("downloading source code from ${config.applicationSrcUrl}")
- delete(dir:"${home}/${config.applicationSrcFolder}")
- exec(executable:"${gitexec}", failonerror:true) {
-  env(key:"HOME", value: "${serviceContext.serviceDirectory}") //looks for ~/.ssh
-  env(key:"HOMEDRIVE", value: "${serviceContext.serviceDirectory}")
-  env(key:"USERPROFILE", value: "${serviceContext.serviceDirectory}")
-  arg(value:"clone")
-  arg(value:"-q")
-  arg(value:"-v")
-  arg(value:"${config.applicationSrcUrl}")
-  arg(value:"${home}/${config.applicationSrcFolder}")
- }
-}
-def pom = "${home}/${config.applicationSrcFolder}/pom.xml"
+def pom = "${serviceContext.serviceDirectory}/${config.applicationSrcFolder}/pom.xml"
 if (!(new File(pom).exists())) {
 	throw new java.io.FileNotFoundException(pom + " does not exist");
 }
