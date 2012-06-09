@@ -2,6 +2,18 @@ import org.cloudifysource.dsl.context.ServiceContextFactory
 import org.cloudifysource.dsl.utils.ServiceUtils;
 import java.util.concurrent.*
 
+class CustomThreadFactory implements ThreadFactory {
+    
+	String name;
+	
+	Thread newThread(Runnable r) {
+        Thread thread = new Thread(r);
+        thread.setDaemon(true);
+		thread.setName(name)
+        return thread;
+    }
+}
+
 def serviceContext = ServiceContextFactory.getServiceContext()
 def instanceID = serviceContext.getInstanceId()
 def serviceName = serviceContext.getServiceName()
@@ -62,7 +74,7 @@ println "tomcat_start.groovy: tomcat(${instanceID}) home ${home}"
 
 def gitHead = null
 CountDownLatch latch = new CountDownLatch(1)
-def executor = Executors.newSingleThreadScheduledExecutor();
+def executor = Executors.newSingleThreadScheduledExecutor(new CustomThreadFactory(name:"update-thread"));
 executor.scheduleWithFixedDelay({
     try {
     //update git if head configuration changed
