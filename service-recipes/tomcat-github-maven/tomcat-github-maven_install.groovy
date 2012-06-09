@@ -35,6 +35,7 @@ applicationWar = "${installDir}/${config.warName}"
 
 def ant = new AntBuilder()
 def git = new GitBuilder()
+def mvn = new MavenBuilder()
 
 ant.sequential {
 	mkdir(dir:installDir)
@@ -62,30 +63,7 @@ serverXmlText = serverXmlText.replace('unpackWARs="true"', 'unpackWARs="false"')
 serverXmlFile.write(serverXmlText)
 
 git.installGit()
-
-ant.sequential { 
- echo("installing maven v${config.mavenVersion}")
- mkdir(dir:installDir)
- get(src:config.mavenDownloadUrl, dest:"${installDir}/${config.mavenZipFilename}", skipexisting:true)
- unzip(src:"${installDir}/${config.mavenZipFilename}", dest:"${home}", overwrite:true)
-}
-
-def mvnexec
-if (ServiceUtils.isWindows()) {
- mvnexec="${home}/${config.mavenUnzipFolder}/bin/mvn.bat"
-}
-else {
- ant.sequential { 
-  chmod(dir:"${home}/${config.mavenUnzipFolder}/bin", perm:'+x', excludes:"*.bat")
- }
- mvnexec="${home}/${config.mavenUnzipFolder}/bin/mvn"
-}
-
-if (!(new File(mvnexec).exists())) {
-	throw new FileNotFoundException(mvnexec + " does not exist");
-}
-serviceContext.attributes.thisInstance["mvn"] = "${mvnexec}"
-
+mvn.installMaven()
 ant.echo("downloading source code from ${config.applicationSrcUrl}")
 git.clone(config.applicationSrcUrl,"${serviceContext.serviceDirectory}/${config.applicationSrcFolder}", verbose:true)
 

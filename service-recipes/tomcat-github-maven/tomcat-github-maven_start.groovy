@@ -22,36 +22,11 @@ def config=new ConfigSlurper().parse(new File("${serviceName}-service.properties
 
 def home= serviceContext.attributes.thisInstance["home"]
 
-def mvnexec= serviceContext.attributes.thisInstance["mvn"]
 def ant = new AntBuilder()
 def git = new GitBuilder(workingDir:"${serviceContext.serviceDirectory}/${config.applicationSrcFolder}")
+def mvn = new MavenBuilder(workingDir:"${serviceContext.serviceDirectory}/${config.applicationSrcFolder}")
 
 serviceContext.attributes.thisInstance["git-head"]=config.gitHead;
-
-def mvn = {mvnargs ->
- if (ServiceUtils.isWindows()) {
- 
-  ant.sequential {
-   echo("cmd /c \"${mvnexec} ${mvnargs}\"")
-   exec(executable:"cmd", dir:"${serviceContext.serviceDirectory}/${config.applicationSrcFolder}", failonerror:true) {
-    arg(value:"/c")
-	arg(value:"\"${mvnexec} ${mvnargs}\"")
-   }
-   echo("done")
-  }
- }
- else {
-  ant.sequential {
-   echo("${mvnexec} ${mvnargs}")
-   exec(executable:mvnexec, dir:"${serviceContext.serviceDirectory}/${config.applicationSrcFolder}", failonerror:true) {
-    for (mvnarg in mvnargs.split(" ")) {
-     arg(value:mvnarg)
-    }
-   }
-   echo("done")
-  }
- }
-}
 
 def update= { githead->
 
@@ -65,9 +40,10 @@ def update= { githead->
  git.checkout "build"
  
  //build and deploy
- mvn("clean package")
- ant.echo("deploying war file")
- ant.copy(todir: "${home}/webapps", file:"${serviceContext.serviceDirectory}/${config.applicationSrcFolder}/target/${config.applicationWarFilename}", overwrite:true)
+ mvn.cleanPackage(skipTests:false)
+ ant.echo "deploying war file"
+ def outputWar="${serviceContext.serviceDirectory}/${config.applicationSrcFolder}/target/${config.applicationWarFilename}"
+ ant.copy todir: "${home}/webapps", file:outputWar, overwrite:true
 }
 
 println "tomcat_start.groovy: tomcat(${instanceID}) home ${home}"
