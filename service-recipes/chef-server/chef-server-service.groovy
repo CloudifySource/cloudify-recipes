@@ -13,23 +13,49 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 *******************************************************************************/
+import static Shell.*
+
 service {
-	extend "../chef"
+    extend "../chef"
 	name "chef-server"
 	type "WEB_SERVER"
 	numInstances 1
-	compute {
-        	template "MEDIUM_LINUX_CHEF_SERVER"
-    	}
+    compute {
+        template "MEDIUM_LINUX_CHEF_SERVER"
+    }
 	lifecycle{
-        	preInstall "chef_server_preInstall.groovy"
-        	install "chef_server_install.groovy"
-        	postInstall "chef_server_postInstall.sh"
-		start "run.groovy"
-
-		startDetectionTimeoutSecs 240
+        start "chef_server.groovy"
+		
+		startDetectionTimeoutSecs 600
 		startDetection {
 			ServiceUtils.isPortOccupied(4000)
 		}
+		
+		
+		details {
+			def publicIp = System.getenv()["CLOUDIFY_AGENT_ENV_PUBLIC_IP"]
+			def serverRestUrl = "https://${publicIp}:443"
+			def serverUrl = "http://${publicIp}:4000"
+    		return [
+    			"Rest URL":"<a href=\"${serverRestUrl}\" target=\"_blank\">${serverRestUrl}</a>",
+    			"Server URL":"<a href=\"${serverUrl}\" target=\"_blank\">${serverUrl}</a>"
+    		]
+    	}    	
+    	
+    	/*
+		locator {
+			
+			def pids = [] as LinkedList
+			pids << ServiceUtils.ProcessUtils.getPidsWithName("rabbitmq")
+			pids << ServiceUtils.ProcessUtils.getPidsWithName("rabbitmq")
+			pids << ServiceUtils.ProcessUtils.getPidsWithName("couchdb")
+			pids << ServiceUtils.ProcessUtils.getPidsWithQuery("State.Name.eq=java,Args.*.ct=solr")
+ 			pids << ServiceUtils.ProcessUtils.getPidsWithName("apache2")	
+ 					
+			return ServiceUtils.ProcessUtils.getPidsWithQuery("State.Name.ct=merb")			
+		}
+		*/
+
 	}
+
 }
