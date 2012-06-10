@@ -13,8 +13,9 @@ class GitBuilder {
 		
 	GitBuilder() {
 		ant = new AntBuilder()
-		config = new ConfigSlurper().parse(new File("git.properties").toURL())
 		context = ServiceContextFactory.getServiceContext()
+		config = new ConfigSlurper().parse(new File("${context.serviceDirectory}/git.properties").toURL())
+		
 		if (ServiceUtils.isWindows()) {
 		  gitexec="${context.serviceDirectory}/git/bin/git.exe"
 		}

@@ -13,8 +13,9 @@ class MavenBuilder {
 		
 	MavenBuilder() {
 		ant = new AntBuilder()
-		config = new ConfigSlurper().parse(new File("maven.properties").toURL())
 		context = ServiceContextFactory.getServiceContext()
+		config = new ConfigSlurper().parse(new File("${context.serviceDirectory}/maven.properties").toURL())
+		
 		if (ServiceUtils.isWindows()) {
 		  mvnexec="${context.serviceDirectory}/${config.mavenUnzipFolder}/bin/mvn.bat"
 		}
