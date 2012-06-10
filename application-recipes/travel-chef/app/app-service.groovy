@@ -30,11 +30,7 @@ service {
 		stopDetection {
 			!(ServiceUtils.isPortOccupied(8080))
 		}
-		
-		locator {
-			ServiceUtils.ProcessUtils.getPidsWithQuery("State.Name.eq=java,Args.*.ct=catalina.home")
-        }
-		
+				
 		details {
 			def travelAppUrl = "http://"+System.getenv()["CLOUDIFY_AGENT_ENV_PUBLIC_IP"]+":8080/travel"
     		return [
@@ -46,7 +42,7 @@ service {
         template "MEDIUM_LINUX"
     }
     
-    
+    /*
     plugins([
 		plugin {
 			name "jmx"
@@ -219,4 +215,5 @@ service {
 			}
 		}
 	])
+	*/
 }

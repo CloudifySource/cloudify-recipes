@@ -22,7 +22,13 @@ service {
         	ChefBootstrap.getBootstrap(context:context, installFlavor: "gem").install()
         } 
 		start "run_chef.groovy"
+		
+		locator {
+			//hack to avoid monitoring started processes by cloudify
+			return  [] as LinkedList			
+		}
     }
+    
     
     customCommands([
         "run_chef": "run_chef.groovy"

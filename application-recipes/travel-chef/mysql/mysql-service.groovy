@@ -13,6 +13,7 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 *******************************************************************************/
+import java.net.InetAddress 
 
 service {
     extend "../../../service-recipes/chef"
@@ -22,23 +23,11 @@ service {
     
     
     lifecycle {
-    	
-    	/*
     	startDetectionTimeoutSecs 240
 		startDetection {
-			ServiceUtils.isPortOccupied(3306)
-		}
-		
-		stopDetection {
-			!(ServiceUtils.isPortOccupied(3306))
-		}		
-		*/    
-		
-    	locator {
-			ServiceUtils.ProcessUtils.getPidsWithName("mysqld")
-        }
+			ServiceUtils.isPortOccupied(System.getenv()["CLOUDIFY_AGENT_ENV_PRIVATE_IP"], 3306)
+		}		       	
     }
-    
     
     compute {
         template "MEDIUM_LINUX"
