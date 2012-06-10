@@ -1,8 +1,6 @@
 # Common Chef service files
 This folder contains common files and a base service recipe for Chef based services. The idea is using `extend` to include this recipe and supporting files.
 
-The closure style code is in the CLASSPATH branch due to a bug with the classpath used in the GSC. It does work when putting the built jar in the usmlib dir (see CLASSPATH branch README).
-
 ## The ChefBootstrap class
 The ChefBootstrap class is used to bootstrap chef. Use the `getBootsrap` factory method to obtain a class instance.
 <strong>Factory method</strong>
@@ -11,10 +9,10 @@ The ChefBootstrap class is used to bootstrap chef. Use the `getBootsrap` factory
 <strong>Class methods:</strong>
 `install` - Install Chef
 `runClient(ArrayList runList)` - Run Chef client with run list
-`runClient(HashMap initialAttributes)` - Run chef-client with initial attributes (including the run list attribute)
-`runSolo(HashMap initialAttributes)` - Run chef-solo with initial attributes (including the run list attribute)
+`runClient(HashMap initialAttributes)` - Run chef-client with initial attributes (including the run\_list attribute)
+`runSolo(HashMap initialAttributes)` - Run chef-solo with initial attributes (including the run\_list attribute) 
 
-Client configuration takes place right before chef-client is actually executed, so `serverURL` is meaningless while chef bootstraping (`install` method) takes place. This allows you to change the Chef server later on.
+Client configuration takes place right before chef-client is actually executed, so `serverURL` is meaningless while chef bootstraping (`start` method) takes place. This allows you to change the Chef server later on.
 
 ## Installation flavors
 <i>gem</i> - Install from ruby gems
@@ -26,10 +24,10 @@ In a service recipe, one might use:
 <pre><code>
 service {
     lifecycle {
-        preInstall {
+        install {
             ChefBootstrap.getBootstrap(serverURL:"http://somehost:4000", installFlavor:"gem").install()
         }
-        install {
+        start {
             ChefBootstrap.getBootstrap(serverURL:"http://somehost:4000", installFlavor:"gem").runClient(runList)
         }
     }

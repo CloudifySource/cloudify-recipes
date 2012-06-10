@@ -6,12 +6,12 @@ This repository is the primary project source of community and GigaSpaces recipe
 Contributing
 ============
 
-Feel free to fork the repository and add your own recipes. We promise to review and consider pulling the changes.
+Feel free to fork the repository and add your own recipes. We promise to review and 
 
 Using this Repository
 =====================
 
-This repository is divided into two sections: 
+This repository is divivded into two sections: 
 * application-recipes: contains recipes for complete application stacks (e.g. tomcat + mysql)
 * service-recipes: Contains recipes for individual services (e.g. Apache HTTP server) 
 
