@@ -1,3 +1,18 @@
+/*******************************************************************************
+* Copyright (c) 2011 GigaSpaces Technologies Ltd. All rights reserved
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*       http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*******************************************************************************/
 import org.cloudifysource.dsl.context.ServiceContextFactory
 import org.cloudifysource.dsl.utils.ServiceUtils;
 import java.util.concurrent.*
@@ -19,13 +34,11 @@ def instanceID = context.getInstanceId()
 def serviceName = context.getServiceName()
 println "tomcat_start.groovy: This ${serviceName} instance ID is ${instanceID}"
 def config=new ConfigSlurper().parse(new File("${serviceName}-service.properties").toURL())
-def tomcatConfig=new ConfigSlurper().parse(new File("${context.serviceDirectory}/tomcat.properties").toURL())
-
-def home= context.attributes.thisInstance["home"]
 
 def ant = new AntBuilder()
 def git = new GitBuilder(workingDir:"${context.serviceDirectory}/${config.applicationSrcFolder}")
 def mvn = new MavenBuilder(workingDir:"${context.serviceDirectory}/${config.applicationSrcFolder}")
+def tomcat = new TomcatBuilder()
 
 context.attributes.thisInstance["git-head"]=config.gitHead;
 
@@ -43,11 +56,9 @@ def update= { githead->
  //build and deploy
  mvn.cleanPackage(skipTests:false)
  ant.echo "deploying war file"
- def outputWar="${context.serviceDirectory}/${config.applicationSrcFolder}/${config.applicationTargetWar}"
- ant.copy todir: "${home}/webapps", file:outputWar, overwrite:true
+ def war="${context.serviceDirectory}/${config.applicationSrcFolder}/${config.applicationTargetWar}"
+ tomcat.update(war)
 }
-
-println "tomcat_start.groovy: tomcat(${instanceID}) home ${home}"
 
 def gitHead = null
 CountDownLatch latch = new CountDownLatch(1)
@@ -73,33 +84,6 @@ executor.scheduleWithFixedDelay({
 println "waiting for initial war deployment to complete"
 latch.await()
 
-def script= context.attributes.thisInstance["script"]
-println "tomcat_start.groovy: tomcat(${instanceID}) script ${script}"
+tomcat.run();
 
-println "tomcat_start.groovy executing ${script}"
-
-portIncrement = 0
-if (context.isLocalCloud()) {
-  portIncrement = instanceID - 1  
-}
-
-currJmxPort=tomcatConfig.jmxPort+portIncrement
-println "tomcat_start.groovy: Replacing default jmx port with port ${currJmxPort}"
-
-ant.sequential {
-	exec(executable:"${script}.sh", osfamily:"unix", failonerror:true) {
-        env(key:"CATALINA_HOME", value: "${home}")
-        env(key:"CATALINA_BASE", value: "${home}")
-        env(key:"CATALINA_TMPDIR", value: "${home}/temp")
-		env(key:"CATALINA_OPTS", value:"-Dcom.sun.management.jmxremote.port=${currJmxPort} -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false")
-		arg(value:"run")
-	}
-	exec(executable:"${script}.bat", osfamily:"windows", failonerror:true) { 
-        env(key:"CATALINA_HOME", value: "${home}")
-        env(key:"CATALINA_BASE", value: "${home}")
-        env(key:"CATALINA_TMPDIR", value: "${home}/temp")
-		env(key:"CATALINA_OPTS", value:"-Dcom.sun.management.jmxremote.port=${currJmxPort} -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false")
-		arg(value:"run")
-	}
-}
 executor.shutdown();
