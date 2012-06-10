@@ -42,20 +42,11 @@ service {
     		]
     	}    	
     	
-    	/*
+    	
 		locator {
-			
-			def pids = [] as LinkedList
-			pids << ServiceUtils.ProcessUtils.getPidsWithName("rabbitmq")
-			pids << ServiceUtils.ProcessUtils.getPidsWithName("rabbitmq")
-			pids << ServiceUtils.ProcessUtils.getPidsWithName("couchdb")
-			pids << ServiceUtils.ProcessUtils.getPidsWithQuery("State.Name.eq=java,Args.*.ct=solr")
- 			pids << ServiceUtils.ProcessUtils.getPidsWithName("apache2")	
- 					
-			return ServiceUtils.ProcessUtils.getPidsWithQuery("State.Name.ct=merb")			
+			//hack to avoid monitoring started processes by cloudify
+			return  [] as LinkedList			
 		}
-		*/
-
 	}
 
 }
