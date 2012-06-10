@@ -80,7 +80,7 @@ class TomcatBuilder {
 	  }
 	 }
 	 else {
-	  ant.exec(executable:${workingDir}/bin/catalina.sh, failonerror:true) { 
+	  ant.exec(executable:"${workingDir}/bin/catalina.sh", failonerror:true) { 
 	   env(key:"CATALINA_HOME", value: "${workingDir}")
 	   env(key:"CATALINA_BASE", value: "${workingDir}")
 	   env(key:"CATALINA_TMPDIR", value: "${workingDir}/temp")
