@@ -41,12 +41,6 @@ service {
     			"Server URL":"<a href=\"${serverUrl}\" target=\"_blank\">${serverUrl}</a>"
     		]
     	}    	
-    	
-    	
-		locator {
-			//hack to avoid monitoring started processes by cloudify
-			return  [] as LinkedList			
-		}
 	}
 
 }
