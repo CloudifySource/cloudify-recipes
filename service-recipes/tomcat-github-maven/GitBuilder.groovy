@@ -3,7 +3,7 @@ import org.cloudifysource.dsl.context.ServiceContextFactory;
 import org.cloudifysource.dsl.context.ServiceContext;
 
 class GitBuilder {
-		
+	
 	String gitexec
 	String installDir
 	String workingDir
@@ -38,31 +38,33 @@ class GitBuilder {
 	}
 	
 	void validateSshKeysInRecipe() {
-     def privateKeyFilename="id_rsa"	 
-	 if (!new File("${context.serviceDirectory}/.ssh/${privateKeyFilename}").exists()) {
-	   throw new java.io.FileNotFoundException("place add a private key to the recipe for accessing github: ${privateKeySourceFolder}/${privateKeyFilename}")
+	 if (!new File("${context.serviceDirectory}/.ssh/id_rsa").exists()) {
+	   throw new java.io.FileNotFoundException("Private key not found. Please add it to the recipe: .ssh/id_rsa")
+	 }
+	 if (!new File("${context.serviceDirectory}/.ssh/known_hosts").exists()) {
+	   throw new java.io.FileNotFoundException("known_hosts not found. Please add it to the recipe: .ssh/known_hosts")
 	 }
 	}
 	
 	void installGit() {
 	 
+	 validateSshKeysInRecipe()
+	 
 	 if (ServiceUtils.isWindows()) {
 	   //windows uses git portable which is configured to use ssh keys directly from recipe folder
-	   validateSshKeysInRecipe()
 	 }
-	 else if (!context.isLocalCloud()) {
-	  // install ssh keys on linux cloud machines
-	  validateSshKeysInRecipe()
-	  def privateKeyTargetFolder="${System.properties["user.home"]}/.ssh"
-	  ant.echo("installing ssh keys")
-      ant.mkdir(dir:privateKeyTargetFolder)
-      ant.copy(todir: privateKeyTargetFolder, overwrite:true) {
-       fileset(dir: "${context.serviceDirectory}/.ssh")
-      }
-	  ant.echo("modifying private ssh key file permissions")
-	  ant.chmod(dir: privateKeyTargetFolder, perm:"600", includes:"**/*")
+	 else { 
+	   println "creating ssh.sh"
+	   //use .ssh keys and known_hosts file supplied with the recipe
+	   ant.chmod(dir: "${context.serviceDirectory}/.ssh", perm:"600", includes:"**/*")
+	   def ssh = new File("${context.serviceDirectory}/ssh.sh")
+	   ssh.withWriter { f -> 
+		f.println("#!/bin/bash")
+		f.println("ssh -i ${context.serviceDirectory}/.ssh/id_rsa -o UserKnownHostsFile=${context.serviceDirectory}/.ssh/known_hosts -o StrictHostKeyChecking=yes \$*")
+	   }
+       ant.chmod(file:ssh.path, perm:'+x')
 	 }
-	 
+	 	 
 	 ant.mkdir(dir:installDir)
 	 if (ServiceUtils.isWindows()) {
 	  ant.echo("installing 7zip")
@@ -110,6 +112,7 @@ class GitBuilder {
 		}
 		else {
 			ant.exec(executable:gitexec, dir:workingDir, failonerror:true) {
+			 env(key:"GIT_SSH", value: "${context.serviceDirectory}/ssh.sh")
 			 for (gitarg in gitargs.split(" ")) {
 			   if (gitarg) {
 				arg(value:gitarg)
