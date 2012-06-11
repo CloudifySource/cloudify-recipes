@@ -19,8 +19,11 @@ service {
     extend "../../../service-recipes/chef"
     name "app"
     type "APP_SERVER"
-    numInstances 1
-    elastic true 
+    
+    elastic true
+	numInstances 1
+	minAllowedInstances 1
+	maxAllowedInstances 2
     
     lifecycle {
     	start "app_install.groovy"
@@ -40,13 +43,13 @@ service {
     	}
     	
     	monitors {
-			def server = connectRMI("localhost", 11099)			
+			def server = connectRMI("127.0.0.1", 11099)			
 			return [
 				"Current Http Threads Busy":getJMXAttribute(server, "Catalina:type=ThreadPool,name=http-8080", "currentThreadsBusy"),
 				"Current Http Thread Count":getJMXAttribute(server, "Catalina:type=ThreadPool,name=http-8080", "currentThreadCount"), 
 			    "Backlog":getJMXAttribute(server, "Catalina:type=ProtocolHandler,port=8080", "backlog"), 
 				"Active Sessions":getJMXAttribute(server, "Catalina:type=Manager,path=/travel,host=localhost", "activeSessions"), 
-			    "Total Requests Count":getJMXAttribute(server, "Catalina:type=GlobalRequestProcessor,name=http-8080", "requestCount")
+			    "Total Requests Count":getJMXAttribute(server, "Catalina:j2eeType=Servlet,name=travel,WebModule=//localhost/travel,J2EEApplication=none,J2EEServer=none", "requestCount")
 			]
     	}
     }
@@ -166,7 +169,7 @@ service {
 	}
 	
 	
-	scaleCooldownInSeconds 20
+	scaleCooldownInSeconds 120
 	samplingPeriodInSeconds 1
 
 	// Defines an automatic scaling rule based on "counter" metric value
@@ -176,7 +179,7 @@ service {
 			serviceStatistics {
 				metric "Total Requests Count"
 				statistics Statistics.maximumThroughput
-				movingTimeRangeInSeconds 20
+				movingTimeRangeInSeconds 10
 			}
 
 			highThreshold {
