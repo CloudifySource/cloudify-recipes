@@ -71,3 +71,11 @@ template "/etc/tomcat6/server.xml" do
   mode "0644"
   notifies :restart, resources(:service => "tomcat")
 end
+
+template "/etc/tomcat6/tomcat-users.xml" do
+  source "tomcat-users.xml.erb"
+  owner "root"
+  group "tomcat6"
+  mode "0644"
+  notifies :restart, resources(:service => "tomcat")
+end
