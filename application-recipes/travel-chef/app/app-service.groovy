@@ -13,6 +13,7 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 *******************************************************************************/
+import static JmxMonitors.*
 
 service {
     extend "../../../service-recipes/chef"
@@ -37,50 +38,27 @@ service {
     			"Travel App URL":"<a href=\"${travelAppUrl}\" target=\"_blank\">${travelAppUrl}</a>"
     		]
     	}
+    	
+    	monitors {
+			def server = connectRMI("localhost", 11099)			
+			return [
+				"Current Http Threads Busy":getJMXAttribute(server, "Catalina:type=ThreadPool,name=http-8080", "currentThreadsBusy"),
+				"Current Http Thread Count":getJMXAttribute(server, "Catalina:type=ThreadPool,name=http-8080", "currentThreadCount"), 
+			    "Backlog":getJMXAttribute(server, "Catalina:type=ProtocolHandler,port=8080", "backlog"), 
+				"Active Sessions":getJMXAttribute(server, "Catalina:type=Manager,path=/travel,host=localhost", "activeSessions"), 
+			    "Total Requests Count":getJMXAttribute(server, "Catalina:type=GlobalRequestProcessor,name=http-8080", "requestCount")
+			]
+    	}
     }
     compute {
         template "MEDIUM_LINUX"
-    }
-    
-    /*
-    plugins([
-		plugin {
-			name "jmx"
-			className "org.cloudifysource.usm.jmx.JmxMonitor"
-			config([
-				"Current Http Threads Busy": [
-					"Catalina:type=ThreadPool,name=\"http-bio-8080\"",
-					"currentThreadsBusy"
-				],
-				"Current Http Threads Count": [
-					"Catalina:type=ThreadPool,name=\"http-bio-8080\"",
-					"currentThreadCount"
-				],
-				"Backlog": [
-					"Catalina:type=ProtocolHandler,port=8080",
-					"backlog"
-				],
-				"Active Sessions":[
-					"Catalina:type=Manager,context=/travel,host=localhost",
-					"activeSessions"
-				],
-				"Total Requests Count": [
-					"Catalina:type=GlobalRequestProcessor,name=\"http-bio-8080\"",
-					"requestCount"
-				],
-				port: "11099"
-
-			])
-		}
-	])
+    }    
 	
 	userInterface {
 
 		metricGroups = ([
 			metricGroup {
-
 				name "process"
-
 				metrics([
 					"Process Cpu Usage",
 					"Total Process Virtual Memory",
@@ -88,9 +66,7 @@ service {
 				])
 			} ,
 			metricGroup {
-
 				name "http"
-
 				metrics([
 					"Current Http Threads Busy",
 					"Current Http Threads Count",
@@ -98,7 +74,6 @@ service {
 					"Total Requests Count"
 				])
 			} ,
-
 		]
 		)
 
@@ -215,5 +190,5 @@ service {
 			}
 		}
 	])
-	*/
+	
 }
