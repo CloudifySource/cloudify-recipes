@@ -77,5 +77,5 @@ template "/etc/tomcat6/tomcat-users.xml" do
   owner "root"
   group "tomcat6"
   mode "0644"
-  notifies :restart, resources(:service => "tomcat")
+  notifies :restart, "service[tomcat]"
 end
