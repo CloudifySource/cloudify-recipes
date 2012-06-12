@@ -17,10 +17,16 @@ import javax.management.ObjectName
 import javax.management.remote.JMXConnectorFactory as JmxFactory
 import javax.management.remote.JMXServiceURL as JmxUrl
 
+/**
+ * Connect to a JMX server over RMI
+ */
 def static connectRMI(host, port) {
         return JmxFactory.connect(new JmxUrl("service:jmx:rmi:///jndi/rmi://${host}:${port}/jmxrmi")).MBeanServerConnection
 }
 
+/**
+ * Get a JMX attribute
+ */
 def static getJMXAttribute(server, objectName, attributeName) {
 	String[] names = server.queryNames(new ObjectName(objectName), null)
 	if (names.length > 0)
