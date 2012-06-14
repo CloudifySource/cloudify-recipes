@@ -1,10 +1,12 @@
 #! /bin/bash -e
 cd ~
+
+#TODO: move these into chef recipe so that the script is cross platform
 export DEBIAN_FRONTEND=noninteractive
 export DEBIAN_PRIORITY=critical
 APT_GET="sudo apt-get -y"
 
-$APT_GET install ruby-mime-types
+$APT_GET install ruby-mime-types git
 
 mkdir .chef
 cat - > .chef/knife.rb <<EOF
@@ -23,12 +25,10 @@ EOF
 sudo cp /etc/chef/webui.pem .chef/chef-webui.pem
 sudo chown `whoami` .chef/chef-webui.pem
 
-wget http://public.fewbytes.com/cloudify-travel-cookbooks.tar.gz
-wget http://public.fewbytes.com/cloudify-travel-roles.tar.gz
-tar -xzf cloudify-travel-cookbooks.tar.gz
-tar -xzf cloudify-travel-roles.tar.gz
+git clone https://github.com/CloudifySource/cloudify-recipes.git
+ln -s $HOME/cloudify-recipes/application-recipes/travel-chef/cookbooks $HOME/cookbooks
 
 knife cookbook upload -a
-for role in roles/*.rb; do
+for role in $HOME/cloudify-recipes/travel-chef/roles/*.rb; do
     knife role from file $role
 done
