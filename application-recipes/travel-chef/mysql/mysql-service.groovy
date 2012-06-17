@@ -26,7 +26,7 @@ service {
     	startDetectionTimeoutSecs 240
 		startDetection {
 			ServiceUtils.isPortOccupied(System.getenv()["CLOUDIFY_AGENT_ENV_PRIVATE_IP"], 3306)
-		}		       	
+		}
     }
     
     compute {

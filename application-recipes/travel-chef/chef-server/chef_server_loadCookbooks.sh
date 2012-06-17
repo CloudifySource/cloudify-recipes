@@ -31,7 +31,7 @@ $SUDO chown `whoami` ~/.chef/chef-webui.pem
 if [[ -d $HOME/cloudify-recipes/.git ]]; then
     cd $HOME/cloudify-recipes; git pull origin master; cd -
 else
-    git clone https://github.com/CloudifySource/cloudify-recipes.git $HOME/cloudify-recipes
+    git clone https://github.com/yoniYalovitsky/cloudify-recipes.git $HOME/cloudify-recipes
 fi
 
 [[ -r $HOME/cookbooks ]] || ln -s $HOME/cloudify-recipes/application-recipes/travel-chef/cookbooks $HOME/cookbooks
