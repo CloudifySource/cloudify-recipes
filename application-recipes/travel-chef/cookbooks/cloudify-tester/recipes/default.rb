@@ -9,7 +9,9 @@
 
 include_recipe "jruby"
 
-jruby_gem "cucumber"
+%w{ cucumber jdbc-mysql }.each do |gem|
+  jruby_gem gem
+end
 
 remote_directory "/home/ubuntu/cucumber" do
   source "cucumber"
