@@ -25,6 +25,4 @@ case node.platform
 when "ubuntu", "debian"
   package "unzip"
   package "tar"
-when /mac_os_x/
-  package "gnu-tar"
 end
