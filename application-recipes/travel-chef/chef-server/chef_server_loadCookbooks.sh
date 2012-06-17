@@ -1,13 +1,18 @@
 #! /bin/bash -e
-cd ~
+
+#TODO: move these into chef recipe so that the script is cross platform
 export DEBIAN_FRONTEND=noninteractive
 export DEBIAN_PRIORITY=critical
-APT_GET="sudo apt-get -y"
+if [[ `whoami` != root ]]; then
+    SUDO=sudo
+fi
+APT_GET="$SUDO apt-get -y"
 
-$APT_GET install ruby-mime-types
+ruby -r mime/types -e true || $APT_GET install ruby-mime-types
+which git > /dev/null || $APT_GET install git
 
-mkdir .chef
-cat - > .chef/knife.rb <<EOF
+[[ -d "$HOME/.chef" ]] || mkdir "$HOME/.chef"
+cat - > ~/.chef/knife.rb <<EOF
 log_level                :info
 log_location             STDOUT
 node_name                'chef-webui'
@@ -20,15 +25,18 @@ cache_options( :path => '$HOME/.chef/checksums' )
 cookbook_path [ '$HOME/cookbooks' ]
 EOF
 
-sudo cp /etc/chef/webui.pem .chef/chef-webui.pem
-sudo chown `whoami` .chef/chef-webui.pem
+$SUDO cp /etc/chef/webui.pem ~/.chef/chef-webui.pem
+$SUDO chown `whoami` ~/.chef/chef-webui.pem
 
-wget http://public.fewbytes.com/cloudify-travel-cookbooks.tar.gz
-wget http://public.fewbytes.com/cloudify-travel-roles.tar.gz
-tar -xzf cloudify-travel-cookbooks.tar.gz
-tar -xzf cloudify-travel-roles.tar.gz
+if [[ -d $HOME/cloudify-recipes/.git ]]; then
+    cd $HOME/cloudify-recipes; git pull origin master; cd -
+else
+    git clone https://github.com/CloudifySource/cloudify-recipes.git $HOME/cloudify-recipes
+fi
+
+[[ -r $HOME/cookbooks ]] || ln -s $HOME/cloudify-recipes/application-recipes/travel-chef/cookbooks $HOME/cookbooks
 
 knife cookbook upload -a
-for role in roles/*.rb; do
+for role in $HOME/cloudify-recipes/application-recipes/travel-chef/roles/*.rb; do
     knife role from file $role
 done
