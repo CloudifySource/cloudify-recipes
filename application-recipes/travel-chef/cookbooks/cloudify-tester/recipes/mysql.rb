@@ -1,1 +1,1 @@
-include_recipe "default"
+include_recipe "cloudify-tester::default"
