@@ -7,7 +7,9 @@
 # All rights reserved - Do Not Redistribute
 #
 
-gem_package cucumber
+include_recipe "jruby"
+
+jruby_gem cucumber
 
 remote_directory "/home/ubuntu/cucumber" do
   source "cucumber"
