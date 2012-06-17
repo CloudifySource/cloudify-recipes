@@ -9,7 +9,7 @@
 
 include_recipe "jruby"
 
-jruby_gem cucumber
+jruby_gem "cucumber"
 
 remote_directory "/home/ubuntu/cucumber" do
   source "cucumber"
