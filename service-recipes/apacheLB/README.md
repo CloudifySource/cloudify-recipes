@@ -11,7 +11,7 @@ You can enable/disable the usage of a sticky session, by modifying the useSticky
 
 ## Registering a service instance to the Apache load balancer.
 
-In apacheLB-service.groovy, there are two custom commands: addNode and removeNode.
+In apacheLB-service.groovy, there are two custom commands: <strong>addNode</strong> and <strong>removeNode</strong>.
 You need to add a <strong>postStart</strong> lifecycle event to each service that you want its instances to be able to add themselves to the load balancer as members(nodes).
 You need to add a  <strong>postStop</strong> lifecycle event to each service that you want its instances to be able to remove themselves from the load balancer.
 
