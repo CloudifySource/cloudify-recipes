@@ -1,7 +1,7 @@
 # ApacheLB 
 This folder contains a service recipe for Apache load balancer.
 
-Its default port is 8090, but can modify it in the apacheLB-service.properties
+Its default port is 8090, but it can be modified in the apacheLB-service.properties.
 
 You can enable/disable the usage of a sticky session, by modifying the useStickysession property in apacheLB-service.properties.
 
