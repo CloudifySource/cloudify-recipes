@@ -40,6 +40,6 @@ service {
 Or better yet, just extend this service:
 <pre><code>
 service {
-    extend "../service-recipes/chef"
+    extend "../services/chef"
 }
 </code></pre>
