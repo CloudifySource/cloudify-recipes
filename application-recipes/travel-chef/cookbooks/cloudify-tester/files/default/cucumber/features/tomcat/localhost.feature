@@ -1,28 +1,8 @@
-Feature: local mysql instance
-  It should be working in a cool fashion 
+Feature: local tomcat instance
+  It should be exposing jmx attributes on port 11099
 
-  Scenario: Checking statistics 
-    Given I have a MySQL server on localhost
-        And I use the username tester
-        And I use the password testpass
-    Then it should have less than 5 queries per second
-        And it should have less than 10 threads connected
+  Scenario: check the search handler
+    Given I have JMX exposed locally on port 11099
+        And I have the object 'Catalina:name=http-8080,type=ThreadPool'
+    Then it should have attribute 'maxThreads' with value '250'
 
-  Scenario Outline: Positively Checking tables
-    Given I have a MySQL server on localhost
-        And I use the username tester
-        And I use the password testpass
-        And I use the database test
-    Then it should have the table <tablename>
-
-        Examples:
-            | tablename |
-            | cats      |
-            | mycats    |
-
-   Scenario: Negatively Checking tables
-    Given I have a MySQL server on localhost
-        And I use the username tester
-        And I use the password testpass
-        And I use the database test
-    Then it should not have the table bats
