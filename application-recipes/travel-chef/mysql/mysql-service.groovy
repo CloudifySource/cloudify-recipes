@@ -16,7 +16,7 @@
 import java.net.InetAddress 
 
 service {
-    extend "../../../service-recipes/chef"
+    extend "../../../services/chef"
     name "mysql"
     type "DATABASE"
     numInstances 1
