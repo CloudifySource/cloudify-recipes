@@ -16,20 +16,17 @@
 
 import org.hyperic.sigar.OperatingSystem
 import org.cloudifysource.dsl.context.ServiceContextFactory
+import org.cloudifysource.dsl.context.ServiceContext
 import groovy.json.JsonOutput
 import static Shell.*
 
 class ChefBootstrap {
-    def chefServerURL
-    def config
+    Map chefConfig
     def osConfig
     def os
     def chefBinPath
-    def context = null
-    def chefVersion = null
-    def installFlavor
+    ServiceContext context = null
     def opscode_gpg_key_url = "http://apt.opscode.com/packages@opscode.com.gpg.key"
-    def validationCert
 
     def static getBootstrap(options=[:]) {
         def os = OperatingSystem.getInstance()
@@ -46,29 +43,25 @@ class ChefBootstrap {
 
     def ChefBootstrap(options=[:]) {
         os = OperatingSystem.getInstance()
-        installFlavor = "fatBinary"
-        options.each {k, v ->
-            switch(k) {
-                case "serverURL": chefServerURL = v; break
-                case "installFlavor": installFlavor = v; break
-                case "validationCert": validationCert = v; break
-                case "context": context = v; break
-                case "chefVersion": chefVersion = v; break
-            }
+        if ("context" in options) {
+            context = options["context"]
         }
         if (context.is(null)) {
             context = ServiceContextFactory.getServiceContext()
         }
-        config = new ConfigSlurper().parse(new File(pathJoin(context.getServiceDirectory(), "chef.properties")).toURL())
-        osConfig = os.isWin32() ? config.win32 : config.unix
-        chefServerURL = chefServerURL ?: config.serverURL
-        validationCert = validationCert ?: config.validationCert
-        chefVersion = chefVersion ?: config.chefVersion
-        installFlavor = installFlavor ?: config.installFlavor
+        def chefProperties = new ConfigSlurper().parse(new File(pathJoin(context.getServiceDirectory(), "chef.properties")).toURL())
+        osConfig = os.isWin32() ? chefProperties.win32 : chefProperties.unix
+
+        // Load chef config from context attributes
+        chefConfig = context.attributes.thisInstance.containsKey("chefConfig") ? context.attributes.thisInstance.get("chefConfig") : [:]
+        // merge configs: defaults from properties file, persisted config from attributes, options given to this function
+        chefConfig = chefProperties.chef.flatten() + chefConfig + options.findAll(){ it.key != "context" }
+        // persist to context attributes
+        context.attributes.thisInstance["chefConfig"] = chefConfig
     }
     def install() {
         if (which("chef-solo").isEmpty()) {
-            switch(installFlavor) {
+            switch(chefConfig.installFlavor) {
                 case ["fatBinary", "pkg"]: break
                 default:
                     if (which("ruby").isEmpty()) {
@@ -79,13 +72,13 @@ class ChefBootstrap {
                         }
                     }
             }
-            this.invokeMethod("${installFlavor}Install", null)
+            this.invokeMethod("${chefConfig.installFlavor}Install", null)
         }
     }
     def gemInstall() {
         def opts = "-y --no-rdoc --no-ri"
-        if (!chefVersion.is(null)) {
-            opts = "-v ${chefVersion} " + opts
+        if (!chefConfig.version.is(null)) {
+            opts = "-v ${chefConfig.version} " + opts
         }
         sudo("gem install chef ${opts}")
     }
@@ -102,14 +95,14 @@ ssl_verify_mode    :verify_none
 validation_client_name "chef-validator"
 validation_key         "/etc/chef/validation.pem"
 client_key               "/etc/chef/client.pem"
-chef_server_url    "${chefServerURL}"
+chef_server_url    "${chefConfig.serverURL}"
 file_cache_path    "/var/chef/cache"
 file_backup_path  "/var/chef/backup"
 pid_file           "/var/run/chef/client.pid"
 Chef::Log::Formatter.show_time = true
 """)
-        if (validationCert) {
-            sudoWriteFile("/etc/chef/validation.pem", validationCert)
+        if (chefConfig.validationCert) {
+            sudoWriteFile("/etc/chef/validation.pem", chefConfig.validationCert)
         } else {
             sudo("cp ${System.properties["user.home"]}/gs-files/validation.pem /etc/chef/validation.pem")
         }
@@ -137,7 +130,7 @@ cookbook_path "/tmp/chef-solo/cookbooks"
         assert ! chef_solo.isEmpty()
         def jsonFile = new File(pathJoin(context.getServiceDirectory(), "bootstrap_server.json"))
         jsonFile.text = JsonOutput.toJson(initJson)
-        sudo("""${chef_solo} -c ${context.getServiceDirectory()}/solo.rb -j ${jsonFile} -r ${config.bootstrapCookbooksUrl}""")
+        sudo("""${chef_solo} -c ${context.getServiceDirectory()}/solo.rb -j ${jsonFile} -r ${chefConfig.bootstrapCookbooksUrl}""")
     }
     def runListToInitialJson(ArrayList runList) {
         def initJson = [:]
@@ -179,7 +172,7 @@ cookbook_path "/tmp/chef-solo/cookbooks"
     }
     def getChefBinPath() {
         def path
-        switch (installFlavor) {
+        switch (chefConfig.installFlavor) {
             case "gem":
                 if (! which("gem").isEmpty()) {
                     path = shellOut("gem env").split("\n").find { it =~ "EXECUTABLE DIRECTORY" }.split(":")[1].stripIndent()
@@ -209,7 +202,7 @@ deb http://apt.opscode.com/ ${os.getVendorCodeName().toLowerCase()}-0.10 main
 """)
         sudo("wget -O - ${opscode_gpg_key_url} | apt-key add -")
         sudo("apt-get update")
-        sudo("""echo "chef chef/chef_server_url string ${chefServerURL}" | sudo debconf-set-selections""")
+        sudo("""echo "chef chef/chef_server_url string ${chefConfig.serverURL}" | sudo debconf-set-selections""")
         install_pkgs(["opscode-keyring", "chef"])
     }
 }
