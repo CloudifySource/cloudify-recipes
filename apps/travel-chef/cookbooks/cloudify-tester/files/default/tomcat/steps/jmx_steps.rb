@@ -17,6 +17,6 @@ Then /^it should have attribute '(.*?)' with value '(.*?)'$/ do |attribute, expe
   #jmx4r uses underscore_separation instead of Java's camelCase
   massaged_attribute = attribute.gsub(/[A-Z]/, '_\0').downcase
   
-  @jmx_obj.send(massaged_attribute).should == expected_value
+  @jmx_obj.send(massaged_attribute).to_s.should == expected_value
 end
 
