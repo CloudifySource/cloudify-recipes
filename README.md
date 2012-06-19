@@ -6,7 +6,7 @@ This repository is the primary project source of community and GigaSpaces recipe
 Contributing
 ============
 
-Feel free to fork the repository and add your own recipes. We promise to review and 
+Feel free to fork the repository and add your own recipes. We promise to review and consider pulling the changes.
 
 Using this Repository
 =====================
