@@ -9,11 +9,11 @@
 
 include_recipe "jruby"
 
-%w{ cucumber jdbc-mysql jmx4r }.each do |gem|
+%w{ cucumber cucumber-nagios webrat jdbc-mysql jmx4r }.each do |gem|
   jruby_gem gem
 end
 
-remote_directory "/home/ubuntu/cucumber" do
+remote_directory node['cloudify-tester']['cucumber_dir'] do
   source "cucumber"
   files_owner "ubuntu"
   files_group "ubuntu"
