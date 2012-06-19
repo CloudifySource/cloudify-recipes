@@ -19,6 +19,7 @@ service {
     extend "../../../services/chef"
     name "app"
     type "APP_SERVER"
+    icon "spring.png"
     
     elastic true
 	numInstances 1
