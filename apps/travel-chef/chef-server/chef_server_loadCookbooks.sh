@@ -34,9 +34,9 @@ else
     git clone https://github.com/yoniYalovitsky/cloudify-recipes.git $HOME/cloudify-recipes
 fi
 
-[[ -r $HOME/cookbooks ]] || ln -s $HOME/cloudify-recipes/application-recipes/travel-chef/cookbooks $HOME/cookbooks
+[[ -r $HOME/cookbooks ]] || ln -s $HOME/cloudify-recipes/apps/travel-chef/cookbooks $HOME/cookbooks
 
 knife cookbook upload -a
-for role in $HOME/cloudify-recipes/application-recipes/travel-chef/roles/*.rb; do
+for role in $HOME/cloudify-recipes/apps/travel-chef/roles/*.rb; do
     knife role from file $role
 done
