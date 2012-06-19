@@ -14,7 +14,7 @@
 * limitations under the License.
 *******************************************************************************/
 service {
-    extend "../../../service-recipes/chef-server"
+    extend "../../../services/chef-server"
     
     lifecycle{
         postStart "chef_server_loadCookbooks.sh"

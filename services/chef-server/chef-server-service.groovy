@@ -16,7 +16,7 @@
 import static Shell.*
 
 service {
-  extend "../chef"
+    extend "../chef"
 	name "chef-server"
 	type "WEB_SERVER"
 	icon "OC_Chef_Logo_small.jpg"

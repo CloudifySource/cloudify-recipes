@@ -12,8 +12,8 @@ Using this Repository
 =====================
 
 This repository is divivded into two sections: 
-* application-recipes: contains recipes for complete application stacks (e.g. tomcat + mysql)
-* service-recipes: Contains recipes for individual services (e.g. Apache HTTP server) 
+* apps: contains recipes for complete application stacks (e.g. tomcat + mysql)
+* services: Contains recipes for individual services (e.g. Apache HTTP server) 
 
 Links
 =====
