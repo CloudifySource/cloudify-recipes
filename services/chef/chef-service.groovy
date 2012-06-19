@@ -32,6 +32,6 @@ service {
     
     customCommands([
         "run_chef": "run_chef.groovy",
-        "run_cucumber": "run_cucumber.groovy"
+        "run_cucumber": "run_cucumber.sh"
     ])
 }
