@@ -13,12 +13,9 @@ include_recipe "jruby"
   jruby_gem gem
 end
 
-remote_directory node['cloudify-tester']['cucumber_dir'] do
-  source "cucumber"
-  files_owner "ubuntu"
-  files_group "ubuntu"
-  files_mode "0777"
+directory node['cloudify-tester']['cucumber_dir'] do
   owner "ubuntu"
   group "ubuntu"
   mode "0777"
+  recursive true
 end

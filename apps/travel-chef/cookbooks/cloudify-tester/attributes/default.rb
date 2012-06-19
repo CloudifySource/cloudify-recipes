@@ -1,1 +1,1 @@
-default['cloudify-tester']['cucumber_dir'] = "/home/ubuntu/cucumber"
+default['cloudify-tester']['cucumber_dir'] = "/home/ubuntu/cucumber/features"
