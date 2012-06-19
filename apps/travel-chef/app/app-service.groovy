@@ -16,7 +16,7 @@
 import static JmxMonitors.*
 
 service {
-    extend "../../../service-recipes/chef"
+    extend "../../../services/chef"
     name "app"
     type "APP_SERVER"
     
