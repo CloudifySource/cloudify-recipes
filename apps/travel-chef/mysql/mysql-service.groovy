@@ -19,6 +19,7 @@ service {
     extend "../../../services/chef"
     name "mysql"
     type "DATABASE"
+    icon "mysql.png"
     numInstances 1
     
     
