@@ -9,7 +9,7 @@
 
 include_recipe "jruby"
 
-%w{ cucumber cucumber-nagios webrat jdbc-mysql jmx4r }.each do |gem|
+%w{ cucumber cucumber-nagios webrat jruby-openssl jdbc-mysql jmx4r }.each do |gem|
   jruby_gem gem
 end
 
