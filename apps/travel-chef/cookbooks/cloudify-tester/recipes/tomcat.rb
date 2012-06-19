@@ -1,5 +1,5 @@
 include_recipe "cloudify-tester::default"
 
-run_cucumber "tomcat"
+run_cucumber "tomcat" do
   feature "localhost"
 end
