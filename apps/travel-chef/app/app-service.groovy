@@ -169,26 +169,26 @@ service {
 	}
 	
 	
-	scaleCooldownInSeconds 120
+	scaleCooldownInSeconds 180
 	samplingPeriodInSeconds 1
 
-	// Defines an automatic scaling rule based on "counter" metric value
+	// Defines an automatic scaling rule based on "Active Sessions" metric value
 	scalingRules ([
 		scalingRule {
 
 			serviceStatistics {
-				metric "Total Requests Count"
-				statistics Statistics.maximumThroughput
-				movingTimeRangeInSeconds 10
+				metric "Active Sessions" 
+				statistics Statistics.averageOfAverages
+				movingTimeRangeInSeconds 20
 			}
 
 			highThreshold {
-				value 1
+				value 2
 				instancesIncrease 1
 			}
 
 			lowThreshold {
-				value 0.2
+				value 0
 				instancesDecrease 1
 			}
 		}
