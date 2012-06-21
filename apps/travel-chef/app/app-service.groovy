@@ -186,11 +186,13 @@ service {
 				value 2
 				instancesIncrease 1
 			}
-
+			
+			/*
 			lowThreshold {
 				value 0
 				instancesDecrease 1
 			}
+			*/
 		}
 	])
 	
