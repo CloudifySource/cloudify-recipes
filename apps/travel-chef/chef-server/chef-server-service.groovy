@@ -18,5 +18,9 @@ service {
     
     lifecycle{
         postStart "chef_server_loadCookbooks.sh"
+
     }
+    customCommands([
+        "updateCookbooks": "chef_server_loadCookbooks.sh"
+        ])
 }

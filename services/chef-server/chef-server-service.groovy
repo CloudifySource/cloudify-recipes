@@ -19,6 +19,7 @@ service {
     extend "../chef"
 	name "chef-server"
 	type "WEB_SERVER"
+	icon "chef.png"
 	numInstances 1
     compute {
         template "MEDIUM_LINUX_CHEF_SERVER"
