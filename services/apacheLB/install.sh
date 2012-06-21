@@ -26,6 +26,9 @@ sudo rm -rf /usr/sbin/httpd || error_exit $? "Failed on: sudo rm -rf /usr/sbin/h
 echo "Using yum. Installing httpd on one of the following : Red Hat, CentOS, Fedora, Amazon"
 sudo yum install -y -q httpd || error_exit $? "Failed on: sudo yum install -y -q httpd"
 
-
+ps -ef | grep -iE "httpd" | grep -vi grep
+if [ $? -eq 0 ] ; then 
+  ps -ef | grep -iE "httpd" | grep -vi grep | awk '{print $2}' | xargs sudo kill -9
+fi  
 
 
