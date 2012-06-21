@@ -1,13 +1,13 @@
-Feature: local spring MVC demo application
-  It should have a nice html page about travel and stuff
+Feature: cloudfoundry spring MVC demo application
+  The demo application about travel and stuff should work correctly
 
   Scenario: Checking travel main page 
-    When I go to "http://localhost:8080/travel/"
+    When I go to "http://travel.cloudfoundry.com/"
     Then I should see "Welcome to Spring Travel"
       And I should not see "error"
 
   Scenario: Checking search page
-    When I go to "http://localhost:8080/travel/"
+    When I go to "http://travel.cloudfoundry.com/"
       And I follow "Start your Spring Travel experience"
     Then I should see "Search Hotels"
     When I fill in "searchString" with "hilton"
@@ -15,7 +15,7 @@ Feature: local spring MVC demo application
     Then I should see "Hilton Tel Aviv"
 
   Scenario: Checking login
-    When I go to "http://localhost:8080/travel/"
+    When I go to "http://travel.cloudfoundry.com/"
       And I follow "Login"
     Then I should see "Login Information"
     When I fill in "j_username" with "keith"
