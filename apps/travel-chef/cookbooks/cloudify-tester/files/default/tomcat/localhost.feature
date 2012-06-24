@@ -15,5 +15,5 @@ Feature: local tomcat instance
   Scenario: check the request processor
     Given I have JMX exposed locally on port 11099
     When I examine the object "Catalina:name=http-8080,type=GlobalRequestProcessor"
-    Then the attribute "maxTime" is between 5 and 20
+    Then the attribute "maxTime" is between 200 and 2000
     And the attribute "errorCount" is equal to 0

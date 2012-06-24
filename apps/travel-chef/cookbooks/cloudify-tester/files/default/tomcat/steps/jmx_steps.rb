@@ -31,7 +31,5 @@ Then /^the attribute "(.*?)" is less than (.*?)$/ do |attribute, expected_value|
 end
 
 Then /^the attribute "(.*?)" is between (.*?) and (.*?)$/ do |attribute, min_value, max_value|
-  value = @jmx_obj.send(massage_attribute(attribute)).to_f
-  value.should <= expected_value.to_f
-  value.should >= expected_value.to_f
+  @jmx_obj.send(massage_attribute(attribute)).to_f.should be_between(min_value.to_f, max_value.to_f)
 end
