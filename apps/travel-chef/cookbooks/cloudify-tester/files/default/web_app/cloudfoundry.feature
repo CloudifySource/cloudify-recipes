@@ -20,14 +20,6 @@ Feature: cloudfoundry spring MVC demo application
     Then I should see "Login Information"
     When I fill in "j_username" with "keith"
       And I fill in "j_password" with "melbourne"
-      And I submit the form named "f"
+      And I press "Login"
     Then I should see "Welcome, keith"
-    
 
-  Scenario: Checking login 2
-    Given I am HTTP digest authenticated with the following credentials:
-      |username|password|
-      |keith|melbourne|
-    When I go to "http://travel.cloudfoundry.com/"
-    Then I should see "Welcome, keith"
-      
