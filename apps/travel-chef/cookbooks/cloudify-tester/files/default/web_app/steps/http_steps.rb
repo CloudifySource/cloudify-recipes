@@ -16,7 +16,11 @@ end
 
 # Actions
 When /^I go to "(.*)"$/ do |path|
-  visit path
+  begin
+    visit(path, @http_method || "get")
+  rescue Exception => e
+    @error = e
+  end
 end
 
 When /^I press "(.*)"$/ do |button|
@@ -74,4 +78,13 @@ end
 
 Then /^the (.*) ?request should fail/ do |_|
   success_code?.should be_false
+end
+
+Then /^the (.*) ?request should not be authorized/ do |_|
+  @error.should be_an_instance_of Mechanize::ResponseCodeError
+  %w(401 403).should include @error.response_code
+end
+
+Then /^(?:the request|I) should be redirected to "([^"]*?)"$/ do |redirect_url|
+  redirect?.should == true and response_location.should == redirect_url
 end

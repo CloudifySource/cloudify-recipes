@@ -1,20 +1,45 @@
 Feature: local spring MVC demo application
-  It should have a nice html page about travel and stuff
+  The Spring Travel demo application should be fully functioning
 
-  Scenario: Checking travel main page 
+  Scenario: The main page comes up nicely
     When I go to "http://localhost:8080/travel/"
     Then I should see "Welcome to Spring Travel"
-      And I should not see "error"
+      And I should see "Start your Spring Travel experience"
+      But I should not see "error"
 
-  Scenario: Checking search page
+  Scenario: The search works
     When I go to "http://localhost:8080/travel/"
       And I follow "Start your Spring Travel experience"
     Then I should see "Search Hotels"
     When I fill in "searchString" with "hilton"
       And I submit the form named "searchCriteria"
     Then I should see "Hilton Tel Aviv"
+      And I should see "Hilton Diagonal Mar"
 
-  Scenario: Checking login
+  Scenario: Cannot book a hotel without logging in
+    When I go to "http://localhost:8080/travel/"
+      And I follow "Start your Spring Travel experience"
+    Then I should see "Search Hotels"
+    When I fill in "searchString" with "Hilton Tel Aviv"
+      And I submit the form named "searchCriteria"
+    Then I should see "Independence Park"
+    #This fails due to a webrat relative url bug, causing duplication of the url-part "hotel"
+    When I follow "View Hotel"
+    Then I should see "Nightly Rate: 210"
+    When I press "Book Hotel"
+    Then I should see "Login Information"
+
+  Scenario: Cannot log in with bad credentials
+    When I go to "http://localhost:8080/travel/"
+      And I follow "Login"
+    Then I should see "Login Information"
+    When I fill in "j_username" with "keith"
+      And I fill in "j_password" with "wrong password"
+      And I press "Login"
+    Then I should not see "Welcome, keith"
+      But I should see "Your login attempt was not successful"
+
+  Scenario: Can log in with the right credentials
     When I go to "http://localhost:8080/travel/"
       And I follow "Login"
     Then I should see "Login Information"
@@ -23,3 +48,32 @@ Feature: local spring MVC demo application
       And I press "Login"
     Then I should see "Welcome, keith"
 
+  Scenario: When logged in, can book a hotel
+    #login
+    When I go to "http://localhost:8080/travel/"
+      And I follow "Login"
+    Then I should see "Login Information"
+    When I fill in "j_username" with "keith"
+      And I fill in "j_password" with "melbourne"
+      And I press "Login"
+    Then I should see "Welcome, keith"
+    #search
+    When I follow "Start your Spring Travel experience"
+    Then I should see "Search Hotels"
+    When I fill in "searchString" with "Hilton Tel Aviv"
+      And I submit the form named "searchCriteria"
+    Then I should see "Independence Park"
+    When I follow "View Hotel"
+    Then I should see "Nightly Rate: 210"
+    #booking (and then cancel)
+    When I press "Book Hotel"
+    Then I should see "Check In"
+    When I fill in "creditCard" with "1234567812345678"
+      And I fill in "creditCardName" with "credit user"
+      And I press "Proceed"
+    Then I should see "Confirm Booking Details"
+    When I press "Confirm"
+    Then I should see "Current Hotel Bookings"
+      But I should not see "No bookings found"
+    When I press "Cancel"
+    Then I should see "No bookings found"
