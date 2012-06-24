@@ -6,14 +6,13 @@ Feature: local tomcat instance
     When I examine the object "Catalina:name=http-8080,type=ThreadPool"
     Then the attribute "maxThreads" is equal to 200
     And the attribute "currentThreadsBusy" is less than 150
-    
-  Scenario: check the garbage collector
-    Given I have JMX exposed locally on port 11099
-    When I examine the object "java.lang:name=Copy,type=GarbageCollector"
-    Then the attribute "CollectionCount" is between 10 and 50
-    
+
   Scenario: check the request processor
     Given I have JMX exposed locally on port 11099
     When I examine the object "Catalina:name=http-8080,type=GlobalRequestProcessor"
-    Then the attribute "maxTime" is between 200 and 2000
-    And the attribute "errorCount" is equal to 0
+    Then the attribute "errorCount" is equal to 0
+
+  Scenario: check the current memory usage
+    Given I have JMX exposed locally on port 11099
+    When I examine the object "java.lang:type=Memory"
+    Then the current heap memory usage is less than 0.7 of the max allowed
