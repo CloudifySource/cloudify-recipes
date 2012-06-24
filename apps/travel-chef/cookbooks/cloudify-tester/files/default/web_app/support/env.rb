@@ -6,6 +6,11 @@ require 'cucumber/nagios'
 require 'webrat/adapters/mechanize'
 require 'webrat_logging_patches'
 
+Webrat.configure do |config|
+  config.mode = :rails
+  config.open_error_files = false
+end
+
 class ResponseHelper
   def response
     webrat_session.response
