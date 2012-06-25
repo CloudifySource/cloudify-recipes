@@ -14,7 +14,7 @@ include_recipe "jruby"
 end
 
 #we're going to hack webrat to fix a still open bug in the redirect
-jruby_gem webrat do
+jruby_gem "webrat" do
   version "0.7.2"
 end
 
