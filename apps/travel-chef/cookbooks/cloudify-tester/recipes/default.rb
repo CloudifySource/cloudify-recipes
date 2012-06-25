@@ -18,7 +18,7 @@ jruby_gem webrat do
   version "0.7.2"
 end
 
-cookbook_file ::File.join(node[:jruby][:install_path], "lib/ruby/gems/1.8/gems/webrat-0.7.2/lib/webrat/core/session.rb" do
+cookbook_file ::File.join(node[:jruby][:install_path], "lib/ruby/gems/1.8/gems/webrat-0.7.2/lib/webrat/core/session.rb") do
   source "webrat-session.rb"
   mode "0644"
 end
