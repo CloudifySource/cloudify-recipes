@@ -34,4 +34,4 @@ end
 Then /^the current heap memory usage is less than ([0-9\.]+) of the max allowed$/ do |multiplier|
   mem_hash = @jmx_obj.send("HeapMemoryUsage".snake_case)
   mem_hash["used"].should be < multiplier.to_f * mem_hash["max"]
-
+end
