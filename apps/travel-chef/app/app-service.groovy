@@ -44,7 +44,7 @@ service {
     	}
     	
     	monitors {					
-			/* A map of JmxAttributeName,JmxObjectName */
+			/* A map of JmxAttributeName,JmxObjectName  */
 			def objectsNames = [
 				"currentThreadsBusy" : "Catalina:type=ThreadPool,name=http-8080", 
 				"currentThreadCount" : "Catalina:type=ThreadPool,name=http-8080", 
