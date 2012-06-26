@@ -20,16 +20,39 @@ import javax.management.remote.JMXServiceURL as JmxUrl
 /**
  * Connect to a JMX server over RMI
  */
+ 
+
+ 
 def static connectRMI(host, port) {
-        return JmxFactory.connect(new JmxUrl("service:jmx:rmi:///jndi/rmi://${host}:${port}/jmxrmi")).MBeanServerConnection
+	return JmxFactory.connect(new JmxUrl("service:jmx:rmi:///jndi/rmi://${host}:${port}/jmxrmi"))
 }
 
 /**
  * Get a JMX attribute
  */
 def static getJMXAttribute(server, objectName, attributeName) {
-	String[] names = server.queryNames(new ObjectName(objectName), null)
+	def connection = server.MBeanServerConnection
+	String[] names = connection.queryNames(new ObjectName(objectName), null)
 	if (names.length > 0)
-			return (new GroovyMBean(server, names[0]))[attributeName]
-	return null;
+			return (new GroovyMBean(connection, names[0]))[attributeName]
+	return 0;
 }
+
+	/* Returns a map of metrics values */ 
+def static getJmxMetrics(host,jmxPort,objectsNames,metricsNames) {
+	def server = connectRMI(host, jmxPort)
+	
+	def metrics  = [:]
+
+	objectsNames.each{attrName,objectName-> 
+		def currMetricName=metricsNames[attrName]			
+		def currMetricValue = getJMXAttribute(server,objectName , attrName) 		
+		metrics.put(currMetricName,currMetricValue)
+	}
+	
+	server.close()
+	return metrics
+}
+
+
+
