@@ -39,16 +39,18 @@ def static getJMXAttribute(server, objectName, attributeName) {
 }
 
 	/* Returns a map of metrics values */ 
-def static getJmxMetrics(host,jmxPort,objectsNames,metricsNames) {
+def static getJmxMetrics(host,jmxPort,metricNamesToMBeansNames) {
 	def server = connectRMI(host, jmxPort)
 	
 	def metrics  = [:]
 
-	objectsNames.each{attrName,objectName-> 
-		def currMetricName=metricsNames[attrName]			
-		def currMetricValue = getJMXAttribute(server,objectName , attrName) 		
-		metrics.put(currMetricName,currMetricValue)
+	metricNamesToMBeansNames.each{metricName,objectsArr->
+		def objectName=objectsArr[0]
+		def attributeName=objectsArr[1]
+		def currMetricValue = getJMXAttribute(server,objectName , attributeName) 		
+		metrics.put(metricName,currMetricValue)
 	}
+	
 	
 	server.close()
 	return metrics
