@@ -43,15 +43,26 @@ service {
     		]
     	}
     	
-    	monitors {
-			def server = connectRMI("127.0.0.1", 11099)			
-			return [
-				"Current Http Threads Busy":getJMXAttribute(server, "Catalina:type=ThreadPool,name=http-8080", "currentThreadsBusy"),
-				"Current Http Thread Count":getJMXAttribute(server, "Catalina:type=ThreadPool,name=http-8080", "currentThreadCount"), 
-			    "Backlog":getJMXAttribute(server, "Catalina:type=ProtocolHandler,port=8080", "backlog"), 
-				"Active Sessions":getJMXAttribute(server, "Catalina:type=Manager,path=/travel,host=localhost", "activeSessions"), 
-			    "Total Requests Count":getJMXAttribute(server, "Catalina:j2eeType=Servlet,name=travel,WebModule=//localhost/travel,J2EEApplication=none,J2EEServer=none", "requestCount")
+    	monitors {					
+			/* A map of JmxAttributeName,JmxObjectName */
+			def objectsNames = [
+				"currentThreadsBusy" : "Catalina:type=ThreadPool,name=http-8080", 
+				"currentThreadCount" : "Catalina:type=ThreadPool,name=http-8080", 
+				"backlog" : "Catalina:type=ProtocolHandler,port=8080", 
+				"requestCount" : "Catalina:j2eeType=Servlet,name=travel,WebModule=//localhost/travel,J2EEApplication=none,J2EEServer=none",
+				"activeSessions" : "Catalina:type=Manager,path=/travel,host=localhost"
 			]
+			
+			/* A map of JmxAttributeName,MetricName */
+			def metricsNames= [
+				"currentThreadsBusy" : "Current Http Threads Busy" , 
+				"currentThreadCount" : "Current Http Thread Count",
+				"backlog" : "Backlog",
+				"requestCount" :  "Total Requests Count",
+				"activeSessions" : "Active Sessions"
+			]
+			
+			return getJmxMetrics("127.0.0.1",11099,objectsNames,metricsNames)
     	}
     }
     compute {
@@ -187,7 +198,7 @@ service {
 				value 2
 				instancesIncrease 1
 			}
-			
+
 			/*
 			lowThreshold {
 				value 0
