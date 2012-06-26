@@ -30,7 +30,7 @@ You need to add a  <strong>postStop</strong> lifecycle event to each service tha
 		
 		postStop {			
 			def apacheService = context.waitForService("apacheLB", 180, TimeUnit.SECONDS)
-			apacheService.invoke("removeNode", "http://" + InetAddress.getLocalHost().getHostAddress() + ":" + port+"/benefits", instanceID as String)			
+			apacheService.invoke("removeNode", "http://" + InetAddress.getLocalHost().getHostAddress() + ":" + port+"/applicationName", instanceID as String)			
 		}		
 	}
 </pre></code>
