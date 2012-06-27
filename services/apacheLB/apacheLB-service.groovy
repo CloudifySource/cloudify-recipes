@@ -75,7 +75,8 @@ service {
 	
 	customCommands ([
 		"addNode" : "apacheLB_addNode.groovy",
-		"removeNode" : "apacheLB_removeNode.groovy"			 		
+		"removeNode" : "apacheLB_removeNode.groovy",
+		"load" : "apacheLB-load.groovy"
 	])
 	
 	
