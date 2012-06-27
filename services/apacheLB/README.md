@@ -36,6 +36,37 @@ You need to add a  <strong>postStop</strong> lifecycle event to each service tha
 </pre></code>
 
 
+## Load Testing
+
+In order to test your application under load, you can use the "load" custom command.
+
+<pre><code>
+    service {
+	
+	  name "apacheLB"
+	  ...
+	  ...
+	  
+	  customCommands ([
+		...
+		...
+		"load" : "apacheLB-load.groovy"
+	  ])
+	  
+	  ...
+	  ...
+	}
+</pre></code>
+
+Usage :
+
+The following will fire 35000 requests on http://LB_IP_ADDRESS:LB_PORT/ with 100 concurrent requests each time:
+<strong>invoke apacheLB load 35000 100</strong>
+
+
+The following will fire 20000 requests on http://LB_IP_ADDRESS:LB_PORT/petclinic-mongo with 240 concurrent requests each time:
+<strong>invoke apacheLB load 20000 240 petclinic-mongo</strong>
+
 
 
 
