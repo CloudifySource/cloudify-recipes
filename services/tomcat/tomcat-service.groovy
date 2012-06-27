@@ -299,12 +299,12 @@ service {
 			}
 
 			highThreshold {
-				value 20
+				value 40
 				instancesIncrease 1
 			}
 
 			lowThreshold {
-				value 10
+				value 25
 				instancesDecrease 1
 			}
 		}
