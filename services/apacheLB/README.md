@@ -4,7 +4,7 @@
 **Maintainer**:       Cloudify  
 **Maintainer email**: cloudifysource@gigaspaces.com    
 **Contributors**:    N/A    
-**License**:      MIT License    
+**License**:      Apache 2.0    
 **Latest Version**: 0.8.2.1 (codename "Shave It")    
 **Release Date**: June 10th 2012  
 
