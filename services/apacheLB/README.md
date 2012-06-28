@@ -1,8 +1,6 @@
 # ApacheLB 
 
 **Homepage**:   [http://www.cloudifysource.org](http://www.cloudifysource.org)  
-**Status**:  Tested
-**Status2**:  Tested2
 **Maintainer**:       Cloudify  
 **Maintainer email**: cloudifysource@gigaspaces.com    
 **Contributors**:    N/A    
