@@ -1,8 +1,8 @@
 # ApacheLB 
 
 **Homepage**:   [http://www.cloudifysource.org](http://www.cloudifysource.org)  
-**Maintainer**:       Cloudify  
-**Maintainer email**: cloudifysource@gigaspaces.com    
+**Maintainer**:       Cloudify
+**Maintainer email**: cloudifysource@gigaspaces.com
 **Contributors**:    N/A    
 **License**:      Apache 2.0    
 **Latest Version**: 0.8.2.1 (codename "Shave It")    
