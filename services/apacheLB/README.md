@@ -2,16 +2,16 @@
 
 **Homepage**:     [http://www.cloudifysource.org](http://www.cloudifysource.org)  
 **Status**: Tested
-*Maintainer* Cloudify
-*Maintainer email* cloudifysource@gigaspaces.com
-*Contributors*						N/A
-*License*								Apache 2.0
-*Description*							Apache Load Balancer
-*Cloudify versions*					2.1.1 GA
-*Build* https://s3.amazonaws.com/gigaspaces-repository/org/cloudifysource/2.1.1/gigaspaces-cloudify-2.1.1-m2-b1396.zip
-*Requires Linux* sudoer permissions**	Mandatory
-*Requires Windows* Admin permissions**	No
-*Release Date*						June 28th 2012
+*Maintainer**: Cloudify
+*Maintainer email**:  cloudifysource@gigaspaces.com
+*Contributors**: N/A
+*License**: Apache 2.0
+*Description**: Apache Load Balancer
+*Cloudify versions**: 2.1.1 GA
+**Build**: https://s3.amazonaws.com/gigaspaces-repository/org/cloudifysource/2.1.1/gigaspaces-cloudify-2.1.1-m2-b1396.zip
+**Requires Linux* sudoer permissions**:	Mandatory
+**Requires Windows* Admin permissions**:	No
+**Release Date**: June 28th 2012
 
 Tested on: 	localCloud/Windows 7 and CenOs, EC2/Ubuntu and CentOs, OpenStack/CentOs
 
