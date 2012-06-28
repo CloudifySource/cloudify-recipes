@@ -17,8 +17,8 @@ Tested on:
 --------
 
 * *localCloud*: Windows 7 and CentOs 
-* EC2*: Ubuntu and CentOs 
-* *OpenStack*: CentOs 
+* *EC2*: Ubuntu and CentOs 
+* <strong>OpenStack</strong>: CentOs 
 
 
 
