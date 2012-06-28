@@ -3,7 +3,7 @@
 **Homepage**:     [http://www.cloudifysource.org](http://www.cloudifysource.org)  
 **Status**: Tested
 *Maintainer**: Cloudify
-*Maintainer email**:  cloudifysource@gigaspaces.com
+*Maintainer email**: cloudifysource@gigaspaces.com
 *Contributors**: N/A
 *License**: Apache 2.0
 *Description**: Apache Load Balancer
