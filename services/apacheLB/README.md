@@ -2,9 +2,10 @@
 
 **Homepage**:   [http://www.cloudifysource.org](http://www.cloudifysource.org)  
 **Status**:  Tested
+**Status2**:  Tested2
 **Maintainer**:       Cloudify  
 **Maintainer email**: cloudifysource@gigaspaces.com    
-**Copyright**:    2007-2012    
+**Contributors**:    N/A    
 **License**:      MIT License    
 **Latest Version**: 0.8.2.1 (codename "Shave It")    
 **Release Date**: June 10th 2012  
