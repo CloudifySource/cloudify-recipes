@@ -2,7 +2,7 @@
 
 **Homepage**:   [http://www.cloudifysource.org](http://www.cloudifysource.org)  
 **Status**:  Tested
-**Author**:       Loren Segal  
+**Maintainer**:       Cloudify  
 **Contfributors**: See Contributors section below    
 **Copyright**:    2007-2012    
 **License**:      MIT License    
