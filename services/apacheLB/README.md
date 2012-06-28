@@ -8,8 +8,8 @@
 **Homepage**:   [http://www.cloudifysource.org](http://www.cloudifysource.org)  
 **License**:      Apache 2.0   
 **Build**: https://s3.amazonaws.com/gigaspaces-repository/org/cloudifysource/2.1.1/gigaspaces-cloudify-2.1.1-m2-b1396.zip  
-**Requires Linux* sudoer permissions**:	Mandatory  
-**Requires Windows* Admin permissions**:  No  
+**Linux* sudoer permissions**:	Mandatory  
+**Windows* Admin permissions**:  Not required    
 **Release Date**: June 28th 2012  
 
 
