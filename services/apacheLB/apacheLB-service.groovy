@@ -40,7 +40,7 @@ service {
 		
 				return [
 					"BalancerManager URL":"<a href=\"${balancerManagerURL}\" target=\"_blank\">${balancerManagerURL}</a>",
-					"Application URL":"<a href=\"${applicationURL}\" target=\"_blank\">${applicationURL}</a>"
+					"Application URL":"<a href=\"${applicationURL}\" target=\"_blank\">${applicationURL}</a>"					
 				]
 		}	
 	
@@ -76,6 +76,17 @@ service {
 	customCommands ([
 		"addNode" : "apacheLB_addNode.groovy",
 		"removeNode" : "apacheLB_removeNode.groovy",
+		
+		/* In order to test your application under load, you can use this "load" custom command.
+			It uses Apache Bench which is installed by default with apache.
+   
+   
+			The following will fire 35000 requests on http://LB_IP_ADDRESS:LB_PORT/ with 100 concurrent requests each time:
+				invoke apacheLB load 35000 100
+
+			The following will fire 20000 requests on http://LB_IP_ADDRESS:LB_PORT/petclinic-mongo with 240 concurrent requests each time: 
+				invoke apacheLB load 20000 240 petclinic-mongo
+		*/
 		"load" : "apacheLB-load.groovy"
 	])
 	
