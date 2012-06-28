@@ -18,20 +18,25 @@ import java.util.concurrent.TimeUnit
 
 service {
     lifecycle {
-        install {
-        	ChefBootstrap.getBootstrap(context:context, installFlavor: "gem").install()
-        } 
-		start "run_chef.groovy"
-		
-		locator {
-			//hack to avoid monitoring started processes by cloudify
-			return  [] as LinkedList			
-		}
+      install {
+      	ChefBootstrap.getBootstrap(context:context, installFlavor: "gem").install()
+      } 
+		  start "run_chef.groovy"
+
+		  locator {
+			  //hack to avoid monitoring started processes by cloudify
+			  return  [] as LinkedList			
+		  }
     }
-    
-    
+
     customCommands([
-        "run_chef": "run_chef.groovy",
+        "run_chef": {serviceRunList="role[${context.serviceName}]", chefType="client" ->
+          println "Runing Chef by custom command: chefType => ${chefType}, serviceRunList => ${serviceRunList}"
+          serviceRunList = serviceRunList.split(",").collect(){ it.stripIndent() }
+          ChefBootstrap.getBootstrap(
+            context:context
+          )."run${chefType.capitalize()}"([run_list: serviceRunList])
+        },
         "run_cucumber": "run_cucumber.sh"
     ])
 }
