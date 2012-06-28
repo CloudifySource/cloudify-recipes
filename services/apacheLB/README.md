@@ -3,7 +3,7 @@
 **Homepage**:   [http://www.cloudifysource.org](http://www.cloudifysource.org)  
 **Status**:  Tested
 **Author**:       Loren Segal  
-**Contributors**: See Contributors section below    
+**Contfributors**: See Contributors section below    
 **Copyright**:    2007-2012    
 **License**:      MIT License    
 **Latest Version**: 0.8.2.1 (codename "Shave It")    
