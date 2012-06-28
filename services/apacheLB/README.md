@@ -16,8 +16,8 @@
 Tested on:
 --------
 
-* *localCloud*: Windows 7 and CentOs 
-* *EC2*: Ubuntu and CentOs 
+* </strong>localCloud</strong>: Windows 7 and CentOs 
+* @EC2@: Ubuntu and CentOs 
 * <strong>OpenStack</strong>: CentOs 
 
 
