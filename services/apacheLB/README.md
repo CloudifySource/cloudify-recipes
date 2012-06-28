@@ -13,7 +13,13 @@
 **Release Date**: June 28th 2012  
 
 
-Tested on: 	localCloud/Windows 7 and CenOs, EC2/Ubuntu and CentOs, OpenStack/CentOs
+Tested on:
+--------
+
+localCloud: Windows 7 and CentOs 
+EC2: Ubuntu and CentOs 
+OpenStack: CentOs 
+
 
 
 Synopsis
