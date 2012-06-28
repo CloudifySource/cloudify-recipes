@@ -15,13 +15,6 @@
 
 Tested on: 	localCloud/Windows 7 and CenOs, EC2/Ubuntu and CentOs, OpenStack/CentOs
 
-|_. HHH1 |_. HHH2 |_. HHH3 |_. HHH4 |
-| r1d | rd | rd | rd |
-| r2d | rd | rd | rd |
-
-
-
-
 
 Synopsis
 --------
