@@ -2,7 +2,7 @@
 
 **Homepage**:   [http://www.cloudifysource.org](http://www.cloudifysource.org)  
 **Status**:  Tested
-
+**Stadtus**:  Tesfted
 **Maintainer**:  Cloudify
 **Maintainer email**:   cloudifysource@gigaspaces.com
 **Contributors**: N/A
