@@ -1,20 +1,16 @@
 # ApacheLB 
 
-**Homepage**:   [http://www.cloudifysource.org](http://www.cloudifysource.org)  
-**Maintainer**:       Cloudify
-**Maintainer email**: cloudifysource@gigaspaces.com
+**Status**: Tested  
+**Description**: Apache Load Balancer  
+**Maintainer**:       Cloudify  
+**Maintainer email**: cloudifysource@gigaspaces.com  
 **Contributors**:    N/A    
-**License**:      Apache 2.0    
-**Latest Version**: 0.8.2.1 (codename "Shave It")    
-**Release Date**: V  
-
-
-
-**Description**: Apache Load Balancer
-**Cloudify versions**: 2.1.1 GA
-**Build**: https://s3.amazonaws.com/gigaspaces-repository/org/cloudifysource/2.1.1/gigaspaces-cloudify-2.1.1-m2-b1396.zip
-**Requires Linux* sudoer permissions**:	Mandatory
-**Requires Windows* Admin permissions**:	No
+**Homepage**:   [http://www.cloudifysource.org](http://www.cloudifysource.org)  
+**License**:      Apache 2.0   
+**Build**: https://s3.amazonaws.com/gigaspaces-repository/org/cloudifysource/2.1.1/gigaspaces-cloudify-2.1.1-m2-b1396.zip  
+**Requires Linux* sudoer permissions**:	Mandatory  
+**Requires Windows* Admin permissions**:  No  
+**Release Date**: June 28th 2012  
 
 
 Tested on: 	localCloud/Windows 7 and CenOs, EC2/Ubuntu and CentOs, OpenStack/CentOs
