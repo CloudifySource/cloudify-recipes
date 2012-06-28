@@ -1,8 +1,8 @@
 # ApacheLB 
 
-**Status**								Tested
-**Maintainer**							Cloudify
-**Maintainer email**					cloudifysource@gigaspaces.com		
+**Status*      Tested
+**Maintainer** Cloudify
+**Maintainer email** cloudifysource@gigaspaces.com
 **Contributors**						N/A
 **License**								Apache 2.0
 **Description**							Apache Load Balancer
