@@ -16,9 +16,9 @@
 Tested on:
 --------
 
-localCloud: Windows 7 and CentOs 
-EC2: Ubuntu and CentOs 
-OpenStack: CentOs 
+* localCloud: Windows 7 and CentOs 
+* EC2: Ubuntu and CentOs 
+* OpenStack: CentOs 
 
 
 
