@@ -3,14 +3,13 @@
 **Homepage**:   [http://www.cloudifysource.org](http://www.cloudifysource.org)  
 **Status**:  Tested
 **Maintainer**:       Cloudify  
-**Contfributors**: See Contributors section below    
+**Maintainer email**: cloudifysource@gigaspaces.com    
 **Copyright**:    2007-2012    
 **License**:      MIT License    
 **Latest Version**: 0.8.2.1 (codename "Shave It")    
 **Release Date**: June 10th 2012  
 
-**Maintainer**:  Cloudify
-**Maintainer email**:   cloudifysource@gigaspaces.com
+
 **Contributors**: N/A
 **License**: Apache 2.0
 **Description**: Apache Load Balancer
