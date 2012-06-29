@@ -71,25 +71,25 @@ def proxyConfigFile
 def proxyConfigText=""
 
 if( !isLinux ) {
-	println "apacheLB_install.groovy: Replacing STICKYSESSION_PLACE_HOLDER in ${proxyBalancerName}..."
+	println "apacheLB_postInstall.groovy: Replacing STICKYSESSION_PLACE_HOLDER in ${proxyBalancerName}..."
 	context.attributes.thisInstance["proxyBalancerPath"] = "${context.serviceDirectory}/install/conf/extra/${proxyBalancerName}"
 	proxyConfigFile = new File("${context.serviceDirectory}/install/conf/extra/${proxyBalancerName}")
 	proxyConfigText = proxyConfigFile.text
 	proxyConfigText = proxyConfigText.replace("PATH-TO-APP", "${config.applicationName}")
 	if ( "${config.useStickysession}"=="true" ) {
-		println "apacheLB_install.groovy: Using Stickysession ..."
+		println "apacheLB_postInstall.groovy: Using Stickysession ..."
 		proxyConfigText = proxyConfigText.replace("STICKYSESSION_PLACE_HOLDER","stickysession=JSESSIONID|jsessionid nofailover=Off")
 	}
 	else {	
-		println "apacheLB_install.groovy: Not USING Stickysession ..."
+		println "apacheLB_postInstall.groovy: Not USING Stickysession ..."
 		proxyConfigText = proxyConfigText.replace("STICKYSESSION_PLACE_HOLDER","")
 	}	
 }
 else {
-	println "apacheLB_install.groovy: Looking for the path of ${proxyBalancerName} in ${context.serviceDirectory}/proxyBalancerPath ..."
+	println "apacheLB_postInstall.groovy: Looking for the path of ${proxyBalancerName} in ${context.serviceDirectory}/proxyBalancerPath ..."
 	proxyBalancerFile = new ConfigSlurper().parse(new File("${context.serviceDirectory}/proxyBalancerPath").toURL())	                    
 	def proxyBalancerFullPath="${proxyBalancerFile.pathToBalancerConf}"
-	println "apacheLB_install.groovy: conf file is in ${proxyBalancerFullPath}"
+	println "apacheLB_postInstall.groovy: conf file is in ${proxyBalancerFullPath}"
 	context.attributes.thisInstance["proxyBalancerPath"] = "${proxyBalancerFullPath}"	
 	proxyConfigFile = new File("${proxyBalancerFullPath}")	
 	proxyConfigText = proxyConfigFile.text	
@@ -108,8 +108,13 @@ if ( balancerMembers!=null ) {
 	balancerMembers = balancerMembers.substring(1,balancerMembers.length()-1)
 	def dontModify="# Generated code - DO NOT MODIFY"
 	balancerMembers.split(",,").each { currNode ->
-		println "Adding ${currNode} to ${proxyBalancerName} .. "
-		proxyConfigText = proxyConfigText.replace("${dontModify}", "${dontModify}" + System.getProperty("line.separator") + "${currNode}")						
+		if ( proxyConfigText.contains(currNode)) {
+			println "apacheLB_postInstall.groovy: Not adding ${currNode} to httpd-proxy-balancer.conf because it's already there..."	
+		}
+		else {
+			println "apacheLB_postInstall.groovy: Adding ${currNode} to ${proxyBalancerName} .. "
+			proxyConfigText = proxyConfigText.replace("${dontModify}", "${dontModify}" + System.getProperty("line.separator") + "${currNode}")
+		}
 	}	
 }
 

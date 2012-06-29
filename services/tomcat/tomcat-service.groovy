@@ -55,7 +55,7 @@ service {
 		def instanceID = context.instanceId
 		
 		postStart {			
-			if ( useLoadBalancer == "true" ) { 
+			if ( useLoadBalancer ) { 
 				println "tomcat-service.groovy: tomcat Post-start ..."
 				def apacheService = context.waitForService("apacheLB", 180, TimeUnit.SECONDS)			
 				println "tomcat-service.groovy: invoking add-node of apacheLB ..."
