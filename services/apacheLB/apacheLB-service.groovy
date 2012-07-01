@@ -35,8 +35,8 @@ service {
 				currPublicIP =System.getenv()["CLOUDIFY_AGENT_ENV_PUBLIC_IP"]
 			}
 			def loadBalancerURL	= "http://${currPublicIP}:${currentPort}"
-			def balancerManagerURL = loadBalancerURL+"/balancer-manager"
-			def applicationURL = loadBalancerURL+"/"+applicationName
+			def balancerManagerURL = "${loadBalancerURL}/balancer-manager"
+			def applicationURL = "${loadBalancerURL}/${context.applicationName}"
 		
 				return [
 					"BalancerManager URL":"<a href=\"${balancerManagerURL}\" target=\"_blank\">${balancerManagerURL}</a>",

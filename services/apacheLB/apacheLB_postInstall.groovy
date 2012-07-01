@@ -58,7 +58,7 @@ if ( isLinux ) {
 			arg(value:"80")		
 			arg(value:"${config.currentPort}")
 			arg(value:"${origProxyBalancerPath}")	
-			arg(value:"${config.applicationName}")	
+			arg(value:"${context.applicationName}")	
 			arg(value:"${config.useStickysession}")
 			arg(value:"${context.serviceDirectory}")
 		}	
@@ -75,7 +75,7 @@ if( !isLinux ) {
 	context.attributes.thisInstance["proxyBalancerPath"] = "${context.serviceDirectory}/install/conf/extra/${proxyBalancerName}"
 	proxyConfigFile = new File("${context.serviceDirectory}/install/conf/extra/${proxyBalancerName}")
 	proxyConfigText = proxyConfigFile.text
-	proxyConfigText = proxyConfigText.replace("PATH-TO-APP", "${config.applicationName}")
+	proxyConfigText = proxyConfigText.replace("PATH-TO-APP", "${context.applicationName}")
 	if ( "${config.useStickysession}"=="true" ) {
 		println "apacheLB_install.groovy: Using Stickysession ..."
 		proxyConfigText = proxyConfigText.replace("STICKYSESSION_PLACE_HOLDER","stickysession=JSESSIONID|jsessionid nofailover=Off")

@@ -23,10 +23,17 @@ application {
     
     service {
         name = "app"
-        dependsOn = ["mysql", "chef-server"]
+        dependsOn = ["mysql", "chef-server", "apacheLB"]
     }
+    
+    service {
+		name = "apacheLB"		
+	}
+    
     service {
         name = "mysql"
         dependsOn = ["chef-server"]
     }
+    
+    
 }
