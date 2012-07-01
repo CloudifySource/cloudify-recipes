@@ -25,7 +25,7 @@ Tested on:
 Synopsis
 --------
 
-This folder contains a service recipe for Mongos (Router) 7.0.23.
+This folder contains a service recipe for Mongos (Router).
 
 Its default port is 30001, but it can be modified in the mongos-service.properties.
 

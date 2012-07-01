@@ -25,7 +25,7 @@ Tested on:
 Synopsis
 --------
 
-This folder contains a service recipe for Mongod 7.0.23.
+This folder contains a service recipe for Mongod.
 
 Its default port is 10001, but it can be modified in the mongod-service.properties.
 

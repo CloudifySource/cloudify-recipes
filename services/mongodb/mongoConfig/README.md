@@ -25,7 +25,7 @@ Tested on:
 Synopsis
 --------
 
-This folder contains a service recipe for Mongo Configuration 7.0.23.
+This folder contains a service recipe for Mongo Configuration.
 
 Its default port is 20001, but it can be modified in the mongoConfig-service.properties.
 
