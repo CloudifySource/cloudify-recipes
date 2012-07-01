@@ -30,7 +30,7 @@ This folder contains a service recipe for Pet Clinic.
 The PetClinic application is a port of the Spring PetClinic application to Grails and MongoDB. It uses the Grails GORM bindings to MongoDB. 
 The users of the application are employees of the clinic who, in the course of their work, need to view and manage information regarding veterinarians, the clients, and their pets.
 
-This recipe is comprised of five serices:
+This recipe is comprised of five services:
 * [mongod](../../services/mongodb/mongod/README.md)  
 * [mongos](../../services/mongodb/mongos/README.md)  
 * [mongoConfig](../../services/mongodb/mongoConfig/README.md)  
