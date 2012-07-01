@@ -14,6 +14,7 @@
 * limitations under the License.
 *******************************************************************************/
 import static JmxMonitors.*
+import java.util.concurrent.TimeUnit;
 
 service {
     extend "../../../services/chef"
@@ -54,6 +55,23 @@ service {
 			
 			return getJmxMetrics("127.0.0.1",11099,metricNamesToMBeansNames)
     	}
+    	
+    	def instanceID = context.instanceId
+    	
+    	postStart {			
+			def apacheService = context.waitForService("apacheLB", 180, TimeUnit.SECONDS)						
+			def privateIP = System.getenv()["CLOUDIFY_AGENT_ENV_PRIVATE_IP"]
+			def currURL="http://${privateIP}:8080/${context.applicationName}"
+			apacheService.invoke("addNode", currURL as String, instanceID as String)			                 
+		}
+		
+		postStop {
+			def apacheService = context.waitForService("apacheLB", 180, TimeUnit.SECONDS)			
+			def	privateIP =System.getenv()["CLOUDIFY_AGENT_ENV_PRIVATE_IP"]
+			def currURL="http://${privateIP}:8080/${context.applicationName}"
+			apacheService.invoke("removeNode", currURL as String, instanceID as String)
+		}
+    	
     }
     compute {
         template "MEDIUM_LINUX"

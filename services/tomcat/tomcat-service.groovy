@@ -3,7 +3,7 @@ import java.util.concurrent.TimeUnit;
 service {
 	name "tomcat"
 	icon "tomcat.gif"
-	type "WEB_SERVER"
+	type "APP_SERVER"
 	
     elastic true
 	numInstances 1
@@ -27,17 +27,17 @@ service {
 			def currPublicIP
 			
 			if (  context.isLocalCloud()  ) {
-				currPublicIP =InetAddress.getLocalHost().getHostAddress()
+				currPublicIP =InetAddress.localHost.hostAddress
 			}
 			else {
 				currPublicIP =System.getenv()["CLOUDIFY_AGENT_ENV_PUBLIC_IP"]
 			}
 			def tomcatURL	= "http://${currPublicIP}:${currHttpPort}"			
-			def applicationURL = tomcatURL+"/"+appFolder
+			def applicationURL = "${tomcatURL}/${context.applicationName}"
 		
-				return [					
-					"Application URL":"<a href=\"${applicationURL}\" target=\"_blank\">${applicationURL}</a>"					
-				]
+            return [
+                "Application URL":"<a href=\"${applicationURL}\" target=\"_blank\">${applicationURL}</a>"
+            ]
 		}		
 	
 	
@@ -68,9 +68,9 @@ service {
 					privateIP =System.getenv()["CLOUDIFY_AGENT_ENV_PRIVATE_IP"]
 				}
 				println "tomcat-service.groovy: privateIP is ${privateIP} ..."
-				def currURL="http://"+privateIP+":"+currHttpPort+"/"+appFolder
+				def currURL="http://${privateIP}:${currHttpPort}/${context.applicationName}"
 				println "tomcat-service.groovy: About to add ${currURL} to apacheLB ..."
-				apacheService.invoke("addNode", currURL, instanceID as String)			                 
+				apacheService.invoke("addNode", currURL as String, instanceID as String)			                 
 				println "tomcat-service.groovy: tomcat Post-start ended"
 			}			
 		}
@@ -82,16 +82,16 @@ service {
 				
 				def privateIP
 				if (  context.isLocalCloud()  ) {
-					privateIP=InetAddress.getLocalHost().getHostAddress()
+					privateIP=InetAddress.localHost.hostAddress
 				}
 				else {
 					privateIP =System.getenv()["CLOUDIFY_AGENT_ENV_PRIVATE_IP"]
 				}				
 				
 				println "tomcat-service.groovy: privateIP is ${privateIP} ..."
-				def currURL="http://"+privateIP+":"+port+"/"+appFolder
+				def currURL="http://${privateIP}:${port}/${context.applicationName}"
 				println "tomcat-service.groovy: About to remove ${currURL} from apacheLB ..."
-				apacheService.invoke("removeNode", currURL, instanceID as String)
+				apacheService.invoke("removeNode", currURL as String, instanceID as String)
 				println "tomcat-service.groovy: tomcat Post-stop ended"
 			}			
 		}		
@@ -138,7 +138,7 @@ service {
 							"backlog"
 						],
 						"Active Sessions":[
-							"Catalina:type=Manager,context=/${appFolder},host=localhost",
+							"Catalina:type=Manager,context=/${context.applicationName},host=localhost",
 							"activeSessions"
 						],
 						"Total Requests Count": [

@@ -21,40 +21,45 @@ import javax.management.remote.JMXServiceURL as JmxUrl
  * Connect to a JMX server over RMI
  */
  
+class JmxMonitors {
 
- 
-def static connectRMI(host, port) {
-	return JmxFactory.connect(new JmxUrl("service:jmx:rmi:///jndi/rmi://${host}:${port}/jmxrmi"))
-}
-
-/**
- * Get a JMX attribute
- */
-def static getJMXAttribute(server, objectName, attributeName) {
-	def connection = server.MBeanServerConnection
-	String[] names = connection.queryNames(new ObjectName(objectName), null)
-	if (names.length > 0)
-			return (new GroovyMBean(connection, names[0]))[attributeName]
-	return 0;
-}
-
-	/* Returns a map of metrics values */ 
-def static getJmxMetrics(host,jmxPort,metricNamesToMBeansNames) {
-	def server = connectRMI(host, jmxPort)
+	def static urlToConnection = [:]
 	
-	def metrics  = [:]
-
-	metricNamesToMBeansNames.each{metricName,objectsArr->
-		def objectName=objectsArr[0]
-		def attributeName=objectsArr[1]
-		def currMetricValue = getJMXAttribute(server,objectName , attributeName) 		
-		metrics.put(metricName,currMetricValue)
+	 
+	def static connectRMI(host, port) {
+		if (urlToConnection["${host:port}"] == null)
+			urlToConnection["${host:port}"] = JmxFactory.connect(new JmxUrl("service:jmx:rmi:///jndi/rmi://${host}:${port}/jmxrmi"))	
+		return urlToConnection["${host:port}"]
 	}
 	
+	/**
+	 * Get a JMX attribute
+	 */
+	def static getJMXAttribute(server, objectName, attributeName) {
+		def connection = server.MBeanServerConnection
+		String[] names = connection.queryNames(new ObjectName(objectName), null)
+		if (names.length > 0)
+				return (new GroovyMBean(connection, names[0]))[attributeName]
+		return 0;
+	}
 	
-	server.close()
-	return metrics
+		/* Returns a map of metrics values */ 
+	def static getJmxMetrics(host,jmxPort,metricNamesToMBeansNames) {
+		def server = connectRMI(host, jmxPort)
+		
+		def metrics  = [:]
+	
+		metricNamesToMBeansNames.each{metricName,objectsArr->
+			def objectName=objectsArr[0]
+			def attributeName=objectsArr[1]
+			def currMetricValue = getJMXAttribute(server,objectName , attributeName) 		
+			metrics.put(metricName,currMetricValue)
+		}
+		
+		
+	//	server.close()
+		return metrics
+	}
+
 }
-
-
 
