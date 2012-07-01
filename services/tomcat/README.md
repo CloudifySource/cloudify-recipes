@@ -1,4 +1,4 @@
-# ApacheLB 
+# tomcat 
 
 **Status**: Tested  
 **Description**: Tomcat 7.0.23  
@@ -34,12 +34,14 @@ You can enable/disable the usage of load balancer, by modifying the useLoadBalan
 If you set useLoadBalancer to true, then during its postStart event, each tomcat service instance will register itself to a load balancer.
 In order to use this option, you need to enable a "brother" load balancer service or have an external load balancer.
 
-The full path from which your application war file should be download, needs to be set in the applicationWarUrl property in tomcat-service.properties.
+The full path from which your application war file should be downloaded, needs to be set in the applicationWarUrl property in tomcat-service.properties.
+
 For example:
 applicationWarUrl = "http://repository.cloudifysource.org/org/cloudifysource/2.0.0/petclinic-mongo-example.war"
 
 
-The relative path to your application need to be set in the appFolder property in tomcat-service.properties.
+The relative path to your application needs to be set in the appFolder property in tomcat-service.properties.
+
 For example:
 appFolder = "petclinic-mongo"
 
