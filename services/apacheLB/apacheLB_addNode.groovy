@@ -34,44 +34,50 @@ if ( "${config.useStickysession}" == "true" ) {
 }
 
 def balancerMemberText="BalancerMember " + node + routeStr
-def modifiedConfig = configText.replace("# Generated code - DO NOT MODIFY", "# Generated code - DO NOT MODIFY" + System.getProperty("line.separator") + "${balancerMemberText}")				
-proxyConfigFile.text = modifiedConfig
-println "addNode: Added ${node} to httpd-proxy-balancer.conf text is now : ${modifiedConfig}..."
-def balancerMembers=context.attributes.thisService["balancerMembers"]
-if ( balancerMembers == null ) {
-	balancerMembers = ""
-}
-balancerMembers +=",${balancerMemberText},"										
-context.attributes.thisService["balancerMembers"]=balancerMembers
-println "addNode: Added ${node} to context balancerMembers which is now ${balancerMembers}"
 
-
-currOs=System.properties['os.name']
-println "addNode: About to kill ${currOs} processes ..."
-if ("${currOs}".toLowerCase().contains('windows')) {
-	println "addNode: About to kill httpd.."
-	def currCmd="taskkill /t /im httpd* /f"
-	currCmd.execute()
-	println "addNode: Killed httpd"
+if ( configText.contains(balancerMemberText)) {
+	println "addNode: Not adding ${node} to httpd-proxy-balancer.conf because it's already there..."	
 }
-else {
-	def os = OperatingSystem.getInstance()
-	def currVendor=os.getVendor()
-	def stopScript
-	switch (currVendor) {
-		case ["Ubuntu", "Debian", "Mint"]:			
-			stopScript="${context.serviceDirectory}/stopOnUbuntu.sh"
-			break		
-		case ["Red Hat", "CentOS", "Fedora", "Amazon",""]:			
-			stopScript="${context.serviceDirectory}/stop.sh"
-			break					
-		default: throw new Exception("Support for ${currVendor} is not implemented")
+else { 
+	def modifiedConfig = configText.replace("# Generated code - DO NOT MODIFY", "# Generated code - DO NOT MODIFY" + System.getProperty("line.separator") + "${balancerMemberText}")				
+	proxyConfigFile.text = modifiedConfig
+	println "addNode: Added ${node} to httpd-proxy-balancer.conf text is now : ${modifiedConfig}..."
+
+	def balancerMembers=context.attributes.thisService["balancerMembers"]
+	if ( balancerMembers == null ) {
+		balancerMembers = ""
 	}
+	balancerMembers +=",${balancerMemberText},"										
+	context.attributes.thisService["balancerMembers"]=balancerMembers
+	println "addNode: Added ${node} to context balancerMembers which is now ${balancerMembers}"
 
-	builder = new AntBuilder()
-	builder.sequential {
-		exec(executable:"${stopScript}", osfamily:"unix")        	
+
+	currOs=System.properties['os.name']
+	println "addNode: About to kill ${currOs} processes ..."
+	if ("${currOs}".toLowerCase().contains('windows')) {
+		println "addNode: About to kill httpd.."
+		def currCmd="taskkill /t /im httpd* /f"
+		currCmd.execute()
+		println "addNode: Killed httpd"
+	}
+	else {
+		def os = OperatingSystem.getInstance()
+		def currVendor=os.getVendor()
+		def stopScript
+		switch (currVendor) {
+			case ["Ubuntu", "Debian", "Mint"]:			
+				stopScript="${context.serviceDirectory}/stopOnUbuntu.sh"
+				break		
+			case ["Red Hat", "CentOS", "Fedora", "Amazon",""]:			
+				stopScript="${context.serviceDirectory}/stop.sh"
+				break					
+			default: throw new Exception("Support for ${currVendor} is not implemented")
+		}
+
+		builder = new AntBuilder()
+		builder.sequential {
+			exec(executable:"${stopScript}", osfamily:"unix")        	
+		}
 	}
 }
-
 

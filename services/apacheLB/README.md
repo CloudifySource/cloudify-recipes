@@ -1,4 +1,30 @@
 # ApacheLB 
+
+**Status**: Tested  
+**Description**: Apache Load Balancer  
+**Maintainer**:       Cloudify  
+**Maintainer email**: cloudifysource@gigaspaces.com  
+**Contributors**:    N/A    
+**Homepage**:   [http://www.cloudifysource.org](http://www.cloudifysource.org)  
+**License**:      Apache 2.0   
+**Build**: https://s3.amazonaws.com/gigaspaces-repository/org/cloudifysource/2.1.1/gigaspaces-cloudify-2.1.1-m2-b1396.zip  
+**Linux* sudoer permissions**:	Mandatory  
+**Windows* Admin permissions**:  Not required    
+**Release Date**: June 28th 2012  
+
+
+Tested on:
+--------
+
+* <strong>localCloud</strong>: Windows 7 and CentOs 
+* <strong>EC2</strong>: Ubuntu and CentOs 
+* <strong>OpenStack</strong>: CentOs 
+
+
+
+Synopsis
+--------
+
 This folder contains a service recipe for Apache load balancer.
 
 Its default port is 8090, but it can be modified in the apacheLB-service.properties.
