@@ -31,10 +31,10 @@ The PetClinic application is a port of the Spring PetClinic application to Grail
 The users of the application are employees of the clinic who, in the course of their work, need to view and manage information regarding veterinarians, the clients, and their pets.
 
 This recipe is comprised of five serices:
-# [mongod](../../services/mongodb/mongod/README.md)  
-# [mongos](../../services/mongodb/mongos/README.md)  
-# [mongoConfig](../../services/mongodb/mongoConfig/README.md)  
-# [tomcat](../../services/tomcat/README.md) 
-# [apacheLB](../../services/apacheLB/README.md) 
+* [mongod](../../services/mongodb/mongod/README.md)  
+* [mongos](../../services/mongodb/mongos/README.md)  
+* [mongoConfig](../../services/mongodb/mongoConfig/README.md)  
+* [tomcat](../../services/tomcat/README.md) 
+* [apacheLB](../../services/apacheLB/README.md) 
 
 

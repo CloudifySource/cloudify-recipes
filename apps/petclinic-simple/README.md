@@ -31,6 +31,6 @@ The PetClinic application is a port of the Spring PetClinic application to Grail
 The users of the application are employees of the clinic who, in the course of their work, need to view and manage information regarding veterinarians, the clients, and their pets.
 
 This recipe is comprised of two serices:
-# [mongod](../../services/mongodb/mongod/README.md)  
-# [tomcat](../../services/tomcat/README.md) 
+* [mongod](../../services/mongodb/mongod/README.md)  
+* [tomcat](../../services/tomcat/README.md) 
 
