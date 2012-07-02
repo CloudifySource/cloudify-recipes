@@ -1,4 +1,5 @@
 import java.util.concurrent.TimeUnit;
+import static JmxMonitors.*
 
 service {
 	name "tomcat"
@@ -15,7 +16,7 @@ service {
 	def currJmxPort = jmxPort + portIncrement
 	def currHttpPort = port + portIncrement
 	def currAjpPort = ajpPort + portIncrement
-	
+		
 	compute {
 		template "SMALL_LINUX"
 	}
@@ -32,13 +33,31 @@ service {
 			else {
 				currPublicIP =System.getenv()["CLOUDIFY_AGENT_ENV_PUBLIC_IP"]
 			}
-			def tomcatURL	= "http://${currPublicIP}:${currHttpPort}"			
-			def applicationURL = "${tomcatURL}/${context.applicationName}"
+			def tomcatURL	= "http://${currPublicIP}:${currHttpPort}"	
+			
+			def ctxPath = ("default" == context.applicationName)?"":"${context.applicationName}"
+			def applicationURL = "${tomcatURL}/${ctxPath}"
+			println "tomcat-service.groovy: applicationURL is ${applicationURL}"
 		
             return [
                 "Application URL":"<a href=\"${applicationURL}\" target=\"_blank\">${applicationURL}</a>"
             ]
-		}		
+		}	
+
+		monitors {
+		
+			def ctxPath = ("default" == context.applicationName)?"":"${context.applicationName}"
+							
+			def metricNamesToMBeansNames = [
+				"Current Http Threads Busy": ["Catalina:type=ThreadPool,name=\"http-bio-${currHttpPort}\"", "currentThreadsBusy"],				
+				"Current Http Thread Count": ["Catalina:type=ThreadPool,name=\"http-bio-${currHttpPort}\"", "currentThreadCount"],				
+				"Backlog": ["Catalina:type=ProtocolHandler,port=${currHttpPort}", "backlog"],				
+				"Total Requests Count": ["Catalina:type=GlobalRequestProcessor,name=\"http-bio-${currHttpPort}\"", "requestCount"],				
+				"Active Sessions": ["Catalina:type=Manager,context=/${ctxPath},host=localhost", "activeSessions"],
+			]
+			
+			return getJmxMetrics("127.0.0.1",currJmxPort,metricNamesToMBeansNames)										
+    	}			
 	
 	
 	
@@ -59,6 +78,8 @@ service {
 				println "tomcat-service.groovy: tomcat Post-start ..."
 				def apacheService = context.waitForService("apacheLB", 180, TimeUnit.SECONDS)			
 				println "tomcat-service.groovy: invoking add-node of apacheLB ..."
+					
+				def ctxPath = ("default" == context.applicationName)?"":"${context.applicationName}"				
 				
 				def privateIP
 				if (  context.isLocalCloud()  ) {
@@ -68,7 +89,8 @@ service {
 					privateIP =System.getenv()["CLOUDIFY_AGENT_ENV_PRIVATE_IP"]
 				}
 				println "tomcat-service.groovy: privateIP is ${privateIP} ..."
-				def currURL="http://${privateIP}:${currHttpPort}/${context.applicationName}"
+				
+				def currURL="http://${privateIP}:${currHttpPort}/${ctxPath}"
 				println "tomcat-service.groovy: About to add ${currURL} to apacheLB ..."
 				apacheService.invoke("addNode", currURL as String, instanceID as String)			                 
 				println "tomcat-service.groovy: tomcat Post-start ended"
@@ -76,9 +98,12 @@ service {
 		}
 		
 		postStop {
-			if ( useLoadBalancer == "true" ) { 
+			if ( useLoadBalancer ) { 
 				println "tomcat-service.groovy: tomcat Post-stop ..."
 				def apacheService = context.waitForService("apacheLB", 180, TimeUnit.SECONDS)			
+						
+				def ctxPath = ("default" == context.applicationName)?"":"${context.applicationName}"
+				println "tomcat-service.groovy: postStop ctxPath is ${ctxPath}"				
 				
 				def privateIP
 				if (  context.isLocalCloud()  ) {
@@ -89,7 +114,7 @@ service {
 				}				
 				
 				println "tomcat-service.groovy: privateIP is ${privateIP} ..."
-				def currURL="http://${privateIP}:${port}/${context.applicationName}"
+				def currURL="http://${privateIP}:${port}/${ctxPath}"
 				println "tomcat-service.groovy: About to remove ${currURL} from apacheLB ..."
 				apacheService.invoke("removeNode", currURL as String, instanceID as String)
 				println "tomcat-service.groovy: tomcat Post-stop ended"
@@ -120,37 +145,7 @@ service {
 		"updateWarFile" : "updateWarFile.groovy"
     ])
 
-	plugins([
-		plugin {
-			name "jmx"
-			className "org.cloudifysource.usm.jmx.JmxMonitor"
-			config([
-						"Current Http Threads Busy": [
-							"Catalina:type=ThreadPool,name=\"http-bio-${currHttpPort}\"",
-							"currentThreadsBusy"
-						],
-						"Current Http Threads Count": [
-							"Catalina:type=ThreadPool,name=\"http-bio-${currHttpPort}\"",
-							"currentThreadCount"
-						],
-						"Backlog": [
-							"Catalina:type=ProtocolHandler,port=${currHttpPort}",
-							"backlog"
-						],
-						"Active Sessions":[
-							"Catalina:type=Manager,context=/${context.applicationName},host=localhost",
-							"activeSessions"
-						],
-						"Total Requests Count": [
-							"Catalina:type=GlobalRequestProcessor,name=\"http-bio-${currHttpPort}\"",
-							"requestCount"
-						],
-						port: "${currJmxPort}"
-
-					])
-		}
-	])
-
+	
 	userInterface {
 
 		metricGroups = ([

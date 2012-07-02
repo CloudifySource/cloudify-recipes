@@ -19,6 +19,7 @@ Tested on:
 * <strong>localCloud</strong>: Windows 7 and CentOs 
 * <strong>EC2</strong>: Ubuntu and CentOs 
 * <strong>OpenStack</strong>: CentOs 
+* <strong>Rackspace</strong>: CentOs 
 
 
 
@@ -42,6 +43,9 @@ You need to add a <strong>postStart</strong> lifecycle event to each service tha
 You need to add a  <strong>postStop</strong> lifecycle event to each service that you want its instances to be able to remove themselves from the load balancer.
 
 <pre><code>
+
+	def ctxPath=("default" == context.applicationName)?"":"${context.applicationName}"
+
 	lifecycle {
 
 		install "myService_install.groovy"
@@ -49,14 +53,16 @@ You need to add a  <strong>postStop</strong> lifecycle event to each service tha
 		....
 	    ...
 		def instanceID = context.instanceId
+		
+					
 		postStart {			
 			def apacheService = context.waitForService("apacheLB", 180, TimeUnit.SECONDS)
-			apacheService.invoke("addNode", "http://${InetAddress.localHost.hostAddress}:${port}/${context.applicationName}" as String, instanceID as String)
+			apacheService.invoke("addNode", "http://${InetAddress.localHost.hostAddress}:${port}/${ctxPath}" as String, instanceID as String)
 		}
 		
 		postStop {			
 			def apacheService = context.waitForService("apacheLB", 180, TimeUnit.SECONDS)
-			apacheService.invoke("removeNode", "http://${InetAddress.localHost.hostAddress}:${port}/${context.applicationName}" as String, instanceID as String)			
+			apacheService.invoke("removeNode", "http://${InetAddress.localHost.hostAddress}:${port}/${ctxPath}" as String, instanceID as String)			
 		}		
 	}
 </pre></code>

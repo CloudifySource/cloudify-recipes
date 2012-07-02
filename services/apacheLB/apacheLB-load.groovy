@@ -60,7 +60,7 @@ switch (currVendor) {
 		abScript="${context.serviceDirectory}/load.sh"
 		break	
 	case ~/.*(?i)(Microsoft|Windows).*/:
-		abScript="${context.serviceDirectory}/install/load.sh"
+		abScript="${context.serviceDirectory}/load.bat"
 		break	
 	default: throw new Exception("Support for ${currVendor} is not implemented")
 }

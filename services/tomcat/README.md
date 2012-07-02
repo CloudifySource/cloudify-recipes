@@ -19,6 +19,7 @@ Tested on:
 * <strong>localCloud</strong>: Windows 7 and CentOs 
 * <strong>EC2</strong>: Ubuntu and CentOs 
 * <strong>OpenStack</strong>: CentOs 
+* <strong>Rackspace</strong>: CentOs 
 
 
 

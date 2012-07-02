@@ -20,6 +20,8 @@ import org.cloudifysource.dsl.context.ServiceContextFactory
 context = ServiceContextFactory.getServiceContext()
 config = new ConfigSlurper().parse(new File("apacheLB-service.properties").toURL())
 
+def ctxPath = ("default" == context.applicationName)?"":"${context.applicationName}"
+
 builder = new AntBuilder()
 
 
@@ -58,7 +60,7 @@ if ( isLinux ) {
 			arg(value:"80")		
 			arg(value:"${config.currentPort}")
 			arg(value:"${origProxyBalancerPath}")	
-			arg(value:"${context.applicationName}")	
+			arg(value:"${ctxPath}")	
 			arg(value:"${config.useStickysession}")
 			arg(value:"${context.serviceDirectory}")
 		}	
@@ -74,8 +76,8 @@ if( !isLinux ) {
 	println "apacheLB_postInstall.groovy: Replacing STICKYSESSION_PLACE_HOLDER in ${proxyBalancerName}..."
 	context.attributes.thisInstance["proxyBalancerPath"] = "${context.serviceDirectory}/install/conf/extra/${proxyBalancerName}"
 	proxyConfigFile = new File("${context.serviceDirectory}/install/conf/extra/${proxyBalancerName}")
-	proxyConfigText = proxyConfigFile.text
-	proxyConfigText = proxyConfigText.replace("PATH-TO-APP", "${context.applicationName}")
+	proxyConfigText = proxyConfigFile.text	
+	proxyConfigText = proxyConfigText.replace("PATH-TO-APP", "${ctxPath}")
 	if ( "${config.useStickysession}"=="true" ) {
 		println "apacheLB_postInstall.groovy: Using Stickysession ..."
 		proxyConfigText = proxyConfigText.replace("STICKYSESSION_PLACE_HOLDER","stickysession=JSESSIONID|jsessionid nofailover=Off")
