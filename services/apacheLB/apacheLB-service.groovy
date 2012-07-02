@@ -36,7 +36,10 @@ service {
 			}
 			def loadBalancerURL	= "http://${currPublicIP}:${currentPort}"
 			def balancerManagerURL = "${loadBalancerURL}/balancer-manager"
-			def applicationURL = "${loadBalancerURL}/${context.applicationName}"
+			
+			def ctxPath=("default" == context.applicationName)?"":"${context.applicationName}"
+			
+			def applicationURL = "${loadBalancerURL}/${ctxPath}"
 		
 				return [
 					"BalancerManager URL":"<a href=\"${balancerManagerURL}\" target=\"_blank\">${balancerManagerURL}</a>",
