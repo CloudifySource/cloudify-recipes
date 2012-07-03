@@ -14,7 +14,7 @@
 * limitations under the License.
 *******************************************************************************/
 
-import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeUnit 
 
 service {
     lifecycle {
@@ -30,13 +30,35 @@ service {
     }
 
     customCommands([
-        "run_chef": {serviceRunList="role[${context.serviceName}]", chefType="client" ->
-          println "Runing Chef by custom command: chefType => ${chefType}, serviceRunList => ${serviceRunList}"
-          serviceRunList = serviceRunList.split(",").collect(){ it.stripIndent() }
-          ChefBootstrap.getBootstrap(
-            context:context
-          )."run${chefType.capitalize()}"([run_list: serviceRunList])
-        },
-        "run_cucumber": "run_cucumber.sh"
+      "run_chef": {serviceRunList="role[${context.serviceName}]", chefType="client", cookbookUrl="" ->
+
+        serviceRunList = serviceRunList.split(",").collect(){ it.stripIndent() }
+        if (cookbookUrl == "") {
+          cookbookUrl = null
+        }
+        output = "Beginning Chef run by custom command: chefType => ${chefType}, " + \
+                 "serviceRunList => ${serviceRunList}, cookbookUrl => ${cookbookUrl}"
+
+        bootstrap = ChefBootstrap.getBootstrap(context:context)
+        try{ //hack - to see the error text, we must exit successfully(CLOUDIFY-915)
+          switch ( chefType ) {
+            case "client":
+              bootstrap.runClient([run_list: serviceRunList])
+              break
+
+            case "solo":
+              bootstrap.runSolo([run_list: serviceRunList], cookbookUrl)
+              break
+
+            default:
+              throw new Exception("Unrecognized chefType(${chefType}), please use 'client' or 'solo'")
+            }
+        } catch(Exception e) {
+          output += "Chef client run encountered an exception:\n${e}"
+        }
+        println output //goes to the gsc log
+      },
+ 
+      "run_cucumber": "run_cucumber.sh"
     ])
 }
