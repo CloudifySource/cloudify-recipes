@@ -7,7 +7,7 @@
 **Contributors**:    [tamirko](https://github.com/tamirko)  
 **Homepage**:   [http://www.cloudifysource.org](http://www.cloudifysource.org)  
 **License**:      Apache 2.0   
-**Build**: https://s3.amazonaws.com/gigaspaces-repository/org/cloudifysource/2.1.1/gigaspaces-cloudify-2.1.1-m2-b1396.zip  
+**Build**: http://repository.cloudifysource.org/org/cloudifysource/2.1.1/gigaspaces-cloudify-2.1.1-ga-b1396-361.zip  
 **Linux* sudoer permissions**:	Not required  
 **Windows* Admin permissions**:  Required on Windows 7    
 **Release Date**: July 1st 2012  
@@ -21,6 +21,8 @@ Tested on:
 * <strong>OpenStack</strong>: CentOs 
 * <strong>Rackspace</strong>: CentOs 
 
+We disable the requiretty flag in /etc/sudoers on the installed VMs, so that Cloudify will be able to invoke remote ssh commands as a sudoer. This feature will be a part of Cloudify in the near future.
+Until then, please use the [Cloud Drivers Repository](https://github.com/CloudifySource/cloudify-cloud-drivers).
 
 
 Synopsis
