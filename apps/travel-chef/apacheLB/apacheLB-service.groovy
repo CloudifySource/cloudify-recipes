@@ -13,27 +13,6 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 *******************************************************************************/
-
-application {
-    name = "travel"
-    
-    service {
-        name = "chef-server"
-    }
-    
-    service {
-        name = "app"
-        dependsOn = ["mysql", "chef-server", "apacheLB"]
-    }
-    
-    service {
-		name = "apacheLB"		
-	}
-    
-    service {
-        name = "mysql"
-        dependsOn = ["chef-server"]
-    }
-    
-    
+service {
+	extend "../../../services/apacheLB"	
 }

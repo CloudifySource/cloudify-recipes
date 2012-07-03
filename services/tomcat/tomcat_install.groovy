@@ -1,21 +1,22 @@
 import org.cloudifysource.dsl.context.ServiceContextFactory
 
 def config = new ConfigSlurper().parse(new File("tomcat-service.properties").toURL())
-def serviceContext = ServiceContextFactory.getServiceContext()
-def instanceID = serviceContext.getInstanceId()
+def context = ServiceContextFactory.getServiceContext()
+def instanceID = context.getInstanceId()
 
+def ctxPath=("default" == context.applicationName)?"":"${context.applicationName}"
 
 println "tomcat_install.groovy: Installing tomcat..."
 
-def home = "${serviceContext.serviceDirectory}/${config.name}"
+def home = "${context.serviceDirectory}/${config.name}"
 def script = "${home}/bin/catalina"
 
-serviceContext.attributes.thisInstance["home"] = "${home}"
-serviceContext.attributes.thisInstance["script"] = "${script}"
+context.attributes.thisInstance["home"] = "${home}"
+context.attributes.thisInstance["script"] = "${script}"
 println "tomcat_install.groovy: tomcat(${instanceID}) home is ${home}"
 
 
-warUrl= serviceContext.attributes.thisService["warUrl"]
+warUrl= context.attributes.thisService["warUrl"]
 if ( warUrl == null ) {  
 	warUrl = "${config.applicationWarUrl}"
 }
@@ -37,12 +38,12 @@ if ( warUrl != null && "${warUrl}" != "" ) {
 		echo(message:"Getting ${warUrl} to ${applicationWar} ...")
 		get(src:"${warUrl}", dest:"${applicationWar}", skipexisting:false)
 		echo(message:"Copying ${applicationWar} to ${home}/webapps ...")
-		copy(todir: "${home}/webapps", file:"${applicationWar}", overwrite:true)
+		copy(tofile: "${home}/webapps/${ctxPath}.war", file:"${applicationWar}", overwrite:true)
 	}
 }
 
 portIncrement = 0
-if (serviceContext.isLocalCloud()) {
+if (context.isLocalCloud()) {
   portIncrement = instanceID - 1
   println "tomcat_install.groovy: Replacing default tomcat port with port ${config.port + portIncrement}"
 }

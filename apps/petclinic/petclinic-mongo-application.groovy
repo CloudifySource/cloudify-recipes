@@ -2,15 +2,15 @@ application {
 	name="petclinic"
 	
 	service {
-		name = "apacheLB"		
-	}
-	
-	service {
 		name = "mongod"		
 	}
 	
 	service {
 		name = "mongoConfig"		
+	}
+	
+	service {
+		name = "apacheLB"		
 	}
 	
 	service {
