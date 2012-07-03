@@ -31,8 +31,6 @@ service {
 		startDetection {
 			ServiceUtils.isPortOccupied(4000)
 		}
-		
-		
 		details {
 			def publicIp = System.getenv()["CLOUDIFY_AGENT_ENV_PUBLIC_IP"]
 			def serverRestUrl = "https://${publicIp}:443"

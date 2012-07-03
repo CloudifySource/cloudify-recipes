@@ -13,16 +13,45 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 *******************************************************************************/
+class ShellRuntimeException extends Exception {
+  String stdout
+  String stderr
+  String command
+  int exitValue
+  
+  def ShellRuntimeException(command, exitValue, stdout=null, stderr=null) {
+    this.stdout = stdout
+    this.stderr = stderr
+    this.exitValue = exitValue
+    this.command = command
+  }
+  
+  String toString() {
+    return """ShellRuntimeException: Command "${this.command}" failed with exit code ${this.exitValue}.
+====== STDOUT =======
+${this.stdout}
+=== END OF STDOUT ===
+
+====== STDERR =======
+${this.stderr}
+=== END OF STDERR ===
+""".toString()
+  }
+}
 
 def static sh(command, shellify=true, env=[:]) {
 	println("Running \"${command}\"")
 	if (shellify) {command = shellify_cmd(command)}
 	def proc = startProcess(command, env)
-	proc.inputStream.eachLine { println "STDOUT: ${it}" }
-	proc.errorStream.eachLine { println "STDERR: ${it}" }
+  def stdout = ""
+  def stderr = ""
+  proc.inputStream.eachLine { println "STDOUT: ${it}";  stdout += "${it}\n" }
+	proc.errorStream.eachLine { println "STDERR: ${it}";  stderr += "${it}\n" }
 	proc.waitFor()
 	println("Command finished with return code ${proc.exitValue()}")
-	assert proc.exitValue() == 0
+	if (proc.exitValue() != 0) {
+    throw new ShellRuntimeException(command, proc.exitValue(), stdout, stderr)
+  }
 }
 
 def static shellOut(command, env=[:]) {
