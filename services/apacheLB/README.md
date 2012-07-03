@@ -1,4 +1,32 @@
 # ApacheLB 
+
+**Status**: Tested  
+**Description**: Apache Load Balancer  
+**Maintainer**:       Cloudify  
+**Maintainer email**: cloudifysource@gigaspaces.com  
+**Contributors**:    [tamirko](https://github.com/tamirko)  
+**Homepage**:   [http://www.cloudifysource.org](http://www.cloudifysource.org)  
+**License**:      Apache 2.0   
+**Build**: http://repository.cloudifysource.org/org/cloudifysource/2.1.1/gigaspaces-cloudify-2.1.1-ga-b1396-361.zip  
+**Linux* sudoer permissions**:	Mandatory  
+**Windows* Admin permissions**:  Not required    
+**Release Date**: June 28th 2012  
+
+
+Tested on:
+--------
+
+* <strong>localCloud</strong>: Windows 7 and CentOs 
+* <strong>EC2</strong>: Ubuntu and CentOs 
+* <strong>OpenStack</strong>: CentOs 
+* <strong>Rackspace</strong>: CentOs 
+
+We disable the requiretty flag in /etc/sudoers on the installed VMs, so that Cloudify will be able to invoke remote ssh commands as a sudoer. This feature will be a part of Cloudify in the near future.
+Until then, please use the [Cloud Drivers Repository](https://github.com/CloudifySource/cloudify-cloud-drivers).
+
+Synopsis
+--------
+
 This folder contains a service recipe for Apache load balancer.
 
 Its default port is 8090, but it can be modified in the apacheLB-service.properties.
@@ -16,6 +44,9 @@ You need to add a <strong>postStart</strong> lifecycle event to each service tha
 You need to add a  <strong>postStop</strong> lifecycle event to each service that you want its instances to be able to remove themselves from the load balancer.
 
 <pre><code>
+
+	def ctxPath=("default" == context.applicationName)?"":"${context.applicationName}"
+
 	lifecycle {
 
 		install "myService_install.groovy"
@@ -23,14 +54,16 @@ You need to add a  <strong>postStop</strong> lifecycle event to each service tha
 		....
 	    ...
 		def instanceID = context.instanceId
+		
+					
 		postStart {			
 			def apacheService = context.waitForService("apacheLB", 180, TimeUnit.SECONDS)
-			apacheService.invoke("addNode", "http://" + InetAddress.getLocalHost().getHostAddress() + ":" + port+"/applicationName", instanceID as String)
+			apacheService.invoke("addNode", "http://${InetAddress.localHost.hostAddress}:${port}/${ctxPath}" as String, instanceID as String)
 		}
 		
 		postStop {			
 			def apacheService = context.waitForService("apacheLB", 180, TimeUnit.SECONDS)
-			apacheService.invoke("removeNode", "http://" + InetAddress.getLocalHost().getHostAddress() + ":" + port+"/applicationName", instanceID as String)			
+			apacheService.invoke("removeNode", "http://${InetAddress.localHost.hostAddress}:${port}/${ctxPath}" as String, instanceID as String)			
 		}		
 	}
 </pre></code>
