@@ -25,8 +25,8 @@ import org.cloudifysource.dsl.context.ServiceContextFactory
    The following will fire 35000 requests on http://LB_IP_ADDRESS:LB_PORT/ with 100 concurrent requests each time:
      invoke apacheLB load 35000 100
 
-   The following will fire 20000 requests on http://LB_IP_ADDRESS:LB_PORT/petclinic-mongo with 240 concurrent requests each time: 
-     invoke apacheLB load 20000 240 petclinic-mongo
+   The following will fire 20000 requests on http://LB_IP_ADDRESS:LB_PORT/petclinic with 240 concurrent requests each time: 
+     invoke apacheLB load 20000 240 petclinic
 */
 
 config = new ConfigSlurper().parse(new File("apacheLB-service.properties").toURL())
