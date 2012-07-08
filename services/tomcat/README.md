@@ -40,13 +40,6 @@ The full path from which your application war file should be downloaded, needs t
 For example:
 applicationWarUrl = "http://repository.cloudifysource.org/org/cloudifysource/2.0.0/petclinic-mongo-example.war"
 
-
-The relative path to your application needs to be set in the appFolder property in tomcat-service.properties.
-
-For example:
-appFolder = "petclinic-mongo"
-
-
 If the application that you deploy on this service, requires a database, you need to set the db's properties in the tomcat-service.properties: 
 The following three properties need to be set: 
 * dbServiceName="NO_DB_REQUIRED"
