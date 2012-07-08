@@ -19,7 +19,7 @@ webapp_dir = ::File.join(node["tomcat"]["webapp_dir"], "travel")
 
 remote_file tarball  do
   #source "http://repository.cloudifysource.org/org/cloudifysource/2.0.0/travel-mongo-example.war"
-  source "http://dl.dropbox.com/u/5682483/travel.war"
+  source "http://s3.amazonaws.com/gigaspaces-repository/org/cloudifysource/sample-apps/travel.war"
   checksum "a7325aa316663cd2b9c4bf8d964114b50da889216f83c6be9fcc2405ca837096"
   mode "0644"
   action :create

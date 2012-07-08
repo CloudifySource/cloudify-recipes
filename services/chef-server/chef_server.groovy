@@ -16,11 +16,6 @@ bootstrap.runSolo([
             "version": "0.10.8"
         ]
     ],
-    "chef_packages": [
-        "chef": [
-            "version": "0.10.8"
-        ]
-    ],
     "run_list": ["recipe[build-essential]", "recipe[chef-server::rubygems-install]", "recipe[chef-server::apache-proxy]" ]
 ])
 
