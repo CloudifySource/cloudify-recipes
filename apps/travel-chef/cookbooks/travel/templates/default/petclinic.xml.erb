@@ -1,6 +1,0 @@
-<Context docBase="/opt/petclinic/petclinic.war" >
-  <Resource name="jdbc/petclinic" auth="Container" type="javax.sql.DataSource"
-    maxActive="20" maxIdle="15" maxWait="10000"
-    username="<%= @mysql_user %>" password="<%= @mysql_password %>" driverClassName="com.mysql.jdbc.Driver"
-    url="jdbc:mysql://<%= @mysql_host %>:3306/petclinic"/>
-</Context>

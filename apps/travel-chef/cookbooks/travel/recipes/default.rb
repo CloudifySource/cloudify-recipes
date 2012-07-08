@@ -10,17 +10,17 @@
 include_recipe "travel::common"
 include_recipe "tomcat"
 
-directory "/opt/travel" do
+directory node["travel"]["war_directory"] do
   mode "0755"
 end
 
-tarball = "/opt/travel/travel.war"
+tarball = ::File.join(node["travel"]["war_directory"], node["travel"]["war_name")
 webapp_dir = ::File.join(node["tomcat"]["webapp_dir"], "travel")
 
 remote_file tarball  do
   #source "http://repository.cloudifysource.org/org/cloudifysource/2.0.0/travel-mongo-example.war"
-  source "http://s3.amazonaws.com/gigaspaces-repository/org/cloudifysource/sample-apps/travel.war"
-  checksum "a7325aa316663cd2b9c4bf8d964114b50da889216f83c6be9fcc2405ca837096"
+  source node["travel"]["war_url"]
+  checksum node["travel"]["war_checksum"]
   mode "0644"
   action :create
   notifies :run, "execute[unzip -o #{tarball} -d #{webapp_dir}]", :immediately
@@ -34,6 +34,8 @@ end
 mysql_host = search(:node, "role:mysql").first.ipaddress
 template ::File.join(webapp_dir, "WEB-INF", "classes", "jdbc.properties") do
   mode "0644"
-  variables :mysql_host => mysql_host, :mysql_password => "test", :mysql_user => "travel"
+  variables :mysql_host => mysql_host,
+            :mysql_password => node["travel"]["db_pass"],
+            :mysql_user => node["travel"]["db_user"]
   notifies :restart, "service[tomcat]"
 end
