@@ -31,4 +31,4 @@ Cloudify Documentation:
 * http://www.cloudifysource.org/guide
 
 Cloudify Users Forums: 
-* http://forum.cloudifysource.org
+* http://forums.cloudifysource.org
