@@ -120,7 +120,7 @@ Chef::Log::Formatter.show_time = true
     def runSolo(ArrayList runList) {
         runSolo(runListToInitialJson(runList))
     }
-    def runSolo(HashMap initJson=[:]) {
+    def runSolo(HashMap initJson=[:], cookbooksUrl=null) {
         def soloConf = new File([context.getServiceDirectory(), "solo.rb"].join(File.separator)).text =
         """
 file_cache_path "/tmp/chef-solo"
@@ -130,7 +130,8 @@ cookbook_path "/tmp/chef-solo/cookbooks"
         assert ! chef_solo.isEmpty()
         def jsonFile = new File(pathJoin(context.getServiceDirectory(), "bootstrap_server.json"))
         jsonFile.text = JsonOutput.toJson(initJson)
-        sudo("""${chef_solo} -c ${context.getServiceDirectory()}/solo.rb -j ${jsonFile} -r ${chefConfig.bootstrapCookbooksUrl}""")
+        cookbooksUrl = cookbooksUrl ?: chefConfig.bootstrapCookbooksUrl
+        sudo("""${chef_solo} -c ${context.getServiceDirectory()}/solo.rb -j ${jsonFile} -r ${cookbooksUrl}""")
     }
     def runListToInitialJson(ArrayList runList) {
         def initJson = [:]
