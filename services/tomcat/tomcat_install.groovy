@@ -4,6 +4,7 @@ def config = new ConfigSlurper().parse(new File("tomcat-service.properties").toU
 def context = ServiceContextFactory.getServiceContext()
 def instanceID = context.getInstanceId()
 
+def ctxPath=("default" == context.applicationName)?"":"${context.applicationName}"
 
 println "tomcat_install.groovy: Installing tomcat..."
 
@@ -37,7 +38,7 @@ if ( warUrl != null && "${warUrl}" != "" ) {
 		echo(message:"Getting ${warUrl} to ${applicationWar} ...")
 		get(src:"${warUrl}", dest:"${applicationWar}", skipexisting:false)
 		echo(message:"Copying ${applicationWar} to ${home}/webapps ...")
-		copy(tofile: "${home}/webapps/${context.applicationName}.war", file:"${applicationWar}", overwrite:true)
+		copy(tofile: "${home}/webapps/${ctxPath}.war", file:"${applicationWar}", overwrite:true)
 	}
 }
 

@@ -4,10 +4,10 @@
 **Description**: Apache Load Balancer  
 **Maintainer**:       Cloudify  
 **Maintainer email**: cloudifysource@gigaspaces.com  
-**Contributors**:    N/A    
+**Contributors**:    [tamirko](https://github.com/tamirko)  
 **Homepage**:   [http://www.cloudifysource.org](http://www.cloudifysource.org)  
 **License**:      Apache 2.0   
-**Build**: https://s3.amazonaws.com/gigaspaces-repository/org/cloudifysource/2.1.1/gigaspaces-cloudify-2.1.1-m2-b1396.zip  
+**Build**: http://repository.cloudifysource.org/org/cloudifysource/2.1.1/gigaspaces-cloudify-2.1.1-ga-b1396-361.zip  
 **Linux* sudoer permissions**:	Mandatory  
 **Windows* Admin permissions**:  Not required    
 **Release Date**: June 28th 2012  
@@ -19,8 +19,10 @@ Tested on:
 * <strong>localCloud</strong>: Windows 7 and CentOs 
 * <strong>EC2</strong>: Ubuntu and CentOs 
 * <strong>OpenStack</strong>: CentOs 
+* <strong>Rackspace</strong>: CentOs 
 
-
+We disable the requiretty flag in /etc/sudoers on the installed VMs, so that Cloudify will be able to invoke remote ssh commands as a sudoer. This feature will be a part of Cloudify in the near future.
+Until then, please use the [Cloud Drivers Repository](https://github.com/CloudifySource/cloudify-cloud-drivers).
 
 Synopsis
 --------
@@ -42,6 +44,9 @@ You need to add a <strong>postStart</strong> lifecycle event to each service tha
 You need to add a  <strong>postStop</strong> lifecycle event to each service that you want its instances to be able to remove themselves from the load balancer.
 
 <pre><code>
+
+	def ctxPath=("default" == context.applicationName)?"":"${context.applicationName}"
+
 	lifecycle {
 
 		install "myService_install.groovy"
@@ -49,14 +54,16 @@ You need to add a  <strong>postStop</strong> lifecycle event to each service tha
 		....
 	    ...
 		def instanceID = context.instanceId
+		
+					
 		postStart {			
 			def apacheService = context.waitForService("apacheLB", 180, TimeUnit.SECONDS)
-			apacheService.invoke("addNode", "http://${InetAddress.localHost.hostAddress}:${port}/${context.applicationName}" as String, instanceID as String)
+			apacheService.invoke("addNode", "http://${InetAddress.localHost.hostAddress}:${port}/${ctxPath}" as String, instanceID as String)
 		}
 		
 		postStop {			
 			def apacheService = context.waitForService("apacheLB", 180, TimeUnit.SECONDS)
-			apacheService.invoke("removeNode", "http://${InetAddress.localHost.hostAddress}:${port}/${context.applicationName}" as String, instanceID as String)			
+			apacheService.invoke("removeNode", "http://${InetAddress.localHost.hostAddress}:${port}/${ctxPath}" as String, instanceID as String)			
 		}		
 	}
 </pre></code>
@@ -91,8 +98,8 @@ The following will fire 35000 requests on http://LB_IP_ADDRESS:LB_PORT/ with 100
    <strong>invoke apacheLB load 35000 100</strong>
 
 
-The following will fire 20000 requests on http://LB_IP_ADDRESS:LB_PORT/petclinic-mongo with 240 concurrent requests each time:
-   <strong>invoke apacheLB load 20000 240 petclinic-mongo</strong>
+The following will fire 20000 requests on http://LB_IP_ADDRESS:LB_PORT/petclinic with 240 concurrent requests each time:
+   <strong>invoke apacheLB load 20000 240 petclinic</strong>
 
 
 
