@@ -29,7 +29,7 @@ service {
 			def currPublicIP
 			
 			if (  context.isLocalCloud()  ) {
-				currPublicIP =InetAddress.getLocalHost().getHostAddress()
+				currPublicIP = InetAddress.localHost.hostAddress
 			}
 			else {
 				currPublicIP =System.getenv()["CLOUDIFY_AGENT_ENV_PUBLIC_IP"]
@@ -76,7 +76,7 @@ service {
 	customCommands ([
 		"addNode" : "apacheLB_addNode.groovy",
 		"removeNode" : "apacheLB_removeNode.groovy",
-		"load" : "apacheLB-load.groovy"
+		"load" : "apacheLB-load.groovy"		
 	])
 	
 	
