@@ -30,9 +30,11 @@ service {
     lifecycle {
     	start "app_install.groovy"
 
-		startDetection {
-			ServiceUtils.isPortOccupied(8080)
+        startDetectionTimeoutSecs 600
+        startDetection {
+			ServiceUtils.arePortsOccupied([8080, 11099])
 		}
+
 		stopDetection {
 			!(ServiceUtils.isPortOccupied(8080))
 		}

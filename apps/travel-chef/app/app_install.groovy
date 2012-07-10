@@ -29,6 +29,6 @@ ChefBootstrap.getBootstrap(
     validationCert: validationCert,
     context: context
 ).runClient([
-	"tomcat": ["java_options": "-Dcom.sun.management.jmxremote.port=11099 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false"],
+	"tomcat": ["java_options": "-Dcom.sun.management.jmxremote.port=11099 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false", "admin_pwd":"tomcat"],
     "run_list": ["role[${context.serviceName}]".toString()]
 ])
