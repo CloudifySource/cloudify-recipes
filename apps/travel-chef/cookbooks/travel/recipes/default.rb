@@ -14,7 +14,7 @@ directory node["travel"]["war_directory"] do
   mode "0755"
 end
 
-tarball = ::File.join(node["travel"]["war_directory"], node["travel"]["war_name")
+tarball = ::File.join(node["travel"]["war_directory"], node["travel"]["war_name"])
 webapp_dir = ::File.join(node["tomcat"]["webapp_dir"], "travel")
 
 remote_file tarball  do

@@ -1,15 +1,16 @@
 Feature: local spring MVC demo application
   The Spring Travel demo application should be fully functioning
 
+  Background: Browsing to our travel website
+    When I go to "http://localhost:8080/travel/"
+    
   Scenario: The main page comes up nicely
-    When I go to "http://localhost:8080/travel"
     Then I should see "Welcome to Spring Travel"
       And I should see "Start your Spring Travel experience"
       But I should not see "error"
 
   Scenario: The search works
-    When I go to "http://localhost:8080/travel"
-      And I follow "Start your Spring Travel experience"
+    When I follow "Start your Spring Travel experience"
     Then I should see "Search Hotels"
     When I fill in "searchString" with "hilton"
       And I submit the form named "searchCriteria"
@@ -17,8 +18,7 @@ Feature: local spring MVC demo application
       And I should see "Hilton Diagonal Mar"
 
   Scenario: Cannot book a hotel without logging in
-    When I go to "http://localhost:8080/travel"
-      And I follow "Start your Spring Travel experience"
+    When I follow "Start your Spring Travel experience"
     Then I should see "Search Hotels"
     When I fill in "searchString" with "Hilton Tel Aviv"
       And I submit the form named "searchCriteria"
@@ -29,8 +29,7 @@ Feature: local spring MVC demo application
     Then I should see "Login Information"
 
   Scenario: Cannot log in with bad credentials
-    When I go to "http://localhost:8080/travel"
-      And I follow "Login"
+    When I follow "Login"
     Then I should see "Login Information"
     When I fill in "j_username" with "keith"
       And I fill in "j_password" with "wrong password"
@@ -39,8 +38,7 @@ Feature: local spring MVC demo application
       But I should see "Your login attempt was not successful"
 
   Scenario: Can log in with the right credentials
-    When I go to "http://localhost:8080/travel"
-      And I follow "Login"
+    When I follow "Login"
     Then I should see "Login Information"
     When I fill in "j_username" with "keith"
       And I fill in "j_password" with "melbourne"
@@ -49,8 +47,7 @@ Feature: local spring MVC demo application
 
   Scenario: When logged in, can book a hotel
     #login
-    When I go to "http://localhost:8080/travel"
-      And I follow "Login"
+    When I follow "Login"
     Then I should see "Login Information"
     When I fill in "j_username" with "keith"
       And I fill in "j_password" with "melbourne"
