@@ -44,16 +44,16 @@ Feature: local spring MVC demo application
       And I fill in "j_password" with "melbourne"
       And I press "Login"
     Then I should see "Welcome, keith"
-
+    
   Scenario: When logged in, can book a hotel
-    #login
+    # login
     When I follow "Login"
     Then I should see "Login Information"
     When I fill in "j_username" with "keith"
       And I fill in "j_password" with "melbourne"
       And I press "Login"
     Then I should see "Welcome, keith"
-    #search
+    # search
     When I follow "Change Search"
     Then I should see "Search Hotels"
     When I fill in "searchString" with "Hilton Tel Aviv"
@@ -61,16 +61,20 @@ Feature: local spring MVC demo application
     Then I should see "Independence Park"
     When I follow "View Hotel"
     Then I should see "Nightly Rate:\s*210"
-    #booking (and then cancel)
+    # book the hotel
     When I press "Book Hotel"
     Then I should see "Check In"
-    When I fill in "creditCard" with "1234567812345678"
-      And I fill in "creditCardName" with "credit user"
-    #This fails due to a webrat issue with javascript, we'll need to find some hack or try it with selenium
-      And I press "proceed"
-    Then I should see "Confirm Booking Details"
-    When I press "Confirm"
+    # HACK warning: spring uses javascript that's too hard for webrat, so we post manualy
+    Then I POST to "/travel/hotels/booking?execution=e1s1" the data:
+         """
+         checkinDate=07-12-2012, checkoutDate=07-18-2012, beds=1, smoking=false, _amenities=on, creditCard=0123456701234567,
+         creditCardName=b, creditCardExpiryMonth=1, creditCardExpiryYear=1, _eventId_proceed=_eventId_proceed
+         """
+    Then I POST to "/travel/hotels/booking?execution=e1s2" the data:
+         """
+         _eventId_confirm=
+         """
     Then I should see "Current Hotel Bookings"
-      But I should not see "No bookings found"
-    When I press "Cancel"
-    Then I should see "No bookings found"
+      But I should see "Confirmation Number"
+    * I press "Cancel"
+    # TODO: hack around to click the exact same booking that I just made and verify that it's gone 
