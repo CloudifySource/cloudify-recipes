@@ -1,14 +1,14 @@
 # Pet Clinic 
 
 **Status**: Tested  
-**Description**: Pet Clinic Application on JBoss
+**Description**: Pet Clinic Application on JBoss  
 **Maintainer**:       Cloudify  
 **Maintainer email**: cloudifysource@gigaspaces.com  
 **Contributors**:    [tamirko](https://github.com/tamirko)  
 **Homepage**:   [http://www.cloudifysource.org](http://www.cloudifysource.org)  
 **License**:      Apache 2.0   
 **Build**: http://repository.cloudifysource.org/org/cloudifysource/2.1.1/gigaspaces-cloudify-2.1.1-ga-b1400.zip  
-**Linux* sudoer permissions**:	Not required  
+**Linux* sudoer permissions**:	Mandatory
 **Windows* Admin permissions**:  Required on Windows 7    
 **Release Date**: July 12th 2012  
 
