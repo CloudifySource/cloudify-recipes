@@ -25,7 +25,7 @@ def instanceID= args[1]
 
 def proxyBalancerFullPath = context.attributes.thisInstance["proxyBalancerPath"]
 
-println "addNode: About to remove ${node} instance (${instanceID}) to httpd-proxy-balancer.conf..."
+println "removeNode: About to remove ${node} instance (${instanceID}) to httpd-proxy-balancer.conf..."
 def proxyConfigFile = new File("${proxyBalancerFullPath}")
 			
 def routeStr=""

@@ -85,7 +85,13 @@ if( !isLinux ) {
 	else {	
 		println "apacheLB_postInstall.groovy: Not USING Stickysession ..."
 		proxyConfigText = proxyConfigText.replace("STICKYSESSION_PLACE_HOLDER","")
-	}	
+	}
+	
+	confFile = new File("install/conf/httpd.conf")
+	confFileText = confFile.text
+	println "apacheLB_postInstall.groovy: Replacing 8090 with ${config.currentPort} in httpd.conf..."
+	confFileText = confFileText.replace("8090", "${config.currentPort}")
+	confFile.text = confFileText
 }
 else {
 	println "apacheLB_postInstall.groovy: Looking for the path of ${proxyBalancerName} in ${context.serviceDirectory}/proxyBalancerPath ..."
