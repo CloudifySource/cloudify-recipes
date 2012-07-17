@@ -78,7 +78,6 @@ service {
 				/* else use the previous value of reqsPerSec */ 
 			}
 			
-			println "totalRequests,currDelta,reqsPerSec ${totalRequests},${currDelta},${reqsPerSec}"	
 			currMetrics.put("Requests Per Second",reqsPerSec)			
 									
 			return currMetrics

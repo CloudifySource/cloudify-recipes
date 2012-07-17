@@ -22,10 +22,3 @@ new AntBuilder().sequential {
 		arg value:"--command=:shutdown"
 	}
 }
-
-
-/* 
-In future versions it should be :
- jboss-cli.bat --controller=IP_ADDRESS:9999 --connect --command=:shutdown
- Also note that the jmxPort should be 9999 and not 1090, in the jboss-service.properties
-*/ 
