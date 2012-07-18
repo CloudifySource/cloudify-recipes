@@ -46,7 +46,7 @@ module Webrat
       if href =~ /^\?/
         @session.current_url + href
       elsif href !~ %r{^https?://} && (href !~ /^\//)
-        @session.current_url[-1] == "/" ? @session.current_url + href : "#{File.dirname(@session.current_url)}/#{href}"
+        @session.current_url[-1, 1] == "/" ? @session.current_url + href : "#{File.dirname(@session.current_url)}/#{href}"
       else
         href
       end
