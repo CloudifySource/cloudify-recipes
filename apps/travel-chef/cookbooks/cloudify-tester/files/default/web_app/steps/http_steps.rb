@@ -80,11 +80,17 @@ Then /^the (.*) ?request should fail/ do |_|
   success_code?.should be_false
 end
 
-Then /^the (.*) ?request should not be authorized/ do |_|
-  @error.should be_an_instance_of Mechanize::ResponseCodeError
-  %w(401 403).should include @error.response_code
+def str_to_hash(str) # helper function for the POST step
+  Hash[str.split(",").map {|pair|
+      k, v = pair.strip.split("=")
+      [k, v||""]
+  }]
 end
 
-Then /^(?:the request|I) should be redirected to "([^"]*?)"$/ do |redirect_url|
-  redirect?.should == true and response_location.should == redirect_url
-end
+Then /^I POST to "(.*)" the data:$/ do |path, data_pairs|
+  begin
+    visit(path, "post", str_to_hash(data_pairs))
+  rescue Exception => e
+    @error = e
+  end
+end 

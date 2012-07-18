@@ -1,3 +1,3 @@
-if node.platform_family == "debian"
+if node["platform_family"] == "debian"
   include_recipe "apt"
 end
