@@ -31,15 +31,15 @@ Create a directory for your application. In this tutorial, we will assume that y
 Apart from the manifest, apps/fluffy should contain the following subdirectories:
 *chef-server: extends the chef-server service and fetches the chef data. Copy this from the cloudify-recipes repository and change fetch_chef_data.sh to point at the repository where you plan to keep the published version of this application. Note that, unlike the case presented here, you can also keep the chef code in a completely separate repository (e.g. if the same chef codebase is used for non-cloudify deployments).
 *mysql: an basic cloudify service that does nothing much except to extend the basic chef service. You can copy the groovy file from cloudify-recipes.
-*webapp: A non-chef cloudify recipe - outside the scaope of this tutorial.
+*webapp: A non-chef cloudify recipe - outside the scope of this tutorial.
 *roles: will contain a ruby file defining each of the chef roles to be used by the services in our application. In this case it will have only a single file "mysql.rb" with the following contents:
     name "mysql"
     description "mysql master server"
     run_list "recipe[fluffy::mysql]"
     default_attributes "mysql" => { "bind_address" => "0.0.0.0" }
-*cookbooks: The chef cookbooks with the code that you need to flesh out the roles you defined. In our case, we will need a fluffy cookbook with a mysql recipe that depends on the mysql cookbook and defines our additional databases/users. You can copy this from cloudify-recipes and you can copy its dependencies from cloudify recipes or the opscode cookbooks repository.
+*cookbooks: The chef cookbooks with the code that you need to flesh out with the roles you defined. In our case, we will need a fluffy cookbook with a mysql recipe that depends on the mysql cookbook and defines our additional databases/users. You can copy this from cloudify-recipes and you can copy its dependencies from cloudify recipes or the opscode cookbooks repository.
 
-We are now ready to install the application. Launch the cloudify shell and bootstrap a cloud (e.g. "bootstrap-cloud ec2") and then install the application by running "install_application apps/fluffy".
+We are now ready to install the application. Launch the cloudify shell, bootstrap a cloud (e.g. "bootstrap-cloud ec2") and then install the application by running "install_application {relative path your local apps dir}/apps/fluffy".
 
-According to our application manifest the chef-server machine will be installed first and as the last part of its installation it will pull the chef cookbooks and roles as we defined in the chef-server service file "fetch_chef_data.sh" (this logic is incorporated as the postStart command "chef_server_loadCookbooks.sh", and is also available as a custom command to be rerun if/when the chef cookbooks are updated) . Afterwards, the fluffy mysql service will install chef and then run the chef_client with the role equal to the service's name (the role we defined in mysql.rb). The chef_run is also available as a custom command for later use (e.g. for updating configuration options).
+According to our application manifest the chef-server machine will be installed first and as the last part of its installation it will pull the chef cookbooks and roles as we defined in the chef-server service file "fetch_chef_data.sh" (this logic is incorporated as the postStart command "chef_server_loadCookbooks.sh", and is also available as a custom command to be rerun if/when the chef cookbooks are updated) . Afterwards, the fluffy mysql service will install chef and then run the chef client with the same role as the service's name (the role we defined in mysql.rb).
 
