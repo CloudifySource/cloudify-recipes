@@ -28,15 +28,10 @@ EOF
 $SUDO cp /etc/chef/webui.pem ~/.chef/chef-webui.pem
 $SUDO chown `whoami` ~/.chef/chef-webui.pem
 
-if [[ -d $HOME/cloudify-recipes/.git ]]; then
-    cd $HOME/cloudify-recipes; git pull origin master; cd -
-else
-    bash clone_cloudify_recipes.sh $HOME/cloudify-recipes
-fi
-
-[[ -r $HOME/cookbooks ]] || ln -s $HOME/cloudify-recipes/apps/travel-chef/cookbooks $HOME/cookbooks
+#the following script fetches the "cookbooks" and "roles" directories
+bash fetch_chef_data.sh $HOME
 
 knife cookbook upload -a
-for role in $HOME/cloudify-recipes/apps/travel-chef/roles/*.rb; do
+for role in $HOME/roles/*.rb; do
     knife role from file $role
 done
