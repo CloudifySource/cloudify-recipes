@@ -36,7 +36,7 @@ class ChefBootstrap {
             case ["Red Hat", "CentOS", "Fedora", "Amazon"]: cls = new RHELBootstrap(options); break
             case "SuSE":  cls = new SuSEBootstrap(options); break
             case "Win32": cls = new WindowsBootstrap(options); break
-            default: throw new Exception("Support for this OS is not implemented")
+            default: throw new Exception("Support for the OS #{os.getVendor()} is not implemented")
         }
         return cls
     }
@@ -83,8 +83,7 @@ class ChefBootstrap {
         sudo("gem install chef ${opts}")
     }
     def mkChefDirs() {
-        sudo("mkdir -p /etc/chef")
-        sudo("mkdir -p /var/chef /var/log/chef")
+        sudo("mkdir -p '/etc/chef' '/var/chef' '/var/log/chef'")
     }
     def configureClient() {
         mkChefDirs()
@@ -195,7 +194,7 @@ class DebianBootstrap extends ChefBootstrap {
     def binPath = "/usr/bin"
     def install_pkgs(List pkgs) {
         sudo("apt-get update")
-        sudo("apt-get install -y ${pkgs.join(" ")}", ["DEBIAN_FRONEND": "noninteractive", "DEBIAN_PRIORITY": "critical"])
+        sudo("apt-get install -y ${pkgs.join(" ")}", ["DEBIAN_FRONTEND": "noninteractive", "DEBIAN_PRIORITY": "critical"])
     }
     def pkgInstall() {
         sudoWriteFile("/etc/apt/sources.list.d/opscode.list", """
@@ -213,7 +212,7 @@ class RHELBootstrap extends ChefBootstrap {
     def rubyPkgs = ["ruby", "ruby-devel", "ruby-shadow", "gcc", "gcc-c++", "automake", "autoconf", "make", "curl", "dmidecode"]
     def binPath = "/usr/bin"
     def install(options) {
-        if (os.getVendor() == "CentOS" || os.getVendor() == "Red Hat") {
+        if (os.getVendor() in ["CentOS", "Red Hat"]) {
             def shortVersion = os.getVendorVersion().tokenize(".")[0]
             if (shortVersion.toInteger() < 6) { 
                 sudo("wget -O /etc/yum.repos.d/aegisco.repo http://rpm.aegisco.com/aegisco/el5/aegisco.repo")
