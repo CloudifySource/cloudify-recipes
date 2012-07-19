@@ -83,16 +83,18 @@ service {
 			def totalRequests = currMetrics["Total Requests Count"] as long
 			
 			/* 
-			   The "Total Requests Count" metric is retrieved from the JMX and since we want to display
-			   the requests per second in the Web UI, we calculate it here,in the monitors section.
-               The calculation of "requests per second" is based on the time and the "Total Requests Count" metric value from the JMX.
+			   The "Total Requests Count" metric is retrieved from the JMX 
+			   and since we want to use it in the Scaling Rules Mechanism 
+			   and display the requests per second in the Web UI, we calculate it here, in the monitors section.
+               The calculation of "Requests Per Second" is based on the time 
+			   and the "Total Requests Count" metric value from the JMX.
 			*/
 				
 			if ( prevTimeStamp == 0 ) {
-				prevTimeStamp = new Date().getTime();				
+				prevTimeStamp =System.currentTimeMillis();			
 			}
 						
-			currTimeStamp =new Date().getTime();			
+			currTimeStamp =System.currentTimeMillis()			
 			def currDiffInSecs = (currTimeStamp-prevTimeStamp)/1000
 			def currDelta = 0 
 									
@@ -228,15 +230,16 @@ service {
 
 	/* 
 	   Scaling rules : 
-		If your deployed JBoss receives more than fifty requests per second for a period of twenty seconds, 
+		If your deployed JBoss instance receives more than fifty requests per second for a period of twenty seconds, 
 		 then another Jboss service instance will be installed on the cloud and be added to a load balancer.
+		 
 	*/ 
 	scalingRules ([
 		scalingRule {
 
 			serviceStatistics {
-				metric "Total Requests Count"
-				statistics Statistics.maximumThroughput
+				metric "Requests Per Second"
+				statistics Statistics.averageOfAverages
 				movingTimeRangeInSeconds 20
 			}
 

@@ -28,7 +28,7 @@ class JmxMonitors {
 	def static connect(url) {	
 		println "JmxMonitors.connect: Using ${url}"
 		if (urlToConnection[url] == null)
-			urlToConnection[url] = JmxFactory.connect(new JmxUrl(url))
+			urlToConnection[url] = JmxFactory.connect(new JmxUrl(url)).MBeanServerConnection
 		return urlToConnection[url]
 	} 
 
@@ -36,8 +36,7 @@ class JmxMonitors {
 	/**
 	 * Get a JMX attribute
 	 */
-	def static getJMXAttribute(server, objectName, attributeName) {
-		def connection = server.MBeanServerConnection
+	def static getJMXAttribute(connection, objectName, attributeName) {		
 		String[] names = connection.queryNames(new ObjectName(objectName), null)
 		if (names.length > 0)
 				return (new GroovyMBean(connection, names[0]))[attributeName]
@@ -51,18 +50,16 @@ class JmxMonitors {
 	}
 	
 	def static getJmxMetrics(url,metricNamesToMBeansNames) {
-		def server = connect(url) 
+		def connection = connect(url) 
 		def metrics  = [:]
 	
 		metricNamesToMBeansNames.each{metricName,objectsArr->
 			def objectName=objectsArr[0]
 			def attributeName=objectsArr[1]
-			def currMetricValue = getJMXAttribute(server,objectName , attributeName) 		
+			def currMetricValue = getJMXAttribute(connection,objectName , attributeName) 		
 			metrics.put(metricName,currMetricValue)
 		}
-		
-		
-	//	server.close()
+	
 		return metrics
 	}	
 	
