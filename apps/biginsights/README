@@ -1,0 +1,16 @@
+BigInsights
+============
+* Status: Initiated
+* Description: BigInsights 1.4
+* Maintainer: Cloudify
+* Maintainer email: cloudifysource@gigaspaces.com
+* Contributors: yoramw
+* Homepage: http://www.cloudifysource.org
+* License: Apache 2.0
+* Linux* sudoer permissions: Required
+* Windows*: Not Supported
+* Release Date: July 11th 2012
+
+Tested on:
+==========
+OpenStack: CentOs
