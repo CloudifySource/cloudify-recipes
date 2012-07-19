@@ -13,6 +13,13 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 *******************************************************************************/
+
+/* 
+   This recipe enables users to install JBoss 7.1.0 on any cloud (you can configure it to deploy other JBoss versions by modifying the jboss-service.properties file).
+	
+*/
+
+
 import static JmxMonitors.*
 import java.util.concurrent.TimeUnit;
 
@@ -34,6 +41,13 @@ service {
 
 	lifecycle{
 	
+	
+		/* 
+			  The "Application URL" which is calculated here, will be displayed in Cloudify's Web UI in the JBoss service instance details panel.
+			  This will enable users to access the application directly at : 
+			    THIS_SERVICEINSTANCE_IP_ADDRESS:port/applicationName 
+		*/
+		
 		details {
 			def currPublicIP
 			
@@ -63,13 +77,16 @@ service {
 		def reqsPerSec = 0 		
 		
 		monitors {
-										
-			
-			     
+									
 			def jmxUrl = "service:jmx:remoting-jmx://127.0.0.1:${currJmxPort}"
 			def currMetrics = getJmxMetrics(jmxUrl,metricNamesToMBeansNames)
 			def totalRequests = currMetrics["Total Requests Count"] as long
 			
+			/* 
+			   The "Total Requests Count" metric is retrieved from the JMX and since we want to display
+			   the requests per second in the Web UI, we calculate it here,in the monitors section.
+               The calculation of "requests per second" is based on the time and the "Total Requests Count" metric value from the JMX.
+			*/
 				
 			if ( prevTimeStamp == 0 ) {
 				prevTimeStamp = new Date().getTime();				
@@ -209,7 +226,11 @@ service {
     scaleOutCooldownInSeconds 300	
 	samplingPeriodInSeconds 5
 
-	// Defines an automatic scaling rule based on "counter" metric value
+	/* 
+	   Scaling rules : 
+		If your deployed JBoss receives more than fifty requests per second for a period of twenty seconds, 
+		 then another Jboss service instance will be installed on the cloud and be added to a load balancer.
+	*/ 
 	scalingRules ([
 		scalingRule {
 
