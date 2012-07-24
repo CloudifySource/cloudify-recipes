@@ -67,7 +67,7 @@ Feature: local spring MVC demo application
     # HACK warning: spring uses javascript that's too hard for webrat, so we post manualy
     Then I POST to "/travel/hotels/booking?execution=e1s1" the data:
          """
-         checkinDate=07-12-2012, checkoutDate=07-18-2012, beds=1, smoking=false, _amenities=on, creditCard=0123456701234567,
+         checkinDate=01-01-9999, checkoutDate=01-02-9999, beds=1, smoking=false, _amenities=on, creditCard=0123456701234567,
          creditCardName=b, creditCardExpiryMonth=1, creditCardExpiryYear=1, _eventId_proceed=_eventId_proceed
          """
     Then I POST to "/travel/hotels/booking?execution=e1s2" the data:
@@ -77,4 +77,4 @@ Feature: local spring MVC demo application
     Then I should see "Current Hotel Bookings"
       But I should see "Confirmation Number"
     * I press "Cancel"
-    # TODO: hack around to click the exact same booking that I just made and verify that it's gone 
+    # TODO: hack around to click the exact same booking that I just made and verify that it's gone
