@@ -1,7 +1,7 @@
 # MySQL 
 
 **Status**: Tested  
-**Description**: MySQL
+**Description**: MySQL 
 **Maintainer**:       Cloudify  
 **Maintainer email**: cloudifysource@gigaspaces.com  
 **Contributors**:    [tamirko](https://github.com/tamirko)  
