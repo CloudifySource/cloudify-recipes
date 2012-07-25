@@ -12,5 +12,5 @@ else #first run
     git clone https://github.com/CloudifySource/cloudify-recipes.git $REPO_DIR
 fi
 
-[[ -r $HOME/cookbooks ]] || ln -s $TARGET_DIR/apps/travel-chef/cookbooks $COOKBOOK_DIR
-[[ -r $HOME/roles ]] || ln -s $TARGET_DIR/apps/travel-chef/roles $ROLE_DIR
+[[ -r $HOME/cookbooks ]] || ln -s $REPO_DIR/apps/travel-chef/cookbooks $COOKBOOK_DIR
+[[ -r $HOME/roles ]] || ln -s $REPO_DIR/apps/travel-chef/roles $ROLE_DIR
