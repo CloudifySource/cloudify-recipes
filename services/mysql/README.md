@@ -54,9 +54,9 @@ Examples :
    
 <pre><code>   
    /* In this case, dbName is a property which is defined in mysql-service.properties    
-      All the occurrences of MYSQLHOST in actionQuery, 
-	  will be replaced with the private IP address on which this service instance resides.   
-   */
+      a) All the occurrences of MYSQLHOST in actionQuery, 
+	  b) will be replaced with the private IP address on which this service instance resides.   
+   */ 
    [    
 		"actionType" : "mysqladmin",   
 		"actionQuery" : "create",  
@@ -67,8 +67,10 @@ Examples :
 </code></pre>  
 
 <pre><code>	
-	// In this case, dbUser and dbPassW are properties which are defined in mysql-service.properties   
-   // All the occurrences of MYSQLHOST in actionQuery, will be replaced with the private IP address on which this service instance resides	  
+	/* In this case, dbUser and dbPassW are properties which are defined in mysql-service.properties   
+       a) All the occurrences of MYSQLHOST in actionQuery, 
+	   b) will be replaced with the private IP address on which this service instance resides.   
+	*/  
 	[   
 		"actionType" : "mysql", 		  
 		"actionQuery" : "\"CREATE USER '${dbUser}'@'localhost' IDENTIFIED BY '${dbPassW}';\"",  
@@ -78,11 +80,12 @@ Examples :
 	]  
 </code></pre>  	
 <pre><code>	  
-   // In this case:  
-   //    dbName,currDBZip,currImportSql are properties which are defined in mysql-service.properties   
-   //    currDBZip is the local name of the zip file ( after download )  
-   //    currImportSql is the name of the sql file which is stored in currDBZip.   
-   /     All the occurrences of REPLACE_WITH_DB_NAME in currImportSql, will be replaced with ${dbName}    
+   /* In this case:  
+        a) dbName,currDBZip,currImportSql are properties which are defined in mysql-service.properties   
+        b) currDBZip is the local name of the zip file ( after download )  
+        c) currImportSql is the name of the sql file which is stored in currDBZip.   
+        d) All the occurrences of REPLACE_WITH_DB_NAME in currImportSql, will be replaced with ${dbName}   
+   */
    [   
 		"actionType" : "import",   
 		"importedZip" : "${currDBZip}",  
@@ -94,13 +97,14 @@ Examples :
 	]	
 </code></pre>	
 <pre><code>	
-   // In this case:  
-   //    dbName is a property which is defined in mysql-service.properties.  
-   //    if actionDbName is an empty string,  then --all-databases will be used  
-   //    actionArgs contain the flags that you want to use with this mysqldump command  
-   //    Do NOT database flags, because they will be set according to the actionDbName.  
-   //    So do NOT use the following  : --all-databases,-A,--databases  
-   //    Do NOT -u flag flags, because it will be set according to the actionUser  
+   /* In this case:  
+        a) dbName is a property which is defined in mysql-service.properties.  
+        b) If actionDbName is an empty string,  then --all-databases will be used. 
+        c) actionArgs contain the flags that you want to use with this mysqldump command  
+        d) Do NOT database flags, because they will be set according to the actionDbName.  
+           i.e: Do NOT use the following  : --all-databases,-A,--databases  
+        e) Do NOT -u flag flags, because it will be set according to the actionUser  
+   */
    [   
 		"actionType" : "mysqldump",   
 		"actionArgs" : "--add-drop-database -c --lock-all-tables -F",  
@@ -114,24 +118,23 @@ Examples :
 
 ## Custom Commands 
 
-#mysqldump - This custom command enables users to create a database snapshot (mysqldump).
+#mysqldump  
 
-Usage :  <strong>invoke mysql mysqldump actionUser dumpPrefix [dbName]</strong>
-Example: <strong>invoke mysql mysqldump root myPrefix_ myDbName</strong>
+This custom command enables users to create a database snapshot (mysqldump).  
+Usage :  <strong>invoke mysql mysqldump actionUser dumpPrefix [dbName]</strong>    
+Example: <strong>invoke mysql mysqldump root myPrefix_ myDbName</strong>  
 		
-#query - This custom command enables users to invoke an SQL statement.
-
-Usage :  <strong>invoke mysql query actionUser dbName query</strong>
-		
-Examples 
-
+#query  
+This custom command enables users to invoke an SQL statement.  
+Usage :  <strong>invoke mysql query actionUser dbName query</strong>  
+Examples: 
 1. If you want to update the users table in myDbName with the following statement : 
-<strong>update users set name='James' where uid=1</strong>
-   - then you need to run the following custom command : 
-<strong>invoke mysql query root myDbName \\"update users set name=\\'James\\' where uid=1\\"</strong>
+<strong>update users set name='James' where uid=1</strong> 
+   - then you need to run the following custom command :   
+<strong>invoke mysql query root myDbName \\"update users set name=\\'James\\' where uid=1\\"</strong>  
 
-2. If you want to insert a new user named Dan, into the users table in myDbName, and you need the following SQL statement:
-<strong>INSERT INTO users VALUES (17,'Dan','hisPassword','hisemail@his.com',0)</strong>
-  - then you need to run the following custom command : 
-<strong>invoke mysql query root tamirDB \\"INSERT INTO users VALUES \\(17,\\'Dan\\',\\'hisPassword\\',\\'hisemail@his.com\\',0\\)\\"</strong>
+2. If you want to insert a new user named Dan, into the users table in myDbName, and you need the following SQL statement:  
+<strong>INSERT INTO users VALUES (17,'Dan','hisPassword','hisemail@his.com',0)</strong>  
+  - then you need to run the following custom command :   
+<strong>invoke mysql query root tamirDB \\"INSERT INTO users VALUES \\(17,\\'Dan\\',\\'hisPassword\\',\\'hisemail@his.com\\',0\\)\\"</strong>  
 
