@@ -35,76 +35,79 @@ This is achieved thanks to the following  :
 
 1:	<strong>A Start Detection Query</strong> 
 
-In most of our recipes, we use something like : <strong>ServiceUtils.isPortOccupied(port)</strong>.
-In this case, it is usually NOT enough, because the port just means that the DB is up, but we also need the schema to be ready.
-So we added a <strong>startDetectionQuery</strong> property (to the properties file) in which you can insert an SQL query.
+In most of our recipes, we use something like : <strong>ServiceUtils.isPortOccupied(port)</strong>.  
+In this case, it is usually NOT enough, because the port just means that the DB is up, but we also need the schema to be ready.  
+So we added a <strong>startDetectionQuery</strong> property (to the properties file) in which you can insert an SQL query.  
 The service instance is alive only if the port is occupied AND the startDetectionQuery result is true.
 
 2:	<strong>Post Start Actions</strong>
 
-In the properties file you can insert an array of postStart commands (as many commands as you want).
-These post start commands will be invoked during the... postStart lifecycle event.
+In the properties file you can insert an array of postStart commands (as many commands as you want).  
+These post start commands will be invoked during the... postStart lifecycle event. 
 There are four types of postStart commands :  
 **a) mysqladmin** : for invoking any administrative command ( for example : creating a new DB )   
 **b) mysql**      : for invoking any SQL statement: insert, update, grant permissions etc.  
 **c) import**     : for importing a DB schema ( by providing a full URL of the zip file that contains the schema )  
 **d) mysqldump**  : for creating a db dump (snapshot)  
 
-ActionType can be one of the four following: mysqladmin,mysql,mysqldump or import
-   Examples :
+Examples :  
    
-   // In this case, dbName is a property which is defined in this properties file 
-   // All the occurrences of MYSQLHOST in actionQuery, will be replaced with the private IP address on which this service instance resides   
-   [  
-		"actionType" : "mysqladmin", 
-		"actionQuery" : "create" ,
-		"actionUser"  : "root",
-		"actionDbName" : "${dbName}",
-		"debugMsg" : "Creating db - Name  : ${dbName} ... "
-	] ,
-	
-	// In this case, dbUser and dbPassW are properties which are defined in this properties file 
-   // All the occurrences of MYSQLHOST in actionQuery, will be replaced with the private IP address on which this service instance resides	
-	[ 
-		"actionType" : "mysql", 		
-		"actionQuery" : "\"CREATE USER '${dbUser}'@'localhost' IDENTIFIED BY '${dbPassW}';\"",
-		"actionUser"  : "root",
-		"actionDbName" : "${dbName}",
-		"debugMsg" : "Creating db user ${dbUser} at localhost, passw ${dbPassW} in ${dbName} db... " 
-	],
-   
-   // In this case:
-   //    dbName,currDBZip,currImportSql are properties which are defined in this properties file 
-   //    currDBZip is the local name of the zip file ( after download )  
-   //    currImportSql is the name of the sql file which is stored in currDBZip. 
-   /     All the occurrences of REPLACE_WITH_DB_NAME in currImportSql, will be replaced with ${dbName}
-   [ 
-		"actionType" : "import", 
-		"importedZip" : "${currDBZip}",
-		"importedFile" : "${currImportSql}",
-		"importedFileUrl" : "http://dropbox/1/222/mysql.zip",
-		"actionUser"  : "root",
-		"actionDbName" : "${dbName}",
-		"debugMsg" : "Importing  to ${dbName} ..."
-	]	
-	
-   // In this case:
-   //    dbName is a property which is defined in this properties file.
-   //    if actionDbName is an empty string,  then --all-databases will be used
-   //    actionArgs contain the flags that you want to use with this mysqldump command
-   //    Do NOT database flags, because they will be set according to the actionDbName.
-   //    So do NOT use the following  : --all-databases,-A,--databases
-   //    Do NOT -u flag flags, because it will be set according to the actionUser
-   [ 
-		"actionType" : "mysqldump", 
-		"actionArgs" : "--add-drop-database -c --lock-all-tables -F",
-		"actionUser"  : "root",
-		"actionDbName" : "${dbName}",
-		"dumpPrefix" : "myDumpFile_",
-		"debugMsg" : "Invoking mysqldump ..." 
-	]	
-   
+<pre><code>   
+   In this case, dbName is a property which is defined in mysql-service.properties    
+   All the occurrences of MYSQLHOST in actionQuery, will be replaced with the private IP address on which this service instance resides    
+   [    
+		"actionType" : "mysqladmin",   
+		"actionQuery" : "create",  
+		"actionUser"  : "root",  
+		"actionDbName" : "${dbName}",  
+		"debugMsg" : "Creating db - Name  : ${dbName} ... "  
+	]  
+</code></pre>  
 
+<pre><code>	
+	// In this case, dbUser and dbPassW are properties which are defined in this properties file   
+   // All the occurrences of MYSQLHOST in actionQuery, will be replaced with the private IP address on which this service instance resides	  
+	[   
+		"actionType" : "mysql", 		  
+		"actionQuery" : "\"CREATE USER '${dbUser}'@'localhost' IDENTIFIED BY '${dbPassW}';\"",  
+		"actionUser"  : "root",  
+		"actionDbName" : "${dbName}",  
+		"debugMsg" : "Creating db user ${dbUser} at localhost, passw ${dbPassW} in ${dbName} db... "   
+	]  
+</code></pre>  	
+<pre><code>	  
+   // In this case:  
+   //    dbName,currDBZip,currImportSql are properties which are defined in this properties file   
+   //    currDBZip is the local name of the zip file ( after download )  
+   //    currImportSql is the name of the sql file which is stored in currDBZip.   
+   /     All the occurrences of REPLACE_WITH_DB_NAME in currImportSql, will be replaced with ${dbName}    
+   [   
+		"actionType" : "import",   
+		"importedZip" : "${currDBZip}",  
+		"importedFile" : "${currImportSql}",  
+		"importedFileUrl" : "http://dropbox/1/222/mysql.zip",  
+		"actionUser"  : "root",  
+		"actionDbName" : "${dbName}",  
+		"debugMsg" : "Importing  to ${dbName} ..."  
+	]	
+</code></pre>	
+<pre><code>	
+   // In this case:  
+   //    dbName is a property which is defined in this properties file.  
+   //    if actionDbName is an empty string,  then --all-databases will be used  
+   //    actionArgs contain the flags that you want to use with this mysqldump command  
+   //    Do NOT database flags, because they will be set according to the actionDbName.  
+   //    So do NOT use the following  : --all-databases,-A,--databases  
+   //    Do NOT -u flag flags, because it will be set according to the actionUser  
+   [   
+		"actionType" : "mysqldump",   
+		"actionArgs" : "--add-drop-database -c --lock-all-tables -F",  
+		"actionUser"  : "root",  
+		"actionDbName" : "${dbName}",  
+		"dumpPrefix" : "myDumpFile_",  
+		"debugMsg" : "Invoking mysqldump ..."   
+	]	
+</code></pre>
 
 
 ## Custom Commands 

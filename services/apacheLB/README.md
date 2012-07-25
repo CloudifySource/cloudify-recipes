@@ -66,7 +66,7 @@ You need to add a  <strong>postStop</strong> lifecycle event to each service tha
 			apacheService.invoke("removeNode", "http://${InetAddress.localHost.hostAddress}:${port}/${ctxPath}" as String, instanceID as String)			
 		}		
 	}
-</pre></code>
+</code></pre>  
 
 
 ## Load Testing
@@ -89,7 +89,7 @@ In order to test your application under load, you can use the "load" custom comm
 	  ...
 	  ...
 	}
-</pre></code>
+</code></pre>  
 
 Usage :
 
