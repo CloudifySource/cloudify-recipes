@@ -43,7 +43,7 @@ The service instance is alive only if the port is occupied AND the startDetectio
 2:	<strong>Post Start Actions</strong>
 
 In the properties file you can insert an array of postStart commands (as many commands as you want).  
-These post start commands will be invoked during the... postStart lifecycle event. 
+These post start commands will be invoked during the... postStart lifecycle event.    
 There are four types of postStart commands :  
 **a) mysqladmin** : for invoking any administrative command ( for example : creating a new DB )   
 **b) mysql**      : for invoking any SQL statement: insert, update, grant permissions etc.  
@@ -53,8 +53,10 @@ There are four types of postStart commands :
 Examples :  
    
 <pre><code>   
-   In this case, dbName is a property which is defined in mysql-service.properties    
-   All the occurrences of MYSQLHOST in actionQuery, will be replaced with the private IP address on which this service instance resides    
+   /* In this case, dbName is a property which is defined in mysql-service.properties    
+      All the occurrences of MYSQLHOST in actionQuery, 
+	  will be replaced with the private IP address on which this service instance resides.   
+   */
    [    
 		"actionType" : "mysqladmin",   
 		"actionQuery" : "create",  
@@ -65,7 +67,7 @@ Examples :
 </code></pre>  
 
 <pre><code>	
-	// In this case, dbUser and dbPassW are properties which are defined in this properties file   
+	// In this case, dbUser and dbPassW are properties which are defined in mysql-service.properties   
    // All the occurrences of MYSQLHOST in actionQuery, will be replaced with the private IP address on which this service instance resides	  
 	[   
 		"actionType" : "mysql", 		  
@@ -77,7 +79,7 @@ Examples :
 </code></pre>  	
 <pre><code>	  
    // In this case:  
-   //    dbName,currDBZip,currImportSql are properties which are defined in this properties file   
+   //    dbName,currDBZip,currImportSql are properties which are defined in mysql-service.properties   
    //    currDBZip is the local name of the zip file ( after download )  
    //    currImportSql is the name of the sql file which is stored in currDBZip.   
    /     All the occurrences of REPLACE_WITH_DB_NAME in currImportSql, will be replaced with ${dbName}    
@@ -93,7 +95,7 @@ Examples :
 </code></pre>	
 <pre><code>	
    // In this case:  
-   //    dbName is a property which is defined in this properties file.  
+   //    dbName is a property which is defined in mysql-service.properties.  
    //    if actionDbName is an empty string,  then --all-databases will be used  
    //    actionArgs contain the flags that you want to use with this mysqldump command  
    //    Do NOT database flags, because they will be set according to the actionDbName.  
