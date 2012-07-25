@@ -7,7 +7,7 @@
 **Contributors**:    [tamirko](https://github.com/tamirko)  
 **Homepage**:   [http://www.cloudifysource.org](http://www.cloudifysource.org)  
 **License**:      Apache 2.0   
-**Build**: [2.1.1 GA](http://repository.cloudifysource.org/org/cloudifysource/2.1.1/gigaspaces-cloudify-2.1.1-ga-b1400.zip) 
+**Build**:  [2.1.1 GA](http://repository.cloudifysource.org/org/cloudifysource/2.1.1/gigaspaces-cloudify-2.1.1-ga-b1400.zip)   
 **Linux* sudoer permissions**:	Mandatory  
 **Windows* Admin permissions**:  Not required    
 **Release Date**: July 25th 2012  
@@ -34,19 +34,21 @@ You can inherit and extend this recipe very easily, just by changing the mysql-s
 This is achieved thanks to the following  : 
 
 1.	A Start Detection Query
+
 In most of our recipes, we use something like : ServiceUtils.isPortOccupied(port).
 In this case, it is usually NOT enough, because the port just means that the DB is up, but we also need the schema to be ready.
-So I added a startDetectionQuery property (to the properties file) in which you can insert an SQL query.
+So we added a <strong>startDetectionQuery</strong> property (to the properties file) in which you can insert an SQL query.
 The service instance is alive only if the port is occupied AND the startDetectionQuery result is true.
 
-2.	Post Start Actions : 
+2.	Post Start Actions
+
 In the properties file you can insert an array of postStart commands (as many commands as you want).
 These post start commands will be invoked during the... postStart lifecycle event.
-There are four types of postStart commands : 
-a)	mysqladmin: for invoking any administrative command ( for example : creating a new DB ) 
-b)	mysql : for invoking any SQL statement: insert, update, grant permissions etc.
-c)	import : for importing a DB schema ( by providing a full URL of the zip file that contains the schema )
-d)  mysqldump : for creating a db dump (snapshot)
+There are four types of postStart commands :  
+**a)	<strong>mysqladmin</strong>: for invoking any administrative command ( for example : creating a new DB )   
+**b)	<strong>mysql</strong> : for invoking any SQL statement: insert, update, grant permissions etc.  
+**c)	<strong>import</strong> : for importing a DB schema ( by providing a full URL of the zip file that contains the schema )  
+**d)  <strong>mysqldump</strong> : for creating a db dump (snapshot)  
 
 ActionType can be one of the four following: mysqladmin,mysql,mysqldump or import
    Examples :
@@ -60,7 +62,6 @@ ActionType can be one of the four following: mysqladmin,mysql,mysqldump or impor
 		"actionDbName" : "${dbName}",
 		"debugMsg" : "Creating db - Name  : ${dbName} ... "
 	] ,
-	
 	
 	// In this case, dbUser and dbPassW are properties which are defined in this properties file 
    // All the occurrences of MYSQLHOST in actionQuery, will be replaced with the private IP address on which this service instance resides	
