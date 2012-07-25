@@ -138,5 +138,5 @@ Examples:
 2. If you want to insert a new user named Dan, into the users table in myDbName, and you need the following SQL statement:  
 <strong>INSERT INTO users VALUES (17,'Dan','hisPassword','hisemail@his.com',0)</strong>  
    then you need to run the following custom command :   
-<strong>invoke mysql query root tamirDB \\\"INSERT INTO users VALUES \\\(17,\\\'Dan\\\',\\\'hisPassword\\\',\\\'hisemail@his.com\\\',0\\\)\\\"</strong>  
+<strong>invoke mysql query root tamirDB \\\"INSERT INTO users VALUES \\\\(17,\\\'Dan\\\',\\\'hisPassword\\\',\\\'hisemail@his.com\\\',0\\\\)\\\"</strong>  
 
