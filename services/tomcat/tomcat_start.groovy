@@ -14,7 +14,12 @@ println "tomcat_start.groovy: tomcat(${instanceID}) home ${home}"
 def script= serviceContext.attributes.thisInstance["script"]
 println "tomcat_start.groovy: tomcat(${instanceID}) script ${script}"
 
-if ( "${config.dbServiceName}"!="NO_DB_REQUIRED" ) {
+if ( !(config.dbServiceName) ||  "${config.dbServiceName}"=="NO_DB_REQUIRED") {
+	println "Using dummy db host(DUMMY_HOST) and port(0)"
+	dbServiceHost="DUMMY_HOST"
+	dbServicePort="0"
+}
+else {
 	println "tomcat_start.groovy: waiting for ${config.dbServiceName}..."
 	def dbService = serviceContext.waitForService(config.dbServiceName, 20, TimeUnit.SECONDS) 
 	def dbInstances = dbService.waitForInstances(dbService.numberOfPlannedInstances, 60, TimeUnit.SECONDS) 
@@ -24,10 +29,6 @@ if ( "${config.dbServiceName}"!="NO_DB_REQUIRED" ) {
 	dbServicePort = dbServiceInstances[1].port
 	println "tomcat_start.groovy: ${config.dbServiceName} port is ${dbServicePort}"
 }
-else {
-	dbServiceHost="DUMMY_HOST"
-	dbServicePort="DUMMY_PORT"
-}	
 
 
 println "tomcat_start.groovy executing ${script}"
