@@ -20,7 +20,7 @@ service {
 	
 	name "mysql"
 
-	icon "mysql.jpg"
+	icon "mysql.png"
 	type "DATABASE"
 
 	lifecycle{
