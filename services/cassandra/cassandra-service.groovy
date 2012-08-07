@@ -16,7 +16,10 @@
 service {
   name "cassandra"
   icon "Apache-cassandra-icon.png"
+  elastic true
   numInstances 1
+  minAllowedInstances 1
+  maxAllowedInstances 3
   type "NOSQL_DB"
   lifecycle{
 		init 		"cassandra_install.groovy"
