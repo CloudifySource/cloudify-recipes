@@ -56,8 +56,11 @@ Set the **dbServiceName** property ONLY if your application uses a db.
    Example:
      For MySQL , use the following
     dbServiceName="mysql"
+	
 	 or for PostgreSQL (not supported -so u need to implement it your self) , use the following
-    dbServiceName="postgresql"
+    
+	dbServiceName="postgresql"
+	
    If your application doesn't required a db, leave this property as is (NO_DB_REQUIRED) or remove it.
 
 Set the **dbHost** property ONLY if your application uses a db which is NOT installed by Cloudify, 
