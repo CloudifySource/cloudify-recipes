@@ -36,19 +36,20 @@ Here are a few of them:
 
 **Context Path**: By modifying the applicationCtxPath, you can set the context path of your application.
 
-Your deployed application can then be accessed at http://DEPLOYED_APPLICATION_IP_ADDRESS:port/applicationCtxPath .
+Your deployed application can then be accessed at [http://DEPLOYED_APPLICATION_IP_ADDRESS:port/applicationCtxPath](http://DEPLOYED_APPLICATION_IP_ADDRESS:port/applicationCtxPath) .
 
-If you use a load balancer, you can access your application at http://LB_IP_ADDRESS:LB_PORT/applicationCtxPath.
+If you use a load balancer, you can access your application at [http://LB_IP_ADDRESS:LB_PORT/applicationCtxPath](http://LB_IP_ADDRESS:LB_PORT/applicationCtxPath).
 
-Known issue : Currently, when you access your application via http://LB_IP_ADDRESS:LB_PORT/applicationCtxPath, you get an error "Action not found". 
+Known issue : Currently, when you access your application via [http://LB_IP_ADDRESS:LB_PORT/applicationCtxPath](http://LB_IP_ADDRESS:LB_PORT/applicationCtxPath), you get an error "Action not found". 
 
-Until we fix it, please use http://DEPLOYED_APPLICATION_IP_ADDRESS:port/applicationCtxPath for access. 
-This doesn't prevent you from testing your application under load via the load balancer (http://LB_IP_ADDRESS:LB_PORT/applicationCtxPath).
+Until we fix it, please use [http://DEPLOYED_APPLICATION_IP_ADDRESS:port/applicationCtxPath](http://DEPLOYED_APPLICATION_IP_ADDRESS:port/applicationCtxPath) for access. 
+
+This doesn't prevent you from testing your application under load via the load balancer ([http://LB_IP_ADDRESS:LB_PORT/applicationCtxPath](http://LB_IP_ADDRESS:LB_PORT/applicationCtxPath)).
 We are working on solving this problem.
 
 **Production or dev**: If you set the productionMode to true, your application will be deployed in a prod mode, otherwise : dev. 
 **Database**: 
-Set the dbServiceName property ONLY if your application uses a db.
+Set the **dbServiceName** property ONLY if your application uses a db.
    Example:
      For MySQL , use the following
     dbServiceName="mysql"
@@ -75,11 +76,16 @@ Set the **applyEvolutions** property ONLY if your application uses a db and you 
 ## Custom Commands 
 
 **replace** - which enables users to replace a string in a file (relative to play home folder).
+
 Usage : <strong>invoke play replace all|first origString newString relativePath</strong> 
+
 **cmd** - which enables users to invoke *any* Play framework command line and up to 3 arguments. 
+
 Usage : <strong>invoke play cmd nameOfTheCommand [arg1] [arg2] [arg3]</strong> 
+
 **updateApp** : - which enables users to update their application
- - Usage : <strong>invoke play updateApp http://www.mynewapplication.zip</strong> 
+
+Usage : <strong>invoke play updateApp http://www.mynewapplication.zip</strong> 
 
 
 	
