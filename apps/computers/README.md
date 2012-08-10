@@ -34,7 +34,7 @@ The Computer database is a classic CRUD application, backed by a JDBC database. 
 * integrating with a CSS framework
 
 
-This recipe is comprised of five services:
+This recipe is comprised of three services:
 * [play](../../services/play/README.md) 
 * [mysql](../../services/mysql/README.md) 
 * [apacheLB](../../services/apacheLB/README.md) 
