@@ -25,7 +25,7 @@ Until then, please use the [Cloud Drivers Repository](https://github.com/Cloudif
 Synopsis
 --------
 
-This folder contains a service recipe for the [Computer database]http://www.playframework.org/documentation/2.0.1/Samples Play framework Sample application.
+This folder contains a service recipe for the [Computer database](http://www.playframework.org/documentation/2.0.1/Samples) Play framework Sample application.
 
 The Computer database is a classic CRUD application, backed by a JDBC database. It demonstrates:
 
