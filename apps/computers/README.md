@@ -29,9 +29,9 @@ This folder contains a service recipe for the [Computer database](http://www.pla
 
 The Computer database is a classic CRUD application, backed by a JDBC database. It demonstrates:
 
-    accessing a JDBC database, using Ebean in Java and Anorm in Scala
-    table pagination and CRUD forms
-    integrating with a CSS framework
+* accessing a JDBC database, using Ebean in Java and Anorm in Scala
+* table pagination and CRUD forms
+* integrating with a CSS framework
 
 
 This recipe is comprised of five services:
