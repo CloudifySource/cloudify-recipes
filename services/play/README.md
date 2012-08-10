@@ -35,9 +35,14 @@ Many attributes can be also be set in the play-service.properties.
 Here are a few of them:
 
 **Context Path**: By modifying the applicationCtxPath, you can set the context path of your application.
-You deployed application can then be accessed at http://DEPLOYED_APPLICATION_IP_ADDRESS:port/applicationCtxPath 
+
+Your deployed application can then be accessed at http://DEPLOYED_APPLICATION_IP_ADDRESS:port/applicationCtxPath .
+
 If you use a load balancer, you can access your application at http://LB_IP_ADDRESS:LB_PORT/applicationCtxPath.
-Known issue : Currently, when you access your application via http://LB_IP_ADDRESS:LB_PORT/applicationCtxPath, you get an error "Action not found". Until we fix it, please use http://DEPLOYED_APPLICATION_IP_ADDRESS:port/applicationCtxPath for access. 
+
+Known issue : Currently, when you access your application via http://LB_IP_ADDRESS:LB_PORT/applicationCtxPath, you get an error "Action not found". 
+
+Until we fix it, please use http://DEPLOYED_APPLICATION_IP_ADDRESS:port/applicationCtxPath for access. 
 This doesn't prevent you from testing your application under load via the load balancer (http://LB_IP_ADDRESS:LB_PORT/applicationCtxPath).
 We are working on solving this problem.
 
@@ -51,17 +56,17 @@ Set the dbServiceName property ONLY if your application uses a db.
     dbServiceName="postgresql"
    If your application doesn't required a db, leave this property as is (NO_DB_REQUIRED) or remove it.
 
-Set the dbHost property ONLY if your application uses a db which is NOT installed by Cloudify, 
+Set the **dbHost** property ONLY if your application uses a db which is NOT installed by Cloudify, 
    otherwise leave is (DB_INSTALLED_BY_CLOUDIFY) or remove it.
    If the db is installed by Cloudify, then Cloudify will calculate it.
    This property is used only if you set the dbServiceName property.
 
-Set the dbPort property ONLY if your application uses a db which is NOT installed by Cloudify, 
+Set the **dbPort** property ONLY if your application uses a db which is NOT installed by Cloudify, 
    otherwise leave is (DB_INSTALLED_BY_CLOUDIFY) or remove it.
    If the db is installed by Cloudify, then Cloudify will calculate it.
    This property is used only if you set the dbServiceName property.
 
-Set the applyEvolutions property ONLY if your application uses a db and you want the play framework to... apply your database's evolutions(1.sql, 2.sql etc.)
+Set the **applyEvolutions** property ONLY if your application uses a db and you want the play framework to... apply your database's evolutions(1.sql, 2.sql etc.)
    This property is used only if you set the dbServiceName property.
 
 
