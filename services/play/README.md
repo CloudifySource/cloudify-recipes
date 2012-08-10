@@ -4,7 +4,7 @@
 **Description**:  Play Framework   
 **Maintainer**:       Cloudify  
 **Maintainer email**: cloudifysource@gigaspaces.com  
-**Contributors**:  Adam Lavie[https://github.com/adaml]  [Eitan Yanovsky]https://github.com/eitany [tamirko](https://github.com/tamirko)  
+**Contributors**:  [Adam Lavie]https://github.com/adaml  [Eitan Yanovsky]https://github.com/eitany [tamirko](https://github.com/tamirko)  
 **Homepage**:   [http://www.cloudifysource.org](http://www.cloudifysource.org)  
 **License**:      Apache 2.0   
 **Build**:  [Cloudify 2.2.0 M2](http://repository.cloudifysource.org/org/cloudifysource/2.2.0/gigaspaces-cloudify-2.2.0-m2-b2491.zip)   
@@ -23,6 +23,7 @@ Synopsis
 --------
 
 This folder contains a service recipe for the Play Framework.
+
 *Play framework* is an open source web application framework, written in Scala and Java, which follows the model-view-controller architectural pattern. 
 It aims to optimize developer productivity by using convention over configuration, hot code reloading and display of errors in the browser.
 
