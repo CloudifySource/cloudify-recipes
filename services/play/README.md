@@ -48,8 +48,11 @@ This doesn't prevent you from testing your application under load via the load b
 We are working on solving this problem.
 
 **Production or dev**: If you set the productionMode to true, your application will be deployed in a prod mode, otherwise : dev. 
+
 **Database**: 
+
 Set the **dbServiceName** property ONLY if your application uses a db.
+
    Example:
      For MySQL , use the following
     dbServiceName="mysql"
