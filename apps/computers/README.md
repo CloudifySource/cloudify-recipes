@@ -1,7 +1,7 @@
 # Computer database
 
 **Status**: Tested  
-**Description**: Computer database 
+**Description**: Computer database  
 **Maintainer**:       Cloudify  
 **Maintainer email**: cloudifysource@gigaspaces.com  
 **Contributors**:  [Adam Lavie](https://github.com/adaml) , [Eitan Yanovsky](https://github.com/eitany) and [tamirko](https://github.com/tamirko)  
