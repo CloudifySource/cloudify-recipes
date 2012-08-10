@@ -57,7 +57,7 @@ Example:
 
 For MySQL , use the following: **dbServiceName="mysql"** . 
 
-For PostgreSQL (not supported -so u need to implement it your self) , use the following: **dbServiceName="postgresql"**
+For PostgreSQL (not supported , so u need to implement it your self) , use the following: **dbServiceName="postgresql"**
 	
 If your application doesn't required a db, leave this property as is (NO_DB_REQUIRED) or remove it.
 
@@ -79,15 +79,15 @@ Set the **applyEvolutions** property ONLY if your application uses a db and you 
 
 ## Custom Commands 
 
-**replace** - which enables users to replace a string in a file (relative to play home folder).
+**1. replace** - which enables users to replace a string in a file (relative to play home folder).
 
 Usage : <strong>invoke play replace all|first origString newString relativePath</strong> 
 
-**cmd** - which enables users to invoke *any* Play framework command line and up to 3 arguments. 
+**2. cmd** - which enables users to invoke *any* Play framework command line and up to 3 arguments. 
 
 Usage : <strong>invoke play cmd nameOfTheCommand [arg1] [arg2] [arg3]</strong> 
 
-**updateApp** : - which enables users to update their application
+**3. updateApp** : - which enables users to update their application
 
 Usage : <strong>invoke play updateApp http://www.mynewapplication.zip</strong> 
 
