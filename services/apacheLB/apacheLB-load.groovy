@@ -14,7 +14,6 @@
 * limitations under the License.
 *******************************************************************************/
 import org.hyperic.sigar.OperatingSystem
-import org.cloudifysource.usm.USMUtils
 import org.cloudifysource.dsl.context.ServiceContextFactory
 
 

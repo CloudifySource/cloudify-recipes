@@ -14,13 +14,13 @@
 * limitations under the License.
 *******************************************************************************/
 import org.hyperic.sigar.OperatingSystem
-import org.cloudifysource.usm.USMUtils
+import org.cloudifysource.dsl.utils.ServiceUtils;
 import org.cloudifysource.dsl.context.ServiceContextFactory
 
 context = ServiceContextFactory.getServiceContext()
 config = new ConfigSlurper().parse(new File("apacheLB-service.properties").toURL())
 
-osConfig = USMUtils.isWindows() ? config.win32 : config.linux
+osConfig = ServiceUtils.isWindows() ? config.win32 : config.linux
 
 downloadFile="${config.downloadFolder}/{$osConfig.zipName}"
 
