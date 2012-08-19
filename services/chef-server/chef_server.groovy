@@ -8,8 +8,6 @@ bootstrap.runSolo([
     "chef_server": [
         "server_url": "http://localhost:8080",
         "init_style": "runit"
-//        "proxy": ["api_port": 443], 
-//        "api_port": 8080
     ],
     "chef_packages": [
         "chef": [
@@ -20,6 +18,9 @@ bootstrap.runSolo([
 ])
 
 
-// eventually we will want to use a global attribute
-context.attributes.thisApplication["chef_validation.pem"] = sudoReadFile("/etc/chef/validation.pem")
+//setting the global attributes to be available for all chef clients  
+def privateIp = System.getenv()["CLOUDIFY_AGENT_ENV_PRIVATE_IP"]
+def serverUrl = "http://${privateIp}:4000" as String
+context.attributes.global["chef_validation.pem"] = sudoReadFile("/etc/chef/validation.pem")
+context.attributes.global["chef_server_url"] = serverUrl
 

@@ -22,7 +22,7 @@ service {
 	icon "chef.png"
 	numInstances 1
     compute {
-        template "MEDIUM_LINUX_CHEF_SERVER"
+        template "MEDIUM_LINUX"
     }
 	lifecycle{
         start "chef_server.groovy"

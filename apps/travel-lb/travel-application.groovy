@@ -27,6 +27,5 @@ application {
 	service {
 		name = "tomcat"
 		dependsOn = ["cassandra","apacheLB"]
-	}
-	
+	}	
 }

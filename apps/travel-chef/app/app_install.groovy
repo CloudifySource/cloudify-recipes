@@ -17,10 +17,16 @@
 import org.cloudifysource.dsl.context.ServiceContextFactory
 import java.util.concurrent.TimeUnit
 
+
 def context = ServiceContextFactory.getServiceContext()
-def chef_server_service = context.waitForService("chef-server", 20, TimeUnit.SECONDS)
-def chefServerURL = "http://${chef_server_service.instances[0].hostName}:4000".toString()
-def validationCert = context.attributes.thisApplication["chef_validation.pem"]
+def chefServerURL = context.attributes.global["chef_server_url"]
+def validationCert = context.attributes.global["chef_validation.pem"]
+
+if (chefServerURL == null) {
+    println "Cannot find a chef server URL in global attribtue \"chef_server_url\", aborting"
+    System.exit(1)
+}
+
 
 println "Using Chef server URL: ${chefServerURL}"
 
