@@ -15,7 +15,7 @@
 *******************************************************************************/
 import org.cloudifysource.dsl.context.ServiceContextFactory
 import java.util.concurrent.TimeUnit
-import org.cloudifysource.usm.USMUtils
+import org.cloudifysource.dsl.utils.ServiceUtils;
 
 jbossMongoConfig = new ConfigSlurper().parse(new File("jboss-service.properties").toURL())
 
@@ -49,7 +49,7 @@ if (serviceContext.isLocalCloud()) {
 
 script = "${jbossMongoConfig.home}/bin/standalone"
 
-if(USMUtils.isWindows()) {
+if(ServiceUtils.isWindows()) {
 	println "jboss_start.groovy: Adding mongo port and host to ${script} .bat ..."
 	searchStr="set JAVA_OPTS="
 	standAloneFile = new File("${script}.bat") 

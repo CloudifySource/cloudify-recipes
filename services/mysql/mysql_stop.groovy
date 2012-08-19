@@ -13,12 +13,12 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 *******************************************************************************/
-import org.cloudifysource.usm.USMUtils
+import org.cloudifysource.dsl.utils.ServiceUtils;
 import org.cloudifysource.dsl.context.ServiceContextFactory
 
 
 config=new ConfigSlurper().parse(new File('mysql-service.properties').toURL())
-osConfig=USMUtils.isWindows() ? config.win64 : config.linux
+osConfig=ServiceUtils.isWindows() ? config.win64 : config.linux
 
 context = ServiceContextFactory.getServiceContext()
 

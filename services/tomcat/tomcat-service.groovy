@@ -114,7 +114,7 @@ service {
 				}				
 				
 				println "tomcat-service.groovy: privateIP is ${privateIP} ..."
-				def currURL="http://${privateIP}:${port}/${ctxPath}"
+				def currURL="http://${privateIP}:${currHttpPort}/${ctxPath}"
 				println "tomcat-service.groovy: About to remove ${currURL} from apacheLB ..."
 				apacheService.invoke("removeNode", currURL as String, instanceID as String)
 				println "tomcat-service.groovy: tomcat Post-stop ended"

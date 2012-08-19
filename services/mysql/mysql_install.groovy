@@ -14,7 +14,7 @@
 * limitations under the License.
 *******************************************************************************/
 import org.cloudifysource.dsl.context.ServiceContextFactory
-import org.cloudifysource.usm.USMUtils
+import org.cloudifysource.dsl.utils.ServiceUtils;
 import org.hyperic.sigar.OperatingSystem
 
 
@@ -39,7 +39,7 @@ def installWindowsMysql(config,osConfig,unzipDir,zipFullPath,builder) {
 }
 
 config=new ConfigSlurper().parse(new File('mysql-service.properties').toURL())
-osConfig=USMUtils.isWindows() ? config.win64 : config.linux
+osConfig=ServiceUtils.isWindows() ? config.win64 : config.linux
 
 context = ServiceContextFactory.getServiceContext()
 

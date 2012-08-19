@@ -14,7 +14,7 @@
 * limitations under the License.
 *******************************************************************************/
 import org.hyperic.sigar.OperatingSystem
-import org.cloudifysource.usm.USMUtils
+import org.cloudifysource.dsl.utils.ServiceUtils;
 import org.cloudifysource.dsl.context.ServiceContextFactory
 import static mysql_runner.*
 
@@ -30,7 +30,7 @@ import static mysql_runner.*
 */
 
 config=new ConfigSlurper().parse(new File('mysql-service.properties').toURL())
-osConfig=USMUtils.isWindows() ? config.win64 : config.linux
+osConfig=ServiceUtils.isWindows() ? config.win64 : config.linux
 context = ServiceContextFactory.getServiceContext()
 mysqlHost=context.attributes.thisInstance["dbHost"]
 binFolder=context.attributes.thisInstance["binFolder"]
