@@ -3,12 +3,13 @@ application {
 	
 	service {
 		name = "master"		
-		dependsOn = ["data","hbase"]
+		dependsOn = ["data"]
 	}		
 	service {
 		name = "data"
 	}
 	service {
-		name = "hbase"
+		name = "dataOnDemand"
+		dependsOn = ["master"]
 	}
 }
