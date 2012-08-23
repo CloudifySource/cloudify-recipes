@@ -28,8 +28,6 @@ service {
 	maxAllowedInstances 2
     
     lifecycle {
-    	start "app_install.groovy"
-
         startDetectionTimeoutSecs 600
         startDetection {
 			ServiceUtils.arePortsOccupied([8080, 11099])

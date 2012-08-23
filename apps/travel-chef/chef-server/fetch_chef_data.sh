@@ -7,7 +7,7 @@ COOKBOOK_DIR=$1/cookbooks
 ROLE_DIR=$1/roles
 
 if [[ -d $REPO_DIR/.git ]]; then
-    cd REPO_DIR; git pull origin master; cd -
+    cd $REPO_DIR; git pull origin master; cd -
 else #first run
     git clone https://github.com/CloudifySource/cloudify-recipes.git $REPO_DIR
 fi
