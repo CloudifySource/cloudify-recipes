@@ -19,6 +19,8 @@ new AntBuilder().sequential {
 		arg("value":"${System.properties["user.home"]}/gs-files/hp-cloud-demo.pem")	
 		arg("value":"${System.properties["user.home"]}/.ssh/identity")	
 	}
+	chmod(file:"${serviceContext.serviceDirectory}/addnode.sh", perm:"ugo+rx")
+	chmod(file:"${serviceContext.serviceDirectory}/removenode.sh", perm:"ugo+rx")
 }
 println "master_install.groovy: Installing master..."
 

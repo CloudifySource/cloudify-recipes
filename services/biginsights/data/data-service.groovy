@@ -1,9 +1,7 @@
 service {
 	name "data"
 	icon "biginsights.png"
-	numInstances 2
-	minAllowedInstances 1
-	maxAllowedInstances 3
+	numInstances 1
 	
 	compute {
 		template "DATA"

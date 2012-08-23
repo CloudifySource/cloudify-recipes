@@ -3,9 +3,9 @@
     <operation>install</operation>
     <vendor>ibm</vendor>
     <general>
-        <biginsights-install-directory>opt/ibm/biginsights</biginsights-install-directory>
-        <biginsights-data-log-directory>var/ibm/biginsights</biginsights-data-log-directory>
-        <directory-prefix>/</directory-prefix>
+        <biginsights-install-directory>${BigInsightInstall}</biginsights-install-directory>
+        <biginsights-data-log-directory>${BigInsightLogs}</biginsights-data-log-directory>
+        <directory-prefix>${ibmHome}</directory-prefix>
         <overwrite>false</overwrite>
         <file-system>hdfs</file-system>
         <shared-directory/>
@@ -25,16 +25,16 @@
         <management-console-port>8080</management-console-port>
     </Console>
     <Jaql-server>
-        <configure>true</configure>
+        <configure>false</configure>
         <node>${masterIP}</node>
         <jaql-server-port>8200</jaql-server-port>
     </Jaql-server>
     <Jaql>
-        <configure>true</configure>
-        <log-directory>var/ibm/biginsights/jaql/logs</log-directory>
+        <configure>false</configure>
+        <log-directory>${BigInsightLogs}/jaql/logs</log-directory>
     </Jaql>
     <Derby>
-        <configure>true</configure>
+        <configure>false</configure>
         <node>${masterIP}</node>
         <backup-node/>
         <port>1528</port>
@@ -42,7 +42,7 @@
     <hadoop>
         <general>
             <cache-directory>hadoop/mapred/local</cache-directory>
-            <log-directory>var/ibm/biginsights/hadoop/logs</log-directory>
+            <log-directory>${BigInsightLogs}/hadoop/logs</log-directory>
             <mapred-system-directory>/hadoop/mapred/system</mapred-system-directory>
         </general>
         <hdfs>
@@ -78,30 +78,30 @@
         <configure>false</configure>
     </Avro>
     <Hive>
-        <configure>true</configure>
+        <configure>false</configure>
         <hwi-node>${masterIP}</hwi-node>
-        <query-directory>var/ibm/biginsights/hive/query</query-directory>
-        <log-directory>var/ibm/biginsights/hive/logs</log-directory>
+        <query-directory>${BigInsightLogs}/hive/query</query-directory>
+        <log-directory>${BigInsightLogs}/hive/logs</log-directory>
         <hwi-port>9999</hwi-port>
         <server-port>10000</server-port>
     </Hive>
     <Lucene>
-        <configure>true</configure>
+        <configure>false</configure>
     </Lucene>
     <Pig>
-        <configure>true</configure>
-        <log-directory>var/ibm/biginsights/pig/logs</log-directory>
+        <configure>false</configure>
+        <log-directory>${BigInsightLogs}/pig/logs</log-directory>
     </Pig>
     <Oozie>
-        <configure>true</configure>
+        <configure>false</configure>
         <node>${masterIP}</node>
         <oozie-port>8280</oozie-port>
     </Oozie>
     <Zookeeper>
         <configure>true</configure>
         <nodes>${masterIP}</nodes>
-        <data-directory>var/ibm/biginsights/zookeeper/data</data-directory>
-        <log-directory>var/ibm/biginsights/zookeeper/logs</log-directory>
+        <data-directory>${BigInsightLogs}/zookeeper/data</data-directory>
+        <log-directory>${BigInsightLogs}/zookeeper/logs</log-directory>
         <client-port>2181</client-port>
         <time-interval>2000</time-interval>
         <init-limit>5</init-limit>
@@ -114,19 +114,19 @@
         <install-mode>fully</install-mode>
         <region-nodes>${masterIP}</region-nodes>
         <root-directory>/hbase</root-directory>
-        <log-directory>var/ibm/biginsights/hbase/logs</log-directory>
+        <log-directory>${BigInsightLogs}/hbase/logs</log-directory>
         <master-port>60000</master-port>
         <master-ui-port>60010</master-ui-port>
         <regionserver-port>60020</regionserver-port>
         <regionserver-ui-port>60030</regionserver-ui-port>
     </HBase>
     <Flume>
-        <configure>true</configure>
+        <configure>false</configure>
         <zookeeper-mode>shared</zookeeper-mode>
         <master-nodes>${masterIP}</master-nodes>
         <nodes>${masterIP}</nodes>
-        <pid-directory>var/ibm/biginsights/flume/pids</pid-directory>
-        <log-directory>var/ibm/biginsights/flume/logs</log-directory>
+        <pid-directory>${BigInsightLogs}/flume/pids</pid-directory>
+        <log-directory>${BigInsightLogs}/flume/logs</log-directory>
     </Flume>
     <node-list>
         <node>
