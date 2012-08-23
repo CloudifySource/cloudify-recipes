@@ -12,6 +12,9 @@ if [[ $EUID -ne 0 ]]; then
 	sudo sed -i 's/^command="echo ['\'']Please login as the ec2-user user rather than root user.['\''];echo;sleep 10" ssh-rsa/ssh-rsa/g' /root/.ssh/authorized_keys
 	sudo echo -e "\nHost *\n\t	UserKnownHostsFile=/dev/null\n\t		StrictHostKeyChecking no" >> /etc/ssh/ssh_config
 	sudo /etc/init.d/sshd restart
+	sudo echo $CLOUDIFY_AGENT_ENV_PRIVATE_IP `hostname` > /etc/hosts
+	sudo echo 127.0.0.1	localhost >> /etc/hosts
+
 else
 	groupadd biadmin
 	useradd -g biadmin -d /home/biadmin biadmin
@@ -24,6 +27,8 @@ else
 	sed -i 's/^command="echo ['\'']Please login as the ec2-user user rather than root user.['\''];echo;sleep 10" ssh-rsa/ssh-rsa/g' /root/.ssh/authorized_keys
 	echo -e "\nHost *\n\t	UserKnownHostsFile=/dev/null\n\t		StrictHostKeyChecking no" >> /etc/ssh/ssh_config
 	/etc/init.d/sshd restart
+	echo $CLOUDIFY_AGENT_ENV_PRIVATE_IP `hostname` > /etc/hosts
+	echo 127.0.0.1	localhost >> /etc/hosts
 fi
 
 
