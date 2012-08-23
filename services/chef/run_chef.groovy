@@ -11,8 +11,10 @@ if (chefServerURL == null) {
 
 println "Using Chef server URL: ${chefServerURL}"
 
+def runParamsLocal = binding.variables["runParams"]?binding.variables["runParams"]:[run_list: "role[${context.serviceName}]" as String]
+
 ChefBootstrap.getBootstrap(
     serverURL: chefServerURL,
     validationCert: validationCert,
     context: context
-).runClient([run_list: "role[${context.serviceName}]".toString()])
+).runClient(runParamsLocal)
