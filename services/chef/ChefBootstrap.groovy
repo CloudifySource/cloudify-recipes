@@ -222,7 +222,7 @@ class RHELBootstrap extends ChefBootstrap {
         return super.install(options)
     }
     def install_pkgs(List pkgs) {
-        sudo "yum install -y ${pkgs.join(" ")}"
+        sudo("yum install -y ${pkgs.join(" ")}")
     }
 }
 
@@ -231,7 +231,7 @@ class SuSEBootstrap extends ChefBootstrap {
     def rubyPkgs = ["ruby", "ruby-devel", "ruby-shadow", "gcc", "gcc-c++", "automake", "autoconf", "make", "curl", "dmidecode"]
     def binPath = "/usr/bin"
     def install_pkgs(List pkgs) {
-        sudo "zypper install ${pkgs.join(" ")}"
+        sudo("zypper install ${pkgs.join(" ")}")
     }
 }
 

@@ -109,7 +109,7 @@ def static pathJoin(Object... args) {
 }
 
 def static underHomeDir(inner_path) {
-    return pathJoin(System.properties["user.dir"], inner_path)
+    return pathJoin(System.properties["user.home"], inner_path)
 }
 
 def static sudoReadFile(filename) {
