@@ -194,7 +194,7 @@ class DebianBootstrap extends ChefBootstrap {
     def binPath = "/usr/bin"
     def install_pkgs(List pkgs) {
         sudo("apt-get update")
-        sudo("apt-get install -y ${pkgs.join(" ")}", ["DEBIAN_FRONTEND": "noninteractive", "DEBIAN_PRIORITY": "critical"])
+        sudo("apt-get install -y ${pkgs.join(" ")}", [env: ["DEBIAN_FRONTEND": "noninteractive", "DEBIAN_PRIORITY": "critical"]])
     }
     def pkgInstall() {
         sudoWriteFile("/etc/apt/sources.list.d/opscode.list", """

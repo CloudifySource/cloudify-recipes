@@ -13,23 +13,58 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 *******************************************************************************/
+class ShellRuntimeException extends Exception {
+  String stdout
+  String stderr
+  String command
+  int exitValue
+  
+  def ShellRuntimeException(command, exitValue, stdout=null, stderr=null) {
+    this.stdout = stdout
+    this.stderr = stderr
+    this.exitValue = exitValue
+    this.command = command
+  }
+  
+  String toString() {
+    return """ShellRuntimeException: Command "${this.command}" failed with exit code ${this.exitValue}.
+====== STDOUT =======
+${this.stdout}
+=== END OF STDOUT ===
 
-def static sh(command, shellify=true, env=[:]) {
-	println("Running \"${command}\"")
-	if (shellify) {command = shellify_cmd(command)}
-	def proc = startProcess(command, env)
-	proc.inputStream.eachLine { println "STDOUT: ${it}" }
-	proc.errorStream.eachLine { println "STDERR: ${it}" }
-	proc.waitFor()
-	println("Command finished with return code ${proc.exitValue()}")
-	assert proc.exitValue() == 0
+====== STDERR =======
+${this.stderr}
+=== END OF STDERR ===
+""".toString()
+  }
 }
 
-def static shellOut(command, env=[:]) {
+def static sh(command, shellify=true, Map opts=[:]) {
+	Map env = opts.env?: [:]
+    println("Running \"${command}\"")
+	if (shellify) {command = shellify_cmd(command)}
+	def proc = startProcess(command, env)
+    def stdout = ""
+    def stderr = ""
+    proc.inputStream.eachLine { println "STDOUT: ${it}";  stdout += "${it}\n" }
+	proc.errorStream.eachLine { println "STDERR: ${it}";  stderr += "${it}\n" }
+	proc.waitFor()
+	println("Command finished with return code ${proc.exitValue()}")
+	if ((! opts.ignore_failure?: false) && proc.exitValue() != 0) {
+        throw new ShellRuntimeException(command, proc.exitValue(), stdout, stderr)
+    }
+    return proc.exitValue()
+}
+
+def static test(command) {
+    return (sh(command, true, [ignore_failure: true]) == 0)
+}
+
+def static shellOut(command, Map env=[:]) {
 	return startProcess(shellify_cmd(command), env).inputStream.text
 }
 
-def static startProcess(command, env=[:]) {
+def static startProcess(command, Map env=[:]) {
 	ProcessBuilder pb = new ProcessBuilder(command)
 	def environment = pb.environment()
 	if (!env.isEmpty()) {
@@ -50,15 +85,15 @@ def static shellify_cmd(org.codehaus.groovy.runtime.GStringImpl command) {
 	return shellify_cmd(command as java.lang.String)
 }
 
-def static sudo(command, env=[:]) {
+def static sudo(command, Map opts=[:]) {
 	if (System.getProperty("user.name") != "root") {
 		command = "sudo ${command}"
 	}
-	return sh(command, true, env)
+	return sh(command, true, opts)
 }
 
-def static sudo(java.util.ArrayList command, env=[:]) {
-	return sudo(command.join(" "), env)
+def static sudo(java.util.ArrayList command, Map opts=[:]) {
+	return sudo(command.join(" "), opts)
 }
 
 def static sudoWriteFile(fileName, content) {
@@ -73,6 +108,14 @@ def static pathJoin(Object... args) {
 	return args*.asType(String).join(File.separator)
 }
 
+def static underHomeDir(inner_path) {
+    return pathJoin(System.properties["user.dir"], inner_path)
+}
+
 def static sudoReadFile(filename) {
 	return shellOut("sudo cat ${filename}")
+}
+
+def static pathExists(path) {
+    return new File(path).exists()
 }
