@@ -16,7 +16,7 @@
 Tested on:
 --------
 
-* <strong>EC2</strong>: Ubuntu and CentOs 
+* <strong>EC2</strong>: Ubuntu (11 and 12) and CentOs (5)
 * <strong>OpenStack</strong>: CentOs 
 * <strong>Rackspace</strong>: CentOs 
 

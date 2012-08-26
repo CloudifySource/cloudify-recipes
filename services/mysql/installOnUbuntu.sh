@@ -42,7 +42,7 @@ sudo rm -rf /etc/mysql || error_exit $? "Failed on: sudo rm -rf /etc/mysql"
 
 
 echo "Using apt-get. Updating apt-get on one of the following : Ubuntu, Debian, Mint" 
-sudo DEBIAN_FRONTEND='noninteractive' apt-get -o Dpkg::Options::='--force-confnew' -q -y install mysql-server-core-5.1 mysql-server-5.1 mysql-client-core-5.1 mysql-client-5.1 mysql-common || error_exit $? "Failed on: sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -q  mysql-server ... "
+sudo DEBIAN_FRONTEND='noninteractive' apt-get -o Dpkg::Options::='--force-confnew' -q -y install mysql-server-core mysql-server mysql-client mysql-common || error_exit $? "Failed on: sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -q  mysql-server ... "
 
 echo "Killing old mysql process if exists b4 ending the installation..."
 killMySqlProcess

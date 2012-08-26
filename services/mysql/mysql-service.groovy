@@ -22,7 +22,7 @@ service {
 
 	icon "mysql.png"
 	type "DATABASE"
-
+	
 	lifecycle{
  
 		install "mysql_install.groovy"
