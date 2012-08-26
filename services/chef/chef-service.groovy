@@ -15,13 +15,31 @@
 *******************************************************************************/
 
 import java.util.concurrent.TimeUnit 
+import ChefBootstrap
 
 service {
     lifecycle {
       install {
       	ChefBootstrap.getBootstrap(context:context, installFlavor: "gem").install()
       } 
-		  start "run_chef.groovy"
+		  start {
+        def chefServerURL = context.attributes.global["chef_server_url"]
+        def validationCert = context.attributes.global["chef_validation.pem"]
+
+        if (chefServerURL == null) {
+            throw new RuntimeException("Cannot find a chef server URL in global attribtue 'chef_server_url'")
+        }
+
+        println "Using Chef server URL: ${chefServerURL}"
+
+        def runParamsLocal = binding.variables["runParams"]?runParams:[run_list: "role[${context.serviceName}]" as String]
+
+        ChefBootstrap.getBootstrap(
+            serverURL: chefServerURL,
+            validationCert: validationCert,
+            context: context
+        ).runClient(runParamsLocal)
+      }
 
 		  locator {
 			  //hack to avoid monitoring started processes by cloudify
