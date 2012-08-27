@@ -20,7 +20,9 @@ service {
 	type "WEB_SERVER"
 	numInstances 1
 
-	
+	compute {
+		template "SMALL_LINUX"
+	}
 
 	lifecycle {
 	
