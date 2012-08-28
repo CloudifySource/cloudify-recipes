@@ -30,10 +30,12 @@ sudo apt-get install -y -q apache2 || error_exit $? "Failed on: sudo apt-get ins
 
 #sudo /etc/init.d/apache2 stop
 # Just in case the above doesn't work
+echo "installOnUbuntu.sh: Looking for apache2 to kill them..."
 ps -ef | grep -iE "apache2" | grep -vi grep
 if [ $? -eq 0 ] ; then 
+  echo "installOnUbuntu.sh: About to kill apache2"
   ps -ef | grep -iE "apache2" | grep -vi grep | awk '{print $2}' | xargs sudo kill -9
 fi  
 
 
-
+echo "end of installOnUbuntu.sh"

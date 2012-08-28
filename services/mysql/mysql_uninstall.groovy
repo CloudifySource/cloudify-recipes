@@ -36,11 +36,11 @@ def currVendor=os.getVendor()
 switch (currVendor) {
 		case ["Ubuntu", "Debian", "Mint"]:		
 			context.attributes.thisInstance["binFolder"]="/usr/bin"
-			uninstallLinuxMysql(context,builder,currVendor,"uninstall.sh")
+			uninstallLinuxMysql(context,builder,currVendor,"uninstallOnUbuntu.sh")
 			break		
 		case ["Red Hat", "CentOS", "Fedora", "Amazon",""]:	
 			context.attributes.thisInstance["binFolder"]="/usr/bin"		
-			uninstallLinuxMysql(context,builder,currVendor,"uninstallOnUbuntu.sh")
+			uninstallLinuxMysql(context,builder,currVendor,"uninstall.sh")
 			break					
 		case ~/.*(?i)(Microsoft|Windows).*/:
 			println "mysql_uninstall.groovy: Windows - Doing nothing"
