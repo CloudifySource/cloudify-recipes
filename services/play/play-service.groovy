@@ -63,7 +63,7 @@ service {
 		postStart {			
 			if ( useLoadBalancer ) { 
 				println "play-service.groovy: play Post-start ..."
-				def apacheService = context.waitForService("apacheLB", 180, TimeUnit.SECONDS)			
+				def apacheService = context.waitForService(loadBalancerServiceName, 180, TimeUnit.SECONDS)			
 				println "play-service.groovy: invoking add-node of apacheLB ..."
 					
 							
@@ -86,7 +86,7 @@ service {
 		postStop {
 			if ( useLoadBalancer ) { 
 				println "play-service.groovy: play Post-stop ..."
-				def apacheService = context.waitForService("apacheLB", 180, TimeUnit.SECONDS)			
+				def apacheService = context.waitForService(loadBalancerServiceName, 180, TimeUnit.SECONDS)			
 										
 										
 				def privateIP
