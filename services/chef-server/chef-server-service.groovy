@@ -14,6 +14,7 @@
 * limitations under the License.
 *******************************************************************************/
 import static Shell.*
+import static ChefLoader
 
 service {
     extend "../chef"
@@ -40,6 +41,21 @@ service {
     			"Server URL":"<a href=\"${serverUrl}\" target=\"_blank\">${serverUrl}</a>"
     		]
     	}    	
-	}
+        postStart { 
+            chef_loader = ChefLoader.get_loader("git") //TODO: allow choice through a cloudify property
+            chef_loader.initialize()
+            chef_loader.fetch()
+            chef_loader.upload()
+        }
+
+    }
+
+    customCommands([
+        "updateCookbooks": { repo_type="git" -> 
+            chef_loader = ChefLoader.get_loader(repo_type) 
+            chef_loader.fetch()
+            chef_loader.upload()
+        }
+    ])
 
 }
