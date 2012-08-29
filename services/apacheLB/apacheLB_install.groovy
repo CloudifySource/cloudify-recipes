@@ -25,6 +25,19 @@ osConfig = ServiceUtils.isWindows() ? config.win32 : config.linux
 downloadFile="${config.downloadFolder}/{$osConfig.zipName}"
 
 def installLinuxHttpd(context,builder,currVendor,installScript) {
+
+	if ( context.isLocalCloud() ) {
+		if ( context.attributes.thisApplication["installing"] == null || context.attributes.thisApplication["installing"] == false ) {
+			context.attributes.thisApplication["installing"] = true
+		}
+		else {
+			while ( context.attributes.thisApplication["installing"] == true ) {
+				println "apacheLB_install.groovy: Waiting for apt-get/yum (on localCloud) to end on another service instance in this application... "
+				sleep 10000			
+			}
+		}
+	}
+
 	builder.sequential {
 		echo(message:"apacheLB_install.groovy: Chmodding +x ${context.serviceDirectory} ...")
 		chmod(dir:"${context.serviceDirectory}", perm:"+x", includes:"*.sh")
@@ -32,6 +45,11 @@ def installLinuxHttpd(context,builder,currVendor,installScript) {
 		echo(message:"apacheLB_install.groovy: Running ${context.serviceDirectory}/${installScript} os is ${currVendor}...")
 		exec(executable: "${context.serviceDirectory}/${installScript}",failonerror: "true")
 	}
+	
+	if ( context.isLocalCloud() ) {
+		context.attributes.thisApplication["installing"] = false
+		println "apacheLB_install.groovy: Finished using apt-get/yum on localCloud"
+	}	
 }
 
 def installWindowsHttpd(config,osConfig,downloadFile,builder) {

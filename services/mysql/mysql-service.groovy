@@ -23,6 +23,10 @@ service {
 	icon "mysql.png"
 	type "DATABASE"
 	
+	compute {
+		template "SMALL_LINUX"
+	}	
+	
 	lifecycle{
  
 		install "mysql_install.groovy"

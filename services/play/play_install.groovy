@@ -31,10 +31,7 @@ new AntBuilder().sequential {
 	unzip(src:"${installDir}/${config.zipName}", dest:"${installDir}", overwrite:true)
 	move(file:"${installDir}/${config.name}", tofile:"${home}")
 	echo(message:"play_install.groovy: Chmodding +x ${home}/play")	
-	chmod(dir:"${home}", perm:'+x', includes:"**/*")
-	echo(message:"play_install.groovy: Chmodding +x " + System.getProperty("user.dir") + "/play_start.sh")
-	chmod(file:System.getProperty("user.dir") + "/play_start.sh", perm:'+x')
-	
+	chmod(dir:"${home}", perm:'+x', includes:"**/*")	
 }
 
 

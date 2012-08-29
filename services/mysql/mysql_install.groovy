@@ -19,12 +19,30 @@ import org.hyperic.sigar.OperatingSystem
 
 
 def installLinuxMysql(context,builder,currVendor,installScript) {
+
+	if ( context.isLocalCloud() ) {
+		if ( context.attributes.thisApplication["installing"] == null || context.attributes.thisApplication["installing"] == false ) {
+			context.attributes.thisApplication["installing"] = true
+		}
+		else {
+			while ( context.attributes.thisApplication["installing"] == true ) {
+				println "mysql_install.groovy: Waiting for apt-get/yum (on localCloud) to end on another service instance in this application... "
+				sleep 10000			
+			}
+		}
+	}
+
 	builder.sequential {
 		echo(message:"mysql_install.groovy: Chmodding +x ${context.serviceDirectory} ...")
 		chmod(dir:"${context.serviceDirectory}", perm:"+x", includes:"*.sh")
 
 		echo(message:"mysql_install.groovy: Running ${context.serviceDirectory}/${installScript} os is ${currVendor}...")
 		exec(executable: "${context.serviceDirectory}/${installScript}",failonerror: "true")
+	}
+	
+	if ( context.isLocalCloud() ) {
+		context.attributes.thisApplication["installing"] = false
+		println "mysql_install.groovy: Finished using apt-get/yum on localCloud"
 	}
 }
 
