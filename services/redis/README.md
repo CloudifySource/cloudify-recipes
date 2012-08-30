@@ -1,13 +1,13 @@
 # REDIS 
 
-**Status**: Under Construction  
+**Status**: *Under Construction*  
 **Description**:  REDIS   
 **Maintainer**:       Cloudify  
 **Maintainer email**: cloudifysource@gigaspaces.com  
 **Contributors**:    [tamirko](https://github.com/uric)  
 **Homepage**:   [http://www.cloudifysource.org](http://www.cloudifysource.org)  
 **License**:      Apache 2.0   
-**Release Date**:  Under Construction 
+**Release Date**:  *Under Construction*  
 
 Synopsis
 --------
