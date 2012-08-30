@@ -1,6 +1,6 @@
 # REDIS 
 
-**Status**: *Under Construction*  
+**Status**: **Under Construction**   
 **Description**:  REDIS   
 **Maintainer**:       Cloudify  
 **Maintainer email**: cloudifysource@gigaspaces.com  
