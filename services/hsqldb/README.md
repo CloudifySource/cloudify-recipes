@@ -1,7 +1,7 @@
-# Redis  
+# HSQLDB     
 
 **Status**: **Under Construction**   
-**Description**:  Redis    
+**Description**:  HSQLDB      
 **Maintainer**:       Cloudify  
 **Maintainer email**: cloudifysource@gigaspaces.com  
 **Contributors**:    [tamirko](https://github.com/uric)  
@@ -12,6 +12,6 @@
 Synopsis
 --------
 
-This folder contains a service recipe for Redis, which is an open source, advanced key-value store.
+This folder contains a service recipe for HSQLDB (HyperSQL Database), which is a relational database engine written in Java. 
 
 * Note that this recipe is under construction. We will test it and release it asap.

@@ -1,7 +1,7 @@
-# Redis  
+# Solr   
 
 **Status**: **Under Construction**   
-**Description**:  Redis    
+**Description**:  Solr       
 **Maintainer**:       Cloudify  
 **Maintainer email**: cloudifysource@gigaspaces.com  
 **Contributors**:    [tamirko](https://github.com/uric)  
@@ -12,6 +12,6 @@
 Synopsis
 --------
 
-This folder contains a service recipe for Redis, which is an open source, advanced key-value store.
+This folder contains a service recipe for Solr, which is an open source enterprise search platform from the Apache Lucene project.
 
 * Note that this recipe is under construction. We will test it and release it asap.
