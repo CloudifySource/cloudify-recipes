@@ -4,7 +4,7 @@
 **Description**:  HSQLDB      
 **Maintainer**:       Cloudify  
 **Maintainer email**: cloudifysource@gigaspaces.com  
-**Contributors**:    [tamirko](https://github.com/uric)  
+**Contributors**:    [Uri Cohen](https://github.com/uric)  
 **Homepage**:   [http://www.cloudifysource.org](http://www.cloudifysource.org)  
 **License**:      Apache 2.0   
 **Release Date**:  *Under Construction*  
