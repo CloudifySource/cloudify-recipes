@@ -15,6 +15,7 @@
                                 <include>**/apps/petclinic-simple/**</include>
                                 <include>**/apps/travel/**</include>
                                 <include>**/apps/travel-azure/**</include>
+								<include>**/services/apacheLB/**</include>
                                 <include>**/services/activemq/**</include>
                                 <include>**/services/cassandra/**</include>
                                 <include>**/services/hsqldb/**</include>
