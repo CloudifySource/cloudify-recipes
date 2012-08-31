@@ -1,7 +1,7 @@
 # Apache
 
 **Status**: Tested  
-**Description**: Apache / Apache PHP
+**Description**: Apache / Apache PHP  
 **Maintainer**:       Cloudify  
 **Maintainer email**: cloudifysource@gigaspaces.com  
 **Contributors**:    [tamirko](https://github.com/tamirko)  
@@ -17,9 +17,11 @@ Tested on:
 --------
 
 * <strong>EC2</strong>: 
+
 ** <strong>CentOs 5<strong> imageId "us-east-1/ami-76f0061f", hardwareId "m1.small", locationId "us-east-1"
-** <strong>Ubuntu 11.10<strong> 
-** <strong>Ubuntu 12.04<strong> 
+* * <strong>Ubuntu 11.10<strong> 
+
+* * <strong>Ubuntu 12.04<strong> 
 * <strong>OpenStack</strong>:  
 ** <strong>CentOs 5<strong> 
 
