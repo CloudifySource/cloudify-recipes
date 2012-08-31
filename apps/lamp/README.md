@@ -19,7 +19,8 @@ Tested on:
  * <strong>CentOs 5</strong> imageId "us-east-1/ami-76f0061f", hardwareId "m1.small", locationId "us-east-1"  
  * <strong>Ubuntu 11.10</strong>: "us-east-1/ami-e1aa7388", hardwareId "m1.small", locationId "us-east-1"  
  * <strong>Ubuntu 12.04</strong>: imageId "us-east-1/ami-82fa58eb", hardwareId "m1.small", locationId "us-east-1"  
-   
+
+- 
    
 * <strong>OpenStack</strong>:  
  * <strong>CentOs 5</strong>: imageId "1234" CentOS 5.6 64-bit, hardwareId "103"  standard.large - 4 vCPU / 8 GB RAM / 240 GB HD , az-1.region-a.geo-1 
@@ -39,7 +40,8 @@ This recipe is comprised of three services:
 * [apacheLB](../../services/apacheLB/README.md) 
 
 The LAMP recipe installs a small sample application uses php code which retrieves data from a MySQL DB(used by this recipe).
-The LAMP recipe also installs a Hangman game sample application (HTML 5) that I found on the net(Apache 2 license).
+
+The LAMP recipe also installs a [Hangman game (HTML 5)](https://01.org/html5webapps/webapps/hangonman).
 
 URLs (accessible from the apacheLB and apache service panel):
 http://LB_IP_ADDRESS:LB_PORT/balancer-manager - LB console
