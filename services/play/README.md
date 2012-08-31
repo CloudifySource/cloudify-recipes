@@ -57,7 +57,7 @@ Example:
 
 For MySQL , use the following: **dbServiceName="mysql"** . 
 
-For PostgreSQL (not supported , so u need to implement it your self) , use the following: **dbServiceName="postgresql"**
+For PostgreSQL (not supported , so u need to implement it yourself) , use the following: **dbServiceName="postgresql"**
 	
 If your application doesn't required a db, leave this property as is (NO_DB_REQUIRED) or remove it.
 
