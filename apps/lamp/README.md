@@ -49,7 +49,9 @@ http://LB_IP_ADDRESS:LB_PORT/index.html - The Hangman game
 
 Usage example : 
  You can invoke the following custom command
-  invoke mysql query root lampdb \\\"update persons set fname = \\\'Robinzon\\\' where id =1\\\"
+ 
+ <strong>invoke mysql query root lampdb \\\"update persons set fname = \\\'Robinzon\\\' where id =1\\\"</strong>
+ 
  And then refresh http://LB_IP_ADDRESS:LB_PORT/sample.php to view the change.
  
 ## Known Issues
