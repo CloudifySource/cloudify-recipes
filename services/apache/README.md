@@ -17,13 +17,11 @@ Tested on:
 --------
 
 * <strong>EC2</strong>: 
-
-* * <strong>CentOs 5<strong> imageId "us-east-1/ami-76f0061f", hardwareId "m1.small", locationId "us-east-1"  
-* * <strong>Ubuntu 11.10<strong> "us-east-1/ami-e1aa7388", hardwareId "m1.small", locationId "us-east-1"  
-* * <strong>Ubuntu 12.04<strong> imageId "us-east-1/ami-82fa58eb", hardwareId "m1.small", locationId "us-east-1"  
+ * <strong>CentOs 5<strong> imageId "us-east-1/ami-76f0061f", hardwareId "m1.small", locationId "us-east-1"  
+ * <strong>Ubuntu 11.10<strong> "us-east-1/ami-e1aa7388", hardwareId "m1.small", locationId "us-east-1"  
+ * <strong>Ubuntu 12.04<strong> imageId "us-east-1/ami-82fa58eb", hardwareId "m1.small", locationId "us-east-1"  
 * <strong>OpenStack</strong>:  
-
-* * <strong>CentOs 5<strong> imageId "1234" CentOS 5.6 Server 64-bit 20111207, hardwareId "103"  standard.large - 4 vCPU / 8 GB RAM / 240 GB HD , az-1.region-a.geo-1 
+ * <strong>CentOs 5<strong> imageId "1234" CentOS 5.6 Server 64-bit 20111207, hardwareId "103"  standard.large - 4 vCPU / 8 GB RAM / 240 GB HD , az-1.region-a.geo-1 
 
 We disable the requiretty flag in /etc/sudoers on the installed VMs, so that Cloudify will be able to invoke remote ssh commands as a sudoer. This feature will be a part of Cloudify in the near future.
 Until then, please use the [Cloud Drivers Repository](https://github.com/CloudifySource/cloudify-cloud-drivers).
