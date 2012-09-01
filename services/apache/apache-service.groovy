@@ -24,7 +24,7 @@ service {
 	maxAllowedInstances 2
 
 	compute {
-		template "UB_12"
+		template "SMALL_LINUX"
 	}
 	
 	def instanceID = context.instanceId
