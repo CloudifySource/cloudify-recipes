@@ -33,10 +33,14 @@ class ChefBootstrap {
         def cls
         switch (os.getVendor()) {
             case ["Ubuntu", "Debian", "Mint"]: cls = new DebianBootstrap(options); break
-            case ["Red Hat", "CentOS", "Fedora", "Amazon"]: cls = new RHELBootstrap(options); break
+            case ["Red Hat", "CentOS", "Fedora", "Amazon", ""]: cls = new RHELBootstrap(options); break
             case "SuSE":  cls = new SuSEBootstrap(options); break
             case "Win32": cls = new WindowsBootstrap(options); break
-            default: throw new Exception("Support for the OS #{os.getVendor()} is not implemented")
+            case "" /*returned by ec2linux*/:
+                if (test("grep 'Amazon Linux' /etc/issue")) {
+                    cls = new RHELBootstrap(options); break
+                }
+            default: throw new Exception("Support for the OS ${os.getVendor()} is not implemented")
         }
         return cls
     }
@@ -58,19 +62,20 @@ class ChefBootstrap {
         chefConfig = chefProperties.chef.flatten() + chefConfig + options.findAll(){ it.key != "context" }
         // persist to context attributes
         context.attributes.thisInstance["chefConfig"] = chefConfig
-    }
+    } 
     def install() {
         if (which("chef-solo").isEmpty()) {
             switch(chefConfig.installFlavor) {
                 case ["fatBinary", "pkg"]: break
-                default:
-                    if (which("ruby").isEmpty()) {
+                case "gem":
+                    if (which("gem").isEmpty()) {
                         if (this.class.methods.find { it.name == "install_pkgs"}) {
                             install_pkgs(rubyPkgs)
                         } else {
                             rvm()
                         }
                     }
+                default: break
             }
             this.invokeMethod("${chefConfig.installFlavor}Install", null)
         }
@@ -186,6 +191,9 @@ cookbook_path "/tmp/chef-solo/cookbooks"
         }
         return path
     }
+    def getConfig() {
+        return chefConfig
+    }
 }
 
 class DebianBootstrap extends ChefBootstrap {
@@ -209,7 +217,7 @@ deb http://apt.opscode.com/ ${os.getVendorCodeName().toLowerCase()}-0.10 main
 
 class RHELBootstrap extends ChefBootstrap {
     def RHELBootstrap(options) { super(options) }
-    def rubyPkgs = ["ruby", "ruby-devel", "ruby-shadow", "gcc", "gcc-c++", "automake", "autoconf", "make", "curl", "dmidecode"]
+    def rubyPkgs = ["ruby", "ruby-devel", "ruby-shadow", "rubygems", "gcc", "gcc-c++", "automake", "autoconf", "make", "curl", "dmidecode"]
     def binPath = "/usr/bin"
     def install(options) {
         if (os.getVendor() in ["CentOS", "Red Hat"]) {
@@ -228,7 +236,7 @@ class RHELBootstrap extends ChefBootstrap {
 
 class SuSEBootstrap extends ChefBootstrap {
     def SuSEBootstrap(options) { super(options) }
-    def rubyPkgs = ["ruby", "ruby-devel", "ruby-shadow", "gcc", "gcc-c++", "automake", "autoconf", "make", "curl", "dmidecode"]
+    def rubyPkgs = ["ruby", "ruby-devel", "ruby-shadow", "rubygems", "gcc", "gcc-c++", "automake", "autoconf", "make", "curl", "dmidecode"]
     def binPath = "/usr/bin"
     def install_pkgs(List pkgs) {
         sudo("zypper install ${pkgs.join(" ")}")
