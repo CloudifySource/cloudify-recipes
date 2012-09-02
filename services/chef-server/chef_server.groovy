@@ -1,7 +1,7 @@
 import org.cloudifysource.dsl.context.ServiceContextFactory
 import static Shell.*
 
-def context = ServiceContextFactory.getServiceContext() 
+def context = ServiceContextFactory.getServiceContext()
 
 bootstrap = ChefBootstrap.getBootstrap(installFlavor:"gem")
 bootstrap.runSolo([
@@ -11,7 +11,7 @@ bootstrap.runSolo([
     ],
     "chef_packages": [
         "chef": [
-            "version": "0.10.8"
+            "version": "10.12.0"
         ]
     ],
     "run_list": ["recipe[build-essential]", "recipe[chef-server::rubygems-install]", "recipe[chef-server::apache-proxy]" ]
