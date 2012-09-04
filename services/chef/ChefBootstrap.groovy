@@ -84,7 +84,7 @@ class ChefBootstrap {
             switch(chefConfig.installFlavor) {
                 case ["fatBinary", "pkg"]: break
                 case "gem":
-                    if (which("ruby").isEmpty()) { installRuby() }
+                    installRuby() //there are multiple packages here, and we want to be sure they're all installed
                     if (which("gem").isEmpty()) { installRubyGems() }
                     break
                 default:
