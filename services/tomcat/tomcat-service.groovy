@@ -166,7 +166,7 @@ service {
 
 				metrics([
 					"Current Http Threads Busy",
-					"Current Http Threads Count",
+					"Current Http Thread Count",
 					"Backlog",
 					"Total Requests Count"
 				])
@@ -219,7 +219,7 @@ service {
 			} ,
 			widgetGroup {
 
-				name "Current Http Threads Count"
+				name "Current Http Thread Count"
 				widgets([
 					balanceGauge{metric = "Current Http Thread Count"},
 					barLineChart {
