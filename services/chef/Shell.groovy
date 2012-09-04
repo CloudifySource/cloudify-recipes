@@ -112,10 +112,20 @@ def static underHomeDir(inner_path) {
     return pathJoin(System.properties["user.home"], inner_path)
 }
 
+def static getTmpDir() {
+    return "/tmp"
+}
+
 def static sudoReadFile(filename) {
 	return shellOut("sudo cat ${filename}")
 }
 
 def static pathExists(path) {
     return new File(path).exists()
+}
+
+def static download(target, url) {
+    new File(target).withOutputStream() { out ->
+        out << new URL(url).openStream()
+    }
 }
