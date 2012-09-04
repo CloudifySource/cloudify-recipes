@@ -33,7 +33,7 @@ class ChefBootstrap {
         def cls
         switch (os.getVendor()) {
             case ["Ubuntu", "Debian", "Mint"]: cls = new DebianBootstrap(options); break
-            case ["Red Hat", "CentOS", "Fedora", "Amazon", ""]: cls = new RHELBootstrap(options); break
+            case ["Red Hat", "CentOS", "Fedora", "Amazon"]: cls = new RHELBootstrap(options); break
             case "SuSE":  cls = new SuSEBootstrap(options); break
             case "Win32": cls = new WindowsBootstrap(options); break
             case "" /*returned by ec2linux*/:
@@ -198,6 +198,7 @@ cookbook_path "/tmp/chef-solo/cookbooks"
 
 class DebianBootstrap extends ChefBootstrap {
     def DebianBootstrap(options) { super(options) }
+    //TODO: rubygems.org - install from source tarball (to avoid a version mismatch in rubygems)
     def rubyPkgs = ["ruby-dev", "ruby", "ruby-json", "rubygems", "libopenssl-ruby"]
     def binPath = "/usr/bin"
     def install_pkgs(List pkgs) {
@@ -231,6 +232,10 @@ class RHELBootstrap extends ChefBootstrap {
     }
     def install_pkgs(List pkgs) {
         sudo("yum install -y ${pkgs.join(" ")}")
+    }
+    def gemInstall() {
+        sudo("gem update --system")
+        super.gemInstall()
     }
 }
 

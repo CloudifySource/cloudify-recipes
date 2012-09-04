@@ -13,8 +13,6 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 *******************************************************************************/
-import org.hyperic.sigar.OperatingSystem
-import org.cloudifysource.dsl.context.ServiceContextFactory
 import static Shell.*
 import static ChefLoader
 
@@ -29,9 +27,7 @@ service {
     }
 	lifecycle{
         start {
-            def context = ServiceContextFactory.getServiceContext()
-
-            def bootstrap = ChefBootstrap.getBootstrap(installFlavor:"gem")
+            def bootstrap = ChefBootstrap.getBootstrap(installFlavor:"gem", context:context)
             def config = bootstrap.getConfig()
             bootstrap.runSolo([
                 "chef_server": [
