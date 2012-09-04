@@ -63,19 +63,33 @@ class ChefBootstrap {
         // persist to context attributes
         context.attributes.thisInstance["chefConfig"] = chefConfig
     } 
+    def installRuby() {
+        if (this.class.methods.find { it.name == "install_pkgs"}) {
+            install_pkgs(rubyPkgs)
+        } else {
+            rvm()
+        }
+    }
+    def installRubyGems() {
+        //install rubygems from source to avoid a version mismatch in rubygems (see rubygems.org)
+        def gemTarball = pathJoin(getTmpDir(), "rubygems.tar.gz")
+        def gemDir = pathJoin(getTmpDir(), "gemInstall")
+        new File(gemDir).mkdir()
+        download(gemTarball, chefConfig.gemTarballUrl)
+        sh("tar -xzf ${gemTarball} --strip-components=1 -C ${gemDir}")
+        sudo("ruby ${gemDir}/setup.rb --no-format-executable")
+    }
     def install() {
         if (which("chef-solo").isEmpty()) {
             switch(chefConfig.installFlavor) {
                 case ["fatBinary", "pkg"]: break
                 case "gem":
-                    if (which("gem").isEmpty()) {
-                        if (this.class.methods.find { it.name == "install_pkgs"}) {
-                            install_pkgs(rubyPkgs)
-                        } else {
-                            rvm()
-                        }
-                    }
-                default: break
+                    if (which("ruby").isEmpty()) { installRuby() }
+                    if (which("gem").isEmpty()) { installRubyGems() }
+                    break
+                default:
+                    throw new Exception("Support for the install flavor ${chefConfig.installFlavor} is not implemented")
+                    break
             }
             this.invokeMethod("${chefConfig.installFlavor}Install", null)
         }
@@ -125,10 +139,11 @@ Chef::Log::Formatter.show_time = true
         runSolo(runListToInitialJson(runList))
     }
     def runSolo(HashMap initJson=[:], cookbooksUrl=null) {
+        def chefSoloDir = pathJoin(getTmpDir(), "chef-solo")
         def soloConf = new File([context.getServiceDirectory(), "solo.rb"].join(File.separator)).text =
         """
-file_cache_path "/tmp/chef-solo"
-cookbook_path "/tmp/chef-solo/cookbooks"
+file_cache_path "${chefSoloDir}"
+cookbook_path "${pathJoin(chefSoloDir, "cookbooks")}"
         """
         def chef_solo = which("chef-solo")
         assert ! chef_solo.isEmpty()
@@ -198,14 +213,15 @@ cookbook_path "/tmp/chef-solo/cookbooks"
 
 class DebianBootstrap extends ChefBootstrap {
     def DebianBootstrap(options) { super(options) }
-    //TODO: rubygems.org - install from source tarball (to avoid a version mismatch in rubygems)
-    def rubyPkgs = ["ruby-dev", "ruby", "ruby-json", "rubygems", "libopenssl-ruby"]
+
+    def rubyPkgs = ["ruby-dev", "ruby", "ruby-json", "libopenssl-ruby", "build-essential"]
     def binPath = "/usr/bin"
     def install_pkgs(List pkgs) {
         sudo("apt-get update")
         sudo("apt-get install -y ${pkgs.join(" ")}", [env: ["DEBIAN_FRONTEND": "noninteractive", "DEBIAN_PRIORITY": "critical"]])
     }
     def pkgInstall() {
+        //TODO: when opscode notice that they're not in 0.10 anymore, we should change this accordingly through properties
         sudoWriteFile("/etc/apt/sources.list.d/opscode.list", """
 deb http://apt.opscode.com/ ${os.getVendorCodeName().toLowerCase()}-0.10 main
 """)
@@ -218,7 +234,7 @@ deb http://apt.opscode.com/ ${os.getVendorCodeName().toLowerCase()}-0.10 main
 
 class RHELBootstrap extends ChefBootstrap {
     def RHELBootstrap(options) { super(options) }
-    def rubyPkgs = ["ruby", "ruby-devel", "ruby-shadow", "rubygems", "gcc", "gcc-c++", "automake", "autoconf", "make", "curl", "dmidecode"]
+    def rubyPkgs = ["ruby", "ruby-devel", "ruby-shadow", "gcc", "gcc-c++", "automake", "autoconf", "make", "curl", "dmidecode"]
     def binPath = "/usr/bin"
     def install(options) {
         if (os.getVendor() in ["CentOS", "Red Hat"]) {
@@ -241,7 +257,7 @@ class RHELBootstrap extends ChefBootstrap {
 
 class SuSEBootstrap extends ChefBootstrap {
     def SuSEBootstrap(options) { super(options) }
-    def rubyPkgs = ["ruby", "ruby-devel", "ruby-shadow", "rubygems", "gcc", "gcc-c++", "automake", "autoconf", "make", "curl", "dmidecode"]
+    def rubyPkgs = ["ruby", "ruby-devel", "ruby-shadow", "gcc", "gcc-c++", "automake", "autoconf", "make", "curl", "dmidecode"]
     def binPath = "/usr/bin"
     def install_pkgs(List pkgs) {
         sudo("zypper install ${pkgs.join(" ")}")

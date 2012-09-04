@@ -32,7 +32,7 @@ service {
             bootstrap.runSolo([
                 "chef_server": [
                     "server_url": "http://localhost:8080",
-                    "init_style": "${config.init_style}"
+                    "init_style": "${config.initStyle}"
                 ],
                 "chef_packages": [
                     "chef": [
@@ -63,10 +63,11 @@ service {
     		]
     	}
         postStart { 
+            def chefRepoLocal
             if (binding.variables["chefRepo"]) {
-                def chefRepoLocal = chefRepo
+                chefRepoLocal = chefRepo
             } else {
-                def chefRepoLocal = [ 
+                chefRepoLocal = [ 
                   "repo_type": "git",
                   "url": "https://github.com/CloudifySource/cloudify-recipes.git",
                   "inner_path": "apps/travel-chef"

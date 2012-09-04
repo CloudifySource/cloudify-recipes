@@ -135,15 +135,9 @@ class ChefSvnLoader extends ChefLoaderBase {
 class ChefTarLoader extends ChefLoaderBase {
     String local_tarball_path = underHomeDir("chef_data.tgz")
     def fetch(url, inner_path) {
-
-        //fetch the tarball (should I maybe just use wget?)
-        new File(local_tarball_path).withWriter { writer ->
-            writer << new URL(url).openStream()
-        }
-
-        //unpack
+        download(local_tarball_path, url)
         sh("tar -xzf ${local_tarball_path} -C ${local_repo_dir}")
-
+        
         if (inner_path!=null) {symlink(inner_path)}
     }
 }
