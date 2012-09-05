@@ -36,7 +36,11 @@ class ChefBootstrap {
             case ["Red Hat", "CentOS", "Fedora", "Amazon"]: cls = new RHELBootstrap(options); break
             case "SuSE":  cls = new SuSEBootstrap(options); break
             case "Win32": cls = new WindowsBootstrap(options); break
-            default: throw new Exception("Support for the OS #{os.getVendor()} is not implemented")
+            case "" /*returned by ec2linux*/:
+                if (test("grep 'Amazon Linux' /etc/issue")) {
+                    cls = new RHELBootstrap(options); break
+                }
+            default: throw new Exception("Support for the OS ${os.getVendor()} is not implemented")
         }
         return cls
     }
@@ -58,19 +62,34 @@ class ChefBootstrap {
         chefConfig = chefProperties.chef.flatten() + chefConfig + options.findAll(){ it.key != "context" }
         // persist to context attributes
         context.attributes.thisInstance["chefConfig"] = chefConfig
+    } 
+    def installRuby() {
+        if (this.class.methods.find { it.name == "install_pkgs"}) {
+            install_pkgs(rubyPkgs)
+        } else {
+            rvm()
+        }
+    }
+    def installRubyGems() {
+        //install rubygems from source to avoid a version mismatch in rubygems (see rubygems.org)
+        def gemTarball = pathJoin(getTmpDir(), "rubygems.tar.gz")
+        def gemDir = pathJoin(getTmpDir(), "gemInstall")
+        new File(gemDir).mkdir()
+        download(gemTarball, chefConfig.gemTarballUrl)
+        sh("tar -xzf ${gemTarball} --strip-components=1 -C ${gemDir}")
+        sudo("ruby ${gemDir}/setup.rb --no-format-executable")
     }
     def install() {
         if (which("chef-solo").isEmpty()) {
             switch(chefConfig.installFlavor) {
                 case ["fatBinary", "pkg"]: break
+                case "gem":
+                    installRuby() //there are multiple packages here, and we want to be sure they're all installed
+                    if (which("gem").isEmpty()) { installRubyGems() }
+                    break
                 default:
-                    if (which("ruby").isEmpty()) {
-                        if (this.class.methods.find { it.name == "install_pkgs"}) {
-                            install_pkgs(rubyPkgs)
-                        } else {
-                            rvm()
-                        }
-                    }
+                    throw new Exception("Support for the install flavor ${chefConfig.installFlavor} is not implemented")
+                    break
             }
             this.invokeMethod("${chefConfig.installFlavor}Install", null)
         }
@@ -120,10 +139,11 @@ Chef::Log::Formatter.show_time = true
         runSolo(runListToInitialJson(runList))
     }
     def runSolo(HashMap initJson=[:], cookbooksUrl=null) {
+        def chefSoloDir = pathJoin(getTmpDir(), "chef-solo")
         def soloConf = new File([context.getServiceDirectory(), "solo.rb"].join(File.separator)).text =
         """
-file_cache_path "/tmp/chef-solo"
-cookbook_path "/tmp/chef-solo/cookbooks"
+file_cache_path "${chefSoloDir}"
+cookbook_path "${pathJoin(chefSoloDir, "cookbooks")}"
         """
         def chef_solo = which("chef-solo")
         assert ! chef_solo.isEmpty()
@@ -186,17 +206,22 @@ cookbook_path "/tmp/chef-solo/cookbooks"
         }
         return path
     }
+    def getConfig() {
+        return chefConfig
+    }
 }
 
 class DebianBootstrap extends ChefBootstrap {
     def DebianBootstrap(options) { super(options) }
-    def rubyPkgs = ["ruby-dev", "ruby", "ruby-json", "rubygems", "libopenssl-ruby"]
+
+    def rubyPkgs = ["ruby-dev", "ruby", "ruby-json", "libopenssl-ruby", "build-essential"]
     def binPath = "/usr/bin"
     def install_pkgs(List pkgs) {
         sudo("apt-get update")
         sudo("apt-get install -y ${pkgs.join(" ")}", [env: ["DEBIAN_FRONTEND": "noninteractive", "DEBIAN_PRIORITY": "critical"]])
     }
     def pkgInstall() {
+        //TODO: when opscode notice that they're not in 0.10 anymore, we should change this accordingly through properties
         sudoWriteFile("/etc/apt/sources.list.d/opscode.list", """
 deb http://apt.opscode.com/ ${os.getVendorCodeName().toLowerCase()}-0.10 main
 """)
@@ -223,6 +248,10 @@ class RHELBootstrap extends ChefBootstrap {
     }
     def install_pkgs(List pkgs) {
         sudo("yum install -y ${pkgs.join(" ")}")
+    }
+    def gemInstall() {
+        sudo("gem update --system")
+        super.gemInstall()
     }
 }
 

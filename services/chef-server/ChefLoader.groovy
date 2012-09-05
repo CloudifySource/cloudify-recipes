@@ -1,4 +1,19 @@
-import org.hyperic.sigar.OperatingSystem
+/*******************************************************************************
+* Copyright (c) 2011 GigaSpaces Technologies Ltd. All rights reserved
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*       http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*******************************************************************************/
+
 import static Shell.*
 
 class ChefLoader{ 
@@ -21,19 +36,15 @@ abstract class ChefLoaderBase {
 
     //TODO: refactor - this is already better implemented in ChefBootstrap, but not available from here
     def install_pkg(pkg) {
-        def os_vendor = OperatingSystem.getInstance().getVendor()
-        switch (os_vendor) {
-            case ["Ubuntu", "Debian", "Mint"]:
-                println "use apt-get"
-                sudo("apt-get install -y ${pkg}",
-                     [env: ["DEBIAN_FRONTEND": "noninteractive", "DEBIAN_PRIORITY": "critical"]])
-                break
-            case ["Red Hat", "CentOS", "Fedora", "Amazon"]:
-                println "use yum"
-                sudo("yum install -y ${pkg}")
-                break
-            default:
-                throw new Exception("Support for the OS ${os_vendor} is not implemented")
+        if (test("which apt-get >/dev/null")) {
+            sudo("apt-get install -y ${pkg}",
+                 [env: ["DEBIAN_FRONTEND": "noninteractive", "DEBIAN_PRIORITY": "critical"]])
+        } else if (test("which yum >/dev/null")) {
+            sudo("yum install -y ${pkg}")
+        } else if (test("which zypper >/dev/null")) {
+            sudo("zypper install ${pkg}")
+        } else {
+            throw new Exception("Failed to find a package manager")
         }        
     }
 
@@ -82,20 +93,17 @@ cookbook_path [ '${underHomeDir("cookbooks")}' ]
         }
     }
 
-    def cleanup() {
+    def cleanup_local_repo() {
         sh("rm -rf ${pathJoin(local_repo_dir,"*")}")
     }
 }
 
 class ChefGitLoader extends ChefLoaderBase {
-    def initialize() {
-        super.initialize()
+    def fetch(url, inner_path) {
         if (! test("which git >/dev/null")) {
             install_pkg("git")
         }
-    }
 
-    def fetch(url="https://github.com/CloudifySource/cloudify-recipes.git", inner_path="apps/travel-chef") {
         def git_dir = pathJoin(local_repo_dir, ".git")
         if (pathExists(git_dir)) {
             sh("cd ${local_repo_dir}; git pull origin master")
@@ -103,19 +111,16 @@ class ChefGitLoader extends ChefLoaderBase {
             sh("git clone ${url} ${local_repo_dir}")
         }
 
-        symlink(inner_path)
+        if (inner_path!=null) {symlink(inner_path)}
     }
 }
 
 class ChefSvnLoader extends ChefLoaderBase {
-    def initialize() {
-        super.initialize()
+    def fetch(url, inner_path) {
         if (! test("which svn >/dev/null")) {
             install_pkg("subversion")
         }
-    }
 
-    def fetch(url, inner_path) {
         def svn_dir = pathJoin(local_repo_dir, ".svn")
         if (pathExists(svn_dir)) {
             sh("cd ${local_repo_dir}; svn update")
@@ -123,22 +128,16 @@ class ChefSvnLoader extends ChefLoaderBase {
             sh("svn co ${url} ${local_repo_dir}")
         }
 
-        symlink(inner_path)
+        if (inner_path!=null) {symlink(inner_path)}
     }
 }
 
 class ChefTarLoader extends ChefLoaderBase {
     String local_tarball_path = underHomeDir("chef_data.tgz")
     def fetch(url, inner_path) {
-
-        //fetch the tarball (should I maybe just use wget?)
-        new File(local_tarball_path).withWriter { writer ->
-            writer << new URL(url).openStream()
-        }
-
-        //unpack
+        download(local_tarball_path, url)
         sh("tar -xzf ${local_tarball_path} -C ${local_repo_dir}")
-
-        symlink(inner_path)
+        
+        if (inner_path!=null) {symlink(inner_path)}
     }
 }
