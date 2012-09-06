@@ -60,7 +60,7 @@ Usage example :
 
 * <strong>mysql recipe</strong>: 
  * monitoring is not implemented yet. It will be asap.  
- * This recipe installs standalone MySQL DB and not master-slave. MySQL master-slave will be asap.  
+ * This recipe installs standalone MySQL DB and not master-slave. MySQL master-slave will be available asap.  
  
  
 
