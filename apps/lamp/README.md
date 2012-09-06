@@ -4,12 +4,12 @@
 **Description**: LAMP Sample Application  
 **Maintainer**:       Cloudify  
 **Maintainer email**: cloudifysource@gigaspaces.com  
-**Contributors**:  [Adam Lavie](https://github.com/adaml) , [Eitan Yanovsky](https://github.com/eitany) and [tamirko](https://github.com/tamirko)  
+**Contributors**:  [tamirko](https://github.com/tamirko)  
 **Homepage**:   [http://www.cloudifysource.org](http://www.cloudifysource.org)  
 **License**:      Apache 2.0   
 **Build**:  [Cloudify 2.2.0 M4](http://repository.cloudifysource.org/org/cloudifysource/2.2.0/gigaspaces-cloudify-2.2.0-m4-b2493-77.zip)   
 **Linux* sudoer permissions**:	Mandatory     
-**Release Date**: August 10th 2012  
+**Release Date**: August 31st 2012  
 
 
 Tested on:
