@@ -37,7 +37,7 @@ This recipe is comprised of three services:
 * [mysql](../../services/mysql/README.md) 
 * [apacheLB](../../services/apacheLB/README.md) 
 
-The LAMP recipe installs a small sample application uses php code which retrieves data from a MySQL DB(used by this recipe).
+The LAMP recipe installs a small sample application that uses php code which retrieves data from a MySQL DB(used by this recipe).
 
 The LAMP recipe also installs a [Hangman game (HTML 5)](https://01.org/html5webapps/webapps/hangonman).
 
