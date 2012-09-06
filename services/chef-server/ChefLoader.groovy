@@ -17,7 +17,7 @@
 import static Shell.*
 
 class ChefLoader{ 
-    def static get_loader(type) {
+    def static get_loader(type="git") {
            switch (type) {
             case "git":
                 return new ChefGitLoader()
@@ -78,10 +78,9 @@ cookbook_path [ '${underHomeDir("cookbooks")}' ]
 
     def symlink(inner_path) {
         ["cookbooks", "roles"].each{ chef_dir ->
-            if (! pathExists(underHomeDir(chef_dir))) {
-                def chef_dir_in_repo = pathJoin(local_repo_dir, inner_path, chef_dir)
-                sh("ln -s ${chef_dir_in_repo} ${underHomeDir(chef_dir)}")
-            }            
+            def chef_dir_in_repo = pathJoin(local_repo_dir, inner_path, chef_dir)
+            sh("rm -f ${underHomeDir(chef_dir)}")
+            sh("ln -sf ${chef_dir_in_repo} ${underHomeDir(chef_dir)}") 
         }
     }
 
