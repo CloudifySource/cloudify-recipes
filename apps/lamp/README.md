@@ -41,11 +41,11 @@ The LAMP recipe installs a small sample application that uses php code which ret
 
 The LAMP recipe also installs a [Hangman game (HTML 5)](https://01.org/html5webapps/webapps/hangonman).
 
-URLs (accessible from the apacheLB and apache service panel):
-http://LB_IP_ADDRESS:LB_PORT/balancer-manager - LB console
-http://LB_IP_ADDRESS:LB_PORT/index.php - PHP info
-http://LB_IP_ADDRESS:LB_PORT/sample.php - The Sample application
-http://LB_IP_ADDRESS:LB_PORT/index.html - The Hangman game
+URLs (accessible from the apacheLB and apache service panel):  
+* http://LB_IP_ADDRESS:LB_PORT/balancer-manager - LB console  
+* http://LB_IP_ADDRESS:LB_PORT/index.php - PHP info  
+* http://LB_IP_ADDRESS:LB_PORT/sample.php - The Sample application  
+* http://LB_IP_ADDRESS:LB_PORT/index.html - The Hangman game  
 
 Usage example : 
  You can invoke the following custom command
