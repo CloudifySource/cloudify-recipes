@@ -279,7 +279,7 @@ service {
         protocolDescription ="HTTP"
     }
 	
-	scaleCooldownInSeconds 20
+	scaleCooldownInSeconds 25
 	samplingPeriodInSeconds 1
 
 	// Defines an automatic scaling rule based on "counter" metric value
@@ -287,19 +287,18 @@ service {
 		scalingRule {
 
 			serviceStatistics {
-				metric "Total Process Cpu Time"
-				timeStatistics Statistics.averageCpuPercentage
-			    instancesStatistics Statistics.maximum
+				metric "Total Requests Count"
+				statistics Statistics.maximumThroughput
 				movingTimeRangeInSeconds 20
 			}
 
 			highThreshold {
-				value 40
+				value 1
 				instancesIncrease 1
 			}
 
 			lowThreshold {
-				value 25
+				value 0.2
 				instancesDecrease 1
 			}
 		}
