@@ -69,8 +69,7 @@ service {
                 chef_loader.fetch(chefRepo.url, chefRepo.inner_path)
                 chef_loader.upload()
             } else {
-                //call initialize with any loader, using git for no specific reason
-                ChefLoader.get_loader("git").initialize()
+                ChefLoader.get_loader().initialize()
             }
         }
     }
@@ -84,9 +83,8 @@ service {
             chef_loader.upload()
         },
         "cleanupCookbooks": { 
-            chef_loader = ChefLoader.get_loader(repo_type) 
-            chef_loader.cleanup()
+            chef_loader = ChefLoader.get_loader() 
+            chef_loader.cleanup_local_repo()
         }
     ])
-
 }
