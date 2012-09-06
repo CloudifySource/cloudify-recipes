@@ -68,6 +68,9 @@ service {
                 chef_loader.initialize()
                 chef_loader.fetch(chefRepo.url, chefRepo.inner_path)
                 chef_loader.upload()
+            } else {
+                //call initialize with any loader, using git for no specific reason
+                ChefLoader.get_loader("git").initialize()
             }
         }
     }
