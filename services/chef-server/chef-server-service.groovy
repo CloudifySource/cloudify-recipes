@@ -23,7 +23,7 @@ service {
 	icon "chef.png"
 	numInstances 1
     compute {
-        template "MEDIUM_LINUX"
+        template "MEDIUM_UBUNTU"
     }
 	lifecycle{
         start {
@@ -63,21 +63,12 @@ service {
     		]
     	}
         postStart { 
-            def chefRepoLocal
             if (binding.variables["chefRepo"]) {
-                chefRepoLocal = chefRepo
-            } else {
-                chefRepoLocal = [ 
-                  "repo_type": "git",
-                  "url": "https://github.com/CloudifySource/cloudify-recipes.git",
-                  "inner_path": "apps/travel-chef"
-                ]
+                chef_loader = ChefLoader.get_loader(chefRepo.repo_type)
+                chef_loader.initialize()
+                chef_loader.fetch(chefRepo.url, chefRepo.inner_path)
+                chef_loader.upload()
             }
-
-            chef_loader = ChefLoader.get_loader(chefRepoLocal.repo_type)
-            chef_loader.initialize()
-            chef_loader.fetch(chefRepoLocal.url, chefRepoLocal.inner_path)
-            chef_loader.upload()
         }
     }
 
