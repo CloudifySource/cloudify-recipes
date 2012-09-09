@@ -23,7 +23,7 @@ service {
 	icon "chef.png"
 	numInstances 1
     compute {
-        template "MEDIUM_UBUNTU"
+        template "MEDIUM_LINUX"
     }
 	lifecycle{
         start {
