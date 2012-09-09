@@ -105,7 +105,9 @@ def static sudoWriteFile(fileName, content) {
 }
 
 def static pathJoin(Object... args) {
-	return args*.asType(String).join(File.separator)
+  def path_elements = args*.asType(String)
+  path_elements.removeAll("")
+	return path_elements.join(File.separator)
 }
 
 def static underHomeDir(inner_path) {

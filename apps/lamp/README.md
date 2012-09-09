@@ -4,12 +4,12 @@
 **Description**: LAMP Sample Application  
 **Maintainer**:       Cloudify  
 **Maintainer email**: cloudifysource@gigaspaces.com  
-**Contributors**:  [Adam Lavie](https://github.com/adaml) , [Eitan Yanovsky](https://github.com/eitany) and [tamirko](https://github.com/tamirko)  
+**Contributors**:  [tamirko](https://github.com/tamirko)  
 **Homepage**:   [http://www.cloudifysource.org](http://www.cloudifysource.org)  
 **License**:      Apache 2.0   
 **Build**:  [Cloudify 2.2.0 M4](http://repository.cloudifysource.org/org/cloudifysource/2.2.0/gigaspaces-cloudify-2.2.0-m4-b2493-77.zip)   
 **Linux* sudoer permissions**:	Mandatory     
-**Release Date**: August 10th 2012  
+**Release Date**: August 31st 2012  
 
 
 Tested on:
@@ -37,15 +37,15 @@ This recipe is comprised of three services:
 * [mysql](../../services/mysql/README.md) 
 * [apacheLB](../../services/apacheLB/README.md) 
 
-The LAMP recipe installs a small sample application uses php code which retrieves data from a MySQL DB(used by this recipe).
+The LAMP recipe installs a small sample application that uses php code which retrieves data from a MySQL DB(used by this recipe).
 
 The LAMP recipe also installs a [Hangman game (HTML 5)](https://01.org/html5webapps/webapps/hangonman).
 
-URLs (accessible from the apacheLB and apache service panel):
-http://LB_IP_ADDRESS:LB_PORT/balancer-manager - LB console
-http://LB_IP_ADDRESS:LB_PORT/index.php - PHP info
-http://LB_IP_ADDRESS:LB_PORT/sample.php - The Sample application
-http://LB_IP_ADDRESS:LB_PORT/index.html - The Hangman game
+URLs (accessible from the apacheLB and apache service panel):  
+* http://LB_IP_ADDRESS:LB_PORT/balancer-manager - LB console  
+* http://LB_IP_ADDRESS:LB_PORT/index.php - PHP info  
+* http://LB_IP_ADDRESS:LB_PORT/sample.php - The Sample application  
+* http://LB_IP_ADDRESS:LB_PORT/index.html - The Hangman game  
 
 Usage example : 
  You can invoke the following custom command
@@ -60,7 +60,7 @@ Usage example :
 
 * <strong>mysql recipe</strong>: 
  * monitoring is not implemented yet. It will be asap.  
- * This recipe installs standalone MySQL DB and not master-slave. It will be asap.  
+ * This recipe installs standalone MySQL DB and not master-slave. MySQL master-slave will be available asap.  
  
  
 
