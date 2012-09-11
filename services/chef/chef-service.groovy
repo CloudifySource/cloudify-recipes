@@ -18,6 +18,12 @@ import java.util.concurrent.TimeUnit
 import ChefBootstrap
 
 service {
+    name = "chef"
+
+    compute {
+        template "SMALL_LINUX"
+    }
+
     lifecycle {
       install {
       	ChefBootstrap.getBootstrap(context:context, installFlavor: "gem").install()

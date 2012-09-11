@@ -22,9 +22,11 @@ service {
 	type "WEB_SERVER"
 	icon "chef.png"
 	numInstances 1
+
     compute {
         template "MEDIUM_LINUX"
     }
+
 	lifecycle{
         start {
             def bootstrap = ChefBootstrap.getBootstrap(installFlavor:"gem", context:context)

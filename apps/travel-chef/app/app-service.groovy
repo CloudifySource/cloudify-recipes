@@ -26,7 +26,11 @@ service {
 	numInstances 1
 	minAllowedInstances 1
 	maxAllowedInstances 2
-    
+
+    compute {
+        template "MEDIUM_LINUX"
+    }
+
     lifecycle {
         startDetectionTimeoutSecs 600
         startDetection {
@@ -73,9 +77,7 @@ service {
 		}
     	
     }
-    compute {
-        template "MEDIUM_LINUX"
-    }    
+
 	
 	userInterface {
 
