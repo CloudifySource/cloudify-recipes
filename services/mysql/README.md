@@ -11,7 +11,7 @@
 [Cloudify 2.2.0 M4](http://repository.cloudifysource.org/org/cloudifysource/2.2.0/gigaspaces-cloudify-2.2.0-m4-b2493-77.zip)     
 **Linux* sudoer permissions**:	Mandatory  
 **Windows* Admin permissions**:  Not required    
-**Release Date**: July 25th 2012  
+**Release Date**: September 24th 2012  
 
 
 Tested on:
@@ -39,7 +39,9 @@ Synopsis
 This folder contains a service recipe for MySQL.
 
 This recipe enables users to install MySQL in two modes: standalone and master-slave.
+
 In a master-slave mode, the first instance of the service is the master and all the other instances are slaves.
+
 In order to work in a master-slave mode, you need to set the masterSlaveMode property to true in mysql-service.properties file.
 
 The default port is 3306, but it can be modified in the mysql-service.properties file.
@@ -133,8 +135,9 @@ Examples :
 
 3:	<strong>my.cnf variables Replacement</strong> 
 
-In the properties file you can insert an array of my.cnf variables and their corresponding values (as many commands as you want).  
+In the properties file you can insert an array of my.cnf variables and their corresponding values (as many as you want).  
 Do NOT set the server-id variable, as it will be set by this recipe.
+
 These variables will be replaced during the install lifecycle event.
    
 Examples :  
