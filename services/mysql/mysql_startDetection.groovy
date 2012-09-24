@@ -15,12 +15,47 @@
 *******************************************************************************/
 import org.cloudifysource.dsl.context.ServiceContextFactory
 import groovy.sql.*
+import org.hyperic.sigar.OperatingSystem
 import org.cloudifysource.dsl.utils.ServiceUtils;
 import com.mysql.jdbc.Driver
+import static mysql_runner.*
 
 config=new ConfigSlurper().parse(new File('mysql-service.properties').toURL())
 
 context = ServiceContextFactory.getServiceContext()
+
+def checkMasterStatus(context,config) {
+	println "mysql_startDetection: checkMasterStatus: I am master ..."
+	osConfig=ServiceUtils.isWindows() ? config.win64 : config.linux
+	binFolder=context.attributes.thisInstance["binFolder"]	
+	def currQuery = "\"" + "show master status;" + "\""
+	def currDebugMsg = "Invoking query: ${currQuery}"
+	      
+	def os = OperatingSystem.getInstance()
+	def currVendor=os.getVendor()
+	switch (currVendor) {
+		case ["Ubuntu", "Debian", "Mint"]:		
+			currOsName="unix"		
+			break		
+		case ["Red Hat", "CentOS", "Fedora", "Amazon",""]:
+			currOsName="unix"
+			break					
+		case ~/.*(?i)(Microsoft|Windows).*/:
+			currOsName="windows"
+			break
+		default: throw new Exception("Support for ${currVendor} is not implemented")
+	}
+
+	def masterStatus = showMasterStatus(context,binFolder,osConfig.mysqlProgram,currOsName,currQuery,config.dbName,"root",currDebugMsg,"binLogData",true)
+	if (masterStatus) {
+		println "mysql_startDetection: checkMasterStatus: master is ready "		
+		return true
+	}
+	else {
+		println "mysql_startDetection: checkMasterStatus: master is NOT ready yet..."		
+		return false
+	}
+}
 
 println "mysql_startDetection.groovy: jdbcPort is ${config.jdbcPort} ..."
 if ( ServiceUtils.isPortOccupied(config.jdbcPort) ) { 				
@@ -51,8 +86,26 @@ if ( ServiceUtils.isPortOccupied(config.jdbcPort) ) {
 				def cc = row0["cc"] as int
 				context.attributes.thisInstance["cc"] = cc
 				println "mysql_startDetection: Count " + cc				
-				//return  cc > 0 
 				if ( cc > 0 ) {
+					if ( config.masterSlaveMode ) {
+						println "mysql_startDetection: in master-slave Mode ..."
+						def isMaster = context.attributes.thisInstance["isMaster"]
+						println "mysql_startDetection: isMaster is ${isMaster}..."
+						if ( isMaster ) {											
+							if (checkMasterStatus(context,config)) {
+								println "mysql_startDetection: Master is ready"
+								context.attributes.thisService["masterIsReady"]=true
+								System.exit(0)
+							}
+							else {
+								println "mysql_startDetection: Master is NOT ready yet..."
+								System.exit(-1)							
+							}
+						}
+					}
+					else {
+						println "mysql_startDetection: in standalone mode ..."
+					}
 					System.exit(0)
 				}				
 				else {

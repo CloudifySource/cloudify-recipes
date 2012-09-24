@@ -1,6 +1,17 @@
 #!/bin/bash
 
 # args:
+# $1 A command separated list of my.cnf section names
+# $2 A command separated list of my.cnf variable names
+# $3 A command separated list of my.cnf values for the above variable names
+# 
+
+sectionNames=$1
+variableNames=$2
+newValues=$3
+
+
+# args:
 # $1 the error code of the last command (should be explicitly passed)
 # $2 the message to print in case of an error
 # 
@@ -52,24 +63,41 @@ sudo yum reinstall -y -q mysql-libs || error_exit $? "Failed on: sudo yum instal
 echo "Killing old mysql process if exists b4 ending the installation..."
 killMySqlProcess
 
+sectionNamesLen=`expr length "$sectionNames"`
+if [ $sectionNamesLen -gt 0 ] ; then
 
-myCnfPath=`sudo find / -name "my.cnf"`
-if [ -f "${myCnfPath}" ] ; then
-    allZeroes="0.0.0.0"
-	bindcount=`grep -c "bind-address" $myCnfPath`
-    if [ $bindcount -eq 0 ] ; then
-	  bindStr="bind-address=${allZeroes}"
-	  mysqldStr="\[mysqld\]"
-	  jointStr="${mysqldStr}\n${bindStr}"
-	  echo "Adding ${bindStr} $myCnfPath ... "
-      sudo sed -i -e "s/$mysqldStr/$jointStr/g" $myCnfPath
-	else
-		orig127="127.0.0.1"
-		echo "Replacing $orig127 with $allZeroes in $myCnfPath ... "
-		sudo sed -i -e "s/$orig127/$allZeroes/g" $myCnfPath
+	myCnfPath=`sudo find / -name "my.cnf"`
+	if [ -f "${myCnfPath}" ] ; then
+
+		sectionNames=$1
+		variableNames=$2
+		newValues=$3
+
+		IFS=, read -a sectionNamesArr <<< "$sectionNames"
+		IFS=, read -a variableNamesArr <<< "$variableNames"
+		IFS=, read -a newValuesArr <<< "$newValues"
+		echo "IFS is ${IFS}"
+		echo "${sectionNamesArr[@]}"
+		echo "${variableNamesArr[@]}"
+		echo "${newValuesArr[@]}"
+
+		variableCounter=${#variableNamesArr[@]}
+
+		for (( i=0; i<${variableCounter}; i++ ));
+		do
+			currSection="\[${sectionNamesArr[$i]}\]"
+			currVariable="${variableNamesArr[$i]}"
+			currNewValue="${newValuesArr[$i]}"
+			currNewLine="${currVariable}=${currNewValue}"
+			echo "Commenting $currVariable in $myCnfPath ... "
+			sudo sed -i -e "s/^$currVariable/#$currVariable/g" $myCnfPath
+			
+			jointStr="${currSection}\n${currNewLine}"
+			echo "Setting ${currNewLine} in the ${currSection} section of $myCnfPath ... "
+			sudo sed -i -e "s/$currSection/$jointStr/g" $myCnfPath		
+		done
 	fi
 fi
-
 echo "End of $0"
 
 

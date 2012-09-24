@@ -20,17 +20,34 @@ import static mysql_runner.*
 
 
 /* 
-	This file enables users to invoke an SQL statement
-	Usage :  invoke mysql query actionUser dbName query
-	Example: invoke mysql query root myDbName "update users set city=\"NY\" where uid=15"
+	This file enables users to add a slave to the master.
+	It should be invoked only on a master instance (by a remote slave) and only if masterSlaveMode is set to true on both the slave and master.
+	As a result, the following will be invoked :  
+	mysql -u root -D dbName -e "GRANT REPLICATION SLAVE, REPLICATION CLIENT ON *.* TO slaveUser@'slaveHostIP' IDENTIFIED BY 'slavePassword';"
+	
+	Usage :  invoke mysqlmaster addSlave actionUser dbName slaveUser slavePassword slaveHostIP 
 */	
 
 config=new ConfigSlurper().parse(new File('mysql-service.properties').toURL())
 osConfig=ServiceUtils.isWindows() ? config.win64 : config.linux
 context = ServiceContextFactory.getServiceContext()
-mysqlHost=context.attributes.thisInstance["dbHost"]
+
+
+
+if ( !config.masterSlaveMode ) {
+	println "mysql_addSlave.groovy: masterSlaveMode is disabled. I cannot invoke addSlave"
+	System.exit(-1)
+}
+
+def isMaster = context.attributes.thisInstance["isMaster"]
+
+if ( !isMaster ) {
+	println "mysql_addSlave.groovy: I am not a master. I cannot invoke addSlave"
+	System.exit(-1)
+}
+
 binFolder=context.attributes.thisInstance["binFolder"]
-println "mysql_query.groovy: mysqlHost is ${mysqlHost} "
+println "mysql_addSlave.groovy: binFolder is ${binFolder} "
 
 def currActionQuery 
 def currOsName
@@ -51,19 +68,25 @@ switch (currVendor) {
 }
 
 
-if (args.length < 3) {
-	println "mysql_query.groovy: query error: Missing parameters\nUsage: invoke serviceName query actionUser dbName query"
+if (args.length < 5) {
+	println "mysql_addSlave.groovy: addSlave error: Missing parameters\nUsage: invoke mysqlmaster addSlave actionUser dbName slaveUser slavePassword slaveHostIP"
 	System.exit(-1)
 }
 
-
 def currActionUser = args[0]
 def currActionDbName = args[1]
-def currQuery = "\"" + args[2] + "\""
+def slaveUser = args[2]
+def slavePassword = args[3]
+def slaveHostIP = args[4]
+
+
+def grantStr = "GRANT REPLICATION SLAVE, REPLICATION CLIENT ON *.* TO ${slaveUser}@'${slaveHostIP}' IDENTIFIED BY '${slavePassword}';"
+def currQuery = "\"" + grantStr + "\""
 def currDebugMsg = "Invoking query: ${currQuery}"
 
-runMysqlQuery(binFolder,osConfig.mysqlProgram,currOsName,currQuery,currActionDbName,currActionUser,currDebugMsg,"queryOutput",true)
+println "mysql_addSlave.groovy: b4 invoking ${currQuery} ... " 
+runMysqlQuery(binFolder,osConfig.mysqlProgram,currOsName,currQuery as String,currActionDbName as String,currActionUser as String,currDebugMsg as String,"addSlaveOutput",true)
 							
-println "mysql_query.groovy: End"
+println "mysql_addSlave.groovy: End"
 	
 
