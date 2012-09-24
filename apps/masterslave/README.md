@@ -40,19 +40,24 @@ Usage example :
  Invoke the following custom commands:
  
  <strong>1. invoke mysql query root lampdb \\\"select * from persons\\\"</strong>
+   
    As a result, you will see that the content of the persons table in all three instances is identical.
  
- <strong>2. invoke -instanceid 1 mysql query root lampdb \\\"update persons set fname = \\\'mynewFamilyName\\\' where id =1\\\"
+ <strong>2. invoke -instanceid 1 mysql query root lampdb \\\"update persons set fname = \\\'mynewFamilyName\\\' where id =1\\\"</strong>
+   
    This will update the persons table only in the database of the master.
    
  <strong>3. invoke mysql query root lampdb \\\"select * from persons\\\"</strong>
+   
    As a result, you will see that (again) the content of the persons table in all three instances is identical, 
    although we invoked the previous command(#2) only on the master instance(-instanceid 1).
  
- <strong>4. invoke -instanceid 1 mysql import root lampdb http://repository.cloudifysource.org/org/cloudifysource/examples/lamp/1.0.0/newSample.zip
+ <strong>4. invoke -instanceid 1 mysql import root lampdb http://repository.cloudifysource.org/org/cloudifysource/examples/lamp/1.0.0/newSample.zip</strong>
+   
    The above will import data to the persons table only in the database of the master. 
  
  <strong>5. invoke mysql query root lampdb \\\"select * from persons\\\"</strong>
+   
    As a result, you will see that (one again) the content of the persons table in all three instances is identical, 
    although we invoked the previous command(#4) only on the master instance(-instanceid 1).
 
