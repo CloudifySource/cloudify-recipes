@@ -11,7 +11,6 @@
 **Linux* sudoer permissions**:	Not required (unless using a port <=1024)
 **Release Date**: September 13, 2012
 
-
 Tested on:
 --------
 * <strong>EC2</strong>: CentOs, Ubuntu
