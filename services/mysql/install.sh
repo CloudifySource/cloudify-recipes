@@ -56,9 +56,24 @@ sudo rm -rf /var/log/mysql* || error_exit $? "Failed on: sudo rm -rf /var/log/my
 #sudo rm -f /home/`whoami`/{.,}*mysql* || error_exit $? "Failed on: sudo rm -f /home/`whoami`/{.,}*mysql*" 
 
 echo "Using yum. Installing mysql on one of the following : Red Hat, CentOS, Fedora, Amazon"
-sudo yum install -y -q mysql mysql-server || error_exit $? "Failed on: sudo yum install -y -q mysql mysql-server "
-echo "Reinstalling mysql-libs ..."
-sudo yum reinstall -y -q mysql-libs || error_exit $? "Failed on: sudo yum install -y -q mysql mysql-server "
+
+# This master-slave implementation requires mysql5.1+ version. 
+# So if the available version is 5.0, the recipe retrievs mysql5.5 from the webtatic repo.
+currMysqlVersion=`yum list mysql mysql-server | grep mysql | grep -cv "5.0"`
+if [ $currMysqlVersion -eq 0 ] ; then
+  echo "Getting rpm repo.webtatic.com ..." 
+  sudo rpm --force -Uvh http://repo.webtatic.com/yum/centos/5/latest.rpm || error_exit $? "Failed on: sudo rpm -Uvh http://repo.webtatic.com/yum/centos/5/latest.rpm"
+  echo "Installing libmysqlclient15 from webtatic repo ..." 
+  sudo yum install -y -q libmysqlclient15 --enablerepo=webtatic || error_exit $? "Failed on: sudo yum install -y -q libmysqlclient15 --enablerepo=webtatic"
+  echo "Installing mysql55 from webtatic repo ..." 
+  sudo yum install -y -q mysql55 mysql55-server --enablerepo=webtatic || error_exit $? "Failed on: sudo yum install -y -q mysql55 mysql55-server --enablerepo=webtatic"
+  echo "Reinstalling mysql55-libs from webtatic repo ..." 
+  sudo yum reinstall -y -q mysql55-libs --enablerepo=webtatic || error_exit $? "Failed on: sudo reinstall -y -q mysql55-libs --enablerepo=webtatic"
+else
+  sudo yum install -y -q mysql mysql-server || error_exit $? "Failed on: sudo yum install -y -q mysql mysql-server "
+  echo "Reinstalling mysql-libs ..."
+  sudo yum reinstall -y -q mysql-libs || error_exit $? "Failed on: sudo yum install -y -q mysql mysql-server "
+fi
 
 echo "Killing old mysql process if exists b4 ending the installation..."
 killMySqlProcess
