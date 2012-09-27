@@ -168,14 +168,14 @@ Examples :
 
 ## Custom Commands 
 
-**mysqldump**:   
+**A) mysqldump**:   
 
 This custom command enables users to create a database snapshot (mysqldump).  
 Usage :  <strong>invoke mysql mysqldump actionUser dumpPrefix [dbName]</strong>    
 Example: <strong>invoke mysql mysqldump root myPrefix_ myDbName</strong>  
 	
 	
-**query**:  
+**B) query**:  
  
 This custom command enables users to invoke an SQL statement.  
 Usage :  <strong>invoke mysql query actionUser dbName query</strong>  
@@ -192,14 +192,14 @@ Examples:
 <strong>invoke mysql query root tamirDB \\\"INSERT INTO users VALUES \\\\(17,\\\'Dan\\\',\\\'hisPassword\\\',\\\'hisemail@his.com\\\',0\\\\)\\\"</strong>  
 
 
-**import**:
+**C) import**:
 
 This custom command enables users to import a zipped file to a database
 Usage :  <strong>invoke import actionUser dbName zipFileURL</strong>
 Example: <strong>invoke import root myDbName http://www.mysite.com/myFile.zip</strong>
 
 
-**addSlave**:
+**D) addSlave**:
 
 This custom command enables users to add a slave to the master.
 It should be invoked only on a master instance (by a remote slave) 
@@ -210,7 +210,7 @@ mysql -u root -D dbName -e "GRANT REPLICATION SLAVE, REPLICATION CLIENT ON *.* T
 Usage :  <strong>invoke mysqlmaster addSlave actionUser dbName slaveUser slavePassword slaveHostIP</strong>
 			
 			
-**showMasterStatus**:	
+**E) showMasterStatus**:	
 					
 This custom command enables users to show the master's status.
 It should be invoked only on a master instance (either by the master or by a remote slave) 
