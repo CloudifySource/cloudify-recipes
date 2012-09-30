@@ -23,7 +23,7 @@ service {
     numInstances 1
 
     compute {
-        template "MEDIUM_LINUX"
+        template "MEDIUM_UBUNTU"
     }
 
     lifecycle {
