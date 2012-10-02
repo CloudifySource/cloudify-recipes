@@ -1,15 +1,15 @@
 # Vert.x
 
-**Status**: **Under Construction**
-**Description**:  Vert.x
-**Maintainer**: GigaSpaces Technologies
-**Maintainer email**: cloudifysource@gigaspaces.com
-**Contributors**:  [Uri Cohen](https://github.com/uric)
-**Homepage**: [http://www.cloudifysource.org](http://www.cloudifysource.org)
-**License**: Apache 2.0
-**Build**: [Cloudify 2.2.0 M4](http://repository.cloudifysource.org/org/cloudifysource/2.2.0/gigaspaces-cloudify-2.2.0-m2-b2491.zip)
-**Linux* sudoer permissions**:	Not required (unless using a port <=1024)
-**Release Date**: September 13, 2012
+* **Status**: **Under Construction**
+* **Description**:  Vert.x
+* **Maintainer**: GigaSpaces Technologies
+* **Maintainer email**: cloudifysource@gigaspaces.com
+* **Contributors**:  [Uri Cohen](https://github.com/uric)
+* **Homepage**: [http://www.cloudifysource.org](http://www.cloudifysource.org)
+* **License**: Apache 2.0
+* **Build**: [Cloudify 2.2.0 M4](http://repository.cloudifysource.org/org/cloudifysource/2.2.0/gigaspaces-cloudify-2.2.0-m2-b2491.zip)
+* **Linux* sudoer permissions**:	Not required (unless using a port <=1024)
+* **Release Date**: September 13, 2012
 
 Tested on:
 --------
