@@ -28,7 +28,7 @@ service {
 	maxAllowedInstances 2
 
     compute {
-        template "MEDIUM_UBUNTU"
+        template "SMALL_UBUNTU"
     }
 
     lifecycle {
