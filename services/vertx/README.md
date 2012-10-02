@@ -21,22 +21,22 @@ Synopsis
 
 This folder contains a service recipe for the Vert.x framework.
 
-[Vert.x](https://vertx.io) is an event driven application framework that runs on top of the JVM. Vert.x apps can be written in Ruby, Java, Groovy, JavaScript, Coffeescript and Python (soon also Scala and Clojure). The recipe auto-installs Java7 and then the vertx distribution (the Java installation is local to the recipe and does not interfere with the default Java installation on the hosting server). Most of the relevant vertx parameters can be set in the ['vertx-service.properties'](vertx-service.properties) file. Please refer to this file for more details.
+[Vert.x](https://vertx.io) is an event driven application framework that runs on top of the JVM. Vert.x apps can be written in Ruby, Java, Groovy, JavaScript, Coffeescript and Python (soon also Scala and Clojure). The recipe auto-installs Java7 and then the vertx distribution (the Java installation is local to the recipe and does not interfere with the default Java installation on the hosting server). Most of the relevant vertx parameters can be set in the [`vertx-service.properties`](vertx-service.properties) file. Please refer to this file for more details.
 To learn about all the possible vertx configuration parameters please refer to the [vertx documentation](http://vertx.io/manual.html#interacting-with-vertx).
 
 Using a Load Balancer
 ---------------------
 The recipe also support fronting vertx with an Apache Load Balancer (see the [Apache Load Balancer](../apacheLB) recipe ).
-To enable load balancer support, make sure to include the apacheLB service within the same application to which the vertx service belongs, and set the 'useLoadBalancer' properties in the ['vertx-service.properties'](vertx-service.properties) file to 'true'.
+To enable load balancer support, make sure to include the apacheLB service within the same application to which the vertx service belongs, and set the `useLoadBalancer` properties in the [`vertx-service.properties`](vertx-service.properties) file to `true`.
 
 Auto Scaling
 ------------
 The service is configured to auto-scale by instantiating a new VM with vertx if the average CPU utilization of at least one node in the cluster crosses 60 percent for more than 20 seconds.
-See the 'scalingRules' section in the [vertx-service.groovy](vertx-service.groovy) file for the exact syntax used to configure this behavior.
+See the `scalingRules` section in the [vertx-service.groovy](vertx-service.groovy) file for the exact syntax used to configure this behavior.
 
 Clustering
 ----------
-The recipe supports clustering via the 'cluster' property. When set to true, the recipe will auto configure clustering. To control clustering parameters, edit the 'clusterConfig' section of the ['vertx-service.properties'](vertx-service.properties) file. To learn more about vertx clustering options please refer to the [vertx documentation](http://vertx.io/manual.html#configuring-clustering)
+The recipe supports clustering via the `cluster` property. When set to true, the recipe will auto configure clustering. To control clustering parameters, edit the `clusterConfig` section of the [`vertx-service.properties`](vertx-service.properties) file. To learn more about vertx clustering options please refer to the [vertx documentation](http://vertx.io/manual.html#configuring-clustering)
 
 
 Custom Commands
