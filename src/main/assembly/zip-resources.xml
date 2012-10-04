@@ -14,14 +14,17 @@
                                 <include>**/apps/petclinic/**</include>
                                 <include>**/apps/petclinic-simple/**</include>
                                 <include>**/apps/travel/**</include>
-                                <include>**/apps/travel-azure/**</include>
-								<include>**/services/apacheLB/**</include>
+                                <include>**/apps/travel-chef/**</include>
+				<include>**/services/apacheLB/**</include>
                                 <include>**/services/activemq/**</include>
                                 <include>**/services/cassandra/**</include>
                                 <include>**/services/hsqldb/**</include>
                                 <include>**/services/mongodb/**</include>
                                 <include>**/services/solr/**</include>
                                 <include>**/services/tomcat/**</include>
+                                <include>**/services/chef/**</include>
+                                <include>**/services/chef-services/**</include>
+                                <include>**/services/chef-server/**</include>
                         </includes>
                         <outputDirectory>/</outputDirectory>
                 </fileSet>
