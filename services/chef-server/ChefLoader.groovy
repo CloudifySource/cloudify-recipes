@@ -92,6 +92,14 @@ cookbook_path [ '${underHomeDir("cookbooks")}' ]
         }
     }
 
+    def listCookbooks() {
+        sudoShellOut("knife cookbook list")
+    }
+
+    def invokeKnife(args = []) {
+        sudoShellOut("knife " + args.join(" "))
+    }
+
     def cleanup_local_repo() {
         sh("rm -rf ${pathJoin(local_repo_dir,"*")}")
     }
