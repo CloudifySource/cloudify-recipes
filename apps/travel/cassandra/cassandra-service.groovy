@@ -15,4 +15,7 @@
 *******************************************************************************/
 service {
 	extend "../../../services/cassandra"
+	lifecycle{		
+		postStart 	"cassandra_poststart.groovy"
+	}
 }

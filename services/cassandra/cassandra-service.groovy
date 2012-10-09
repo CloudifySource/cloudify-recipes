@@ -24,8 +24,7 @@ service {
   lifecycle{
 		init 		"cassandra_install.groovy"
 		preStart 	"cassandra_prestart.groovy"
-		start 		"cassandra_start.groovy"
-		postStart 	"cassandra_poststart.groovy"
+		start 		"cassandra_start.groovy"	
 	}
 	plugins ([
 		plugin {

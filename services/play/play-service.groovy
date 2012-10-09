@@ -86,21 +86,30 @@ service {
 		postStop {
 			if ( useLoadBalancer ) { 
 				println "play-service.groovy: play Post-stop ..."
-				def apacheService = context.waitForService(loadBalancerServiceName, 180, TimeUnit.SECONDS)			
-										
-										
-				def privateIP
-				if (  context.isLocalCloud()  ) {
-					privateIP=InetAddress.localHost.hostAddress
+				try { 				
+					def apacheService = context.waitForService(loadBalancerServiceName, 180, TimeUnit.SECONDS)			
+					if ( apacheService != null ) { 	
+											
+						def privateIP
+						if (  context.isLocalCloud()  ) {
+							privateIP=InetAddress.localHost.hostAddress
+						}
+						else {
+							privateIP =System.getenv()["CLOUDIFY_AGENT_ENV_PRIVATE_IP"]
+						}				
+						
+						println "play-service.groovy: privateIP is ${privateIP} ..."
+						def currURL="http://${privateIP}:${httpPort}/${applicationCtxPath}"
+						println "play-service.groovy: About to remove ${currURL} from apacheLB ..."
+						apacheService.invoke("removeNode", currURL as String, instanceID as String)
+					}
+					else {
+						println "play-service.groovy: waitForService returned ${loadBalancerServiceName} null"
+					}
 				}
-				else {
-					privateIP =System.getenv()["CLOUDIFY_AGENT_ENV_PRIVATE_IP"]
-				}				
-				
-				println "play-service.groovy: privateIP is ${privateIP} ..."
-				def currURL="http://${privateIP}:${httpPort}/${applicationCtxPath}"
-				println "play-service.groovy: About to remove ${currURL} from apacheLB ..."
-				apacheService.invoke("removeNode", currURL as String, instanceID as String)
+				catch (all) {		
+					println "play-service.groovy: Exception in Post-stop: " + all
+				} 					
 				println "play-service.groovy: play Post-stop ended"
 			}			
 		}		
