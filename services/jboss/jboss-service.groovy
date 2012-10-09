@@ -158,23 +158,33 @@ service {
 		postStop {
 			if ( useLoadBalancer ) { 
 				println "jboss-service.groovy: jboss Post-stop ..."
-				def apacheService = context.waitForService("apacheLB", 180, TimeUnit.SECONDS)			
+				try { 
+					def apacheService = context.waitForService("apacheLB", 180, TimeUnit.SECONDS)			
+							
+					if ( apacheService != null ) { 						
+						def ctxPath = ("default" == context.applicationName)?"":"${context.applicationName}"
+						println "jboss-service.groovy: postStop ctxPath is ${ctxPath}"				
 						
-				def ctxPath = ("default" == context.applicationName)?"":"${context.applicationName}"
-				println "jboss-service.groovy: postStop ctxPath is ${ctxPath}"				
-				
-				def privateIP
-				if (  context.isLocalCloud()  ) {
-					privateIP=InetAddress.localHost.hostAddress
+						def privateIP
+						if (  context.isLocalCloud()  ) {
+							privateIP=InetAddress.localHost.hostAddress
+						}
+						else {
+							privateIP =System.getenv()["CLOUDIFY_AGENT_ENV_PRIVATE_IP"]
+						}				
+						
+						println "jboss-service.groovy: privateIP is ${privateIP} ..."
+						def currURL="http://${privateIP}:${currHttpPort}/${ctxPath}"
+						println "jboss-service.groovy: About to remove ${currURL} from apacheLB ..."
+						apacheService.invoke("removeNode", currURL as String, instanceID as String)
+					}
+					else {
+						println "jboss-service.groovy: waitForService returned apacheLB null"
+					}
 				}
-				else {
-					privateIP =System.getenv()["CLOUDIFY_AGENT_ENV_PRIVATE_IP"]
-				}				
-				
-				println "jboss-service.groovy: privateIP is ${privateIP} ..."
-				def currURL="http://${privateIP}:${currHttpPort}/${ctxPath}"
-				println "jboss-service.groovy: About to remove ${currURL} from apacheLB ..."
-				apacheService.invoke("removeNode", currURL as String, instanceID as String)
+				catch (all) {		
+					println "jboss-service.groovy: Exception in Post-stop: " + all
+				} 				
 				println "jboss-service.groovy: jboss Post-stop ended"
 			}			
 		}					
