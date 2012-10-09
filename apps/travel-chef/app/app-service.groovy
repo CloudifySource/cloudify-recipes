@@ -26,7 +26,11 @@ service {
 	numInstances 1
 	minAllowedInstances 1
 	maxAllowedInstances 2
-    
+
+    compute {
+        template "SMALL_UBUNTU"
+    }
+
     lifecycle {
         startDetectionTimeoutSecs 600
         startDetection {
@@ -66,16 +70,21 @@ service {
 		}
 		
 		postStop {
-			def apacheService = context.waitForService("apacheLB", 180, TimeUnit.SECONDS)			
-			def	privateIP =System.getenv()["CLOUDIFY_AGENT_ENV_PRIVATE_IP"]
-			def currURL="http://${privateIP}:8080/${context.applicationName}"
-			apacheService.invoke("removeNode", currURL as String, instanceID as String)
+			try { 	
+				def apacheService = context.waitForService("apacheLB", 180, TimeUnit.SECONDS)
+				if ( apacheService != null ) { 					
+					def	privateIP =System.getenv()["CLOUDIFY_AGENT_ENV_PRIVATE_IP"]
+					def currURL="http://${privateIP}:8080/${context.applicationName}"
+					apacheService.invoke("removeNode", currURL as String, instanceID as String)
+				}
+			}
+			catch (all) {		
+				println "app-service.groovy: Exception in Post-stop: " + all
+			} 
 		}
     	
     }
-    compute {
-        template "MEDIUM_LINUX"
-    }    
+
 	
 	userInterface {
 

@@ -13,9 +13,33 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 *******************************************************************************/
-import java.net.InetAddress 
 
-service {
-    extend "../../../services/chef-services/mysql-vanilla"
-    name "mysql"
+def user = args[0]
+def dbName = args[1]
+def password = args[2]
+def currQuery = args[3]
+
+
+def static shellOut(command, Map env=[:]) {
+    def proc = startProcess(shellify_cmd(command), env)
+    def out = new StringBuilder()
+    def err = new StringBuilder()
+    proc.waitForProcessOutput(out, err)
+    if (out) println "\n$out"
+    if (err) println "\n$err"
 }
+
+def static startProcess(command, Map env=[:]) {
+    ProcessBuilder pb = new ProcessBuilder(command)
+    def environment = pb.environment()
+    if (!env.isEmpty()) {
+        environment += env
+    }
+    return pb.start()
+}
+
+def static shellify_cmd(command) {
+    return ["/bin/sh", "-c", command as String]
+}
+
+shellOut("mysql -u ${user} -p${password} -D ${dbName} -e \"${currQuery}\"")

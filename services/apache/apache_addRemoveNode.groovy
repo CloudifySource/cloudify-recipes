@@ -17,26 +17,36 @@
 import java.util.concurrent.TimeUnit;
 
 def static addOrRemoveNode(config,lifecycleEvent,actionName,seconds2Wait,context,currHttpPort,instanceID) { 
+		
+	def myServiceName = config.serviceName		
+	try {			
+		def loadBalancerServiceName = config.loadBalancerServiceName	
+		println "${myServiceName}: In ${lifecycleEvent} ..."
+		def loadbalancerService = context.waitForService(loadBalancerServiceName, seconds2Wait, TimeUnit.SECONDS)			
+		if ( loadbalancerService != null ) { 
+			println "${myServiceName}: Invoking ${actionName} of ${loadBalancerServiceName} ..."
+					
+			def privateIP
+			if (  context.isLocalCloud()  ) {
+				privateIP=InetAddress.getLocalHost().getHostAddress()
+			}
+			else {
+				privateIP =System.getenv()["CLOUDIFY_AGENT_ENV_PRIVATE_IP"]
+			}
+			println "${myServiceName}: privateIP is ${privateIP} ..."
 			
-    def myServiceName = config.serviceName
-	def loadBalancerServiceName = config.loadBalancerServiceName	
-	println "${myServiceName}: In ${lifecycleEvent} ..."
-	def loadbalancerService = context.waitForService(loadBalancerServiceName, seconds2Wait, TimeUnit.SECONDS)			
-	println "${myServiceName}: Invoking ${actionName} of ${loadBalancerServiceName} ..."
-			
-	def privateIP
-	if (  context.isLocalCloud()  ) {
-		privateIP=InetAddress.getLocalHost().getHostAddress()
+			def currURL="http://${privateIP}:${currHttpPort}/${config.ctxPath}"
+			println "${myServiceName}: About to ${actionName} ${currURL} to ${loadBalancerServiceName} ..."
+			loadbalancerService.invoke("${actionName}", currURL as String, instanceID as String)
+		}		
+		else {
+			println "${myServiceName}: waitForService returned ${loadBalancerServiceName} null"	
+		}
 	}
-	else {
-		privateIP =System.getenv()["CLOUDIFY_AGENT_ENV_PRIVATE_IP"]
+	catch (all) {		
+		println "${myServiceName}: Exception in addOrRemoveNode: " + all		
 	}
-	println "${myServiceName}: privateIP is ${privateIP} ..."
-	
-	def currURL="http://${privateIP}:${currHttpPort}/${config.ctxPath}"
-	println "${myServiceName}: About to ${actionName} ${currURL} to ${loadBalancerServiceName} ..."
-	loadbalancerService.invoke("${actionName}", currURL as String, instanceID as String)			                 
 	println "${myServiceName}: ${lifecycleEvent} ended"
-	
+
 }
 		

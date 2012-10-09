@@ -28,9 +28,24 @@ import static mysql_runner.*
 config=new ConfigSlurper().parse(new File('mysql-service.properties').toURL())
 osConfig=ServiceUtils.isWindows() ? config.win64 : config.linux
 context = ServiceContextFactory.getServiceContext()
+
+
+if ( !config.masterSlaveMode ) {
+	println "mysql_addSlave.groovy: masterSlaveMode is disabled. I cannot invoke showMasterStatus"
+	System.exit(-1)
+}
+
+def isMaster = context.attributes.thisInstance["isMaster"]
+
+if ( !isMaster ) {
+	println "mysql_showMasterStatus.groovy: I am not a master. I cannot invoke showMasterStatus"
+	System.exit(-1)
+}
+
+
 mysqlHost=context.attributes.thisInstance["dbHost"]
 binFolder=context.attributes.thisInstance["binFolder"]
-println "mysql_query.groovy: mysqlHost is ${mysqlHost} "
+println "mysql_showMasterStatus.groovy: mysqlHost is ${mysqlHost} "
 
 def currActionQuery 
 def currOsName
@@ -51,19 +66,27 @@ switch (currVendor) {
 }
 
 
-if (args.length < 3) {
-	println "mysql_query.groovy: query error: Missing parameters\nUsage: invoke serviceName query actionUser dbName query"
+if (args.length < 2) {
+	println "mysql_showMasterStatus.groovy: showMasterStatus error: Missing parameters\nUsage: invoke serviceName showMasterStatus actionUser dbName"
 	System.exit(-1)
 }
 
 
 def currActionUser = args[0]
 def currActionDbName = args[1]
-def currQuery = "\"" + args[2] + "\""
+def currQuery = "\"" + "show master status;" + "\""
 def currDebugMsg = "Invoking query: ${currQuery}"
 
-runMysqlQuery(binFolder,osConfig.mysqlProgram,currOsName,currQuery,currActionDbName,currActionUser,currDebugMsg,"queryOutput",true)
+def masterStatus = showMasterStatus(context,binFolder,osConfig.mysqlProgram,currOsName,currQuery as String,currActionDbName as String,currActionUser as String,currDebugMsg as String,"binLogData",true)
+
+if ( masterStatus ) {
+	println "mysql_showMasterStatus.groovy: master is up and running"	
+}
+else {
+	println "mysql_showMasterStatus.groovy: master is NOT ready yet"
+}
 							
-println "mysql_query.groovy: End"
+
+println "mysql_showMasterStatus.groovy: End"
 	
 

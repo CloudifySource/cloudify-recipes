@@ -17,7 +17,7 @@ export PATH=$PATH:/usr/sbin:/sbin || error_exit $? "Failed on: export PATH=$PATH
 echo "Using apt-get. Updating apt-get on one of the following : Ubuntu, Debian, Mint" > usingAptGet
 sudo apt-get -y -q update || error_exit $? "Failed on: sudo apt-get -y update"
 # Removing previous apache2 installation if exist
-sudo apt-get -y -q purge apache2.2-common || error_exit $? "Failed on: sudo apt-get -y -q purge apache2.2-common"
+sudo apt-get -y -q purge apache2* || error_exit $? "Failed on: sudo apt-get -y -q purge apache2*"
 
 # The following statements are used since in some cases, there are leftovers after uninstall
 sudo rm -rf /etc/apache2 || error_exit $? "Failed on: sudo rm -rf /etc/apache2"
