@@ -5,3 +5,11 @@
 /.project
 /.settings
 out/
+*/*/common/target/
+*/*/feeder/target/
+*/*/processor/target/
+*.class
+*.jar
+*.war
+*.ear
+.metadata/
