@@ -45,7 +45,7 @@
 							<tasks>
 									<copy
 										file="${basedir}/target/${project.artifactId}-${project.version}.jar"
-										tofile="${basedir}/../rt_app/processor/rt-analytics-processor.jar" />
+										tofile="${basedir}/../bigDataApp/processor/rt-analytics-processor.jar" />
 							</tasks>
 						</configuration>
 						<phase>install</phase>

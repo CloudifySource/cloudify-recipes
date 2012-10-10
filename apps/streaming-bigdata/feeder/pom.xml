@@ -36,7 +36,7 @@
 							<tasks>
 									<copy
 										file="${basedir}/target/${project.artifactId}-${project.version}.jar"
-										tofile="${basedir}/../rt_app/feeder/rt-analytics-feeder.jar" />
+										tofile="${basedir}/../bigDataApp/feeder/rt-analytics-feeder.jar" />
 							</tasks>
 						</configuration>
 						<phase>install</phase>
