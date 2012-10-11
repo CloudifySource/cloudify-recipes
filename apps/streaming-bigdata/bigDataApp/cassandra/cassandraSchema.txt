@@ -1,0 +1,16 @@
+create keyspace TWITTER;
+use TWITTER;
+
+create column family TWEETS with
+  comparator = UTF8Type and
+  key_validation_class = UTF8Type and 
+  column_metadata =
+  [    
+    {column_name: Id, validation_class: UTF8Type, index_type: KEYS},
+    {column_name: Text, validation_class: UTF8Type},
+    {column_name: CreatedAt, validation_class: UTF8Type},
+    {column_name: FromUserId, validation_class: UTF8Type},
+    {column_name: ToUserId, validation_class: UTF8Type}
+  ];
+  
+  

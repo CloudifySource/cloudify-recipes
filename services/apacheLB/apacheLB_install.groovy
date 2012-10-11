@@ -22,7 +22,7 @@ config = new ConfigSlurper().parse(new File("apacheLB-service.properties").toURL
 
 osConfig = ServiceUtils.isWindows() ? config.win32 : config.linux
 
-downloadFile="${config.downloadFolder}/{$osConfig.zipName}"
+downloadFile="${config.downloadFolder}/${osConfig.zipName}"
 
 def installLinuxHttpd(context,builder,currVendor,installScript) {
 

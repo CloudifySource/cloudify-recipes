@@ -41,10 +41,14 @@ proxyConfigFile.text = modifiedConfig
 println "removeNode: Removed ${node} from httpd-proxy-balancer.conf text is now : ${modifiedConfig}..."
 
 def balancerMembers=context.attributes.thisService["balancerMembers"]
-balancerMembers=balancerMembers.replace(",${balancerMemberText},","")
-if ( balancerMembers == "" ) {
-	balancerMembers = null
+if ( balancerMembers != null ) {
+	balancerMembers=balancerMembers.replace(",${balancerMemberText},","")
+	if ( balancerMembers == "" ) {
+		balancerMembers = null
+	}
 }
+	
+
 context.attributes.thisService["balancerMembers"]=balancerMembers
 println "removeNode: Cleaned ${node} from context balancerMembers"
 
