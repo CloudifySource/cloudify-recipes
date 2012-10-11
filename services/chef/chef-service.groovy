@@ -21,7 +21,7 @@ service {
     name = "chef"
 
     compute {
-        template "SMALL_UBUNTU"
+        template "SMALL_LINUX"
     }
 
     lifecycle {
