@@ -21,7 +21,7 @@
 default['java']['remove_deprecated_packages'] = false
 
 # default jdk attributes
-default['java']['install_flavor'] = "openjdk"
+default['java']['install_flavor'] = "oracle"
 default['java']['jdk_version'] = '6'
 default['java']['arch'] = kernel['machine'] =~ /x86_64/ ? "x86_64" : "i586"
 
@@ -38,12 +38,12 @@ end
 
 # jdk6 attributes
 # x86_64
-default['java']['jdk']['6']['x86_64']['url'] = 'http://download.example.com/otn-pub/java/jdk/6u30-b12/jdk-6u30-linux-x64.bin'
-default['java']['jdk']['6']['x86_64']['checksum'] = '928220f4e46c5dabef0440791c48023945629d8a23998e072157e04960d8a759'
+default['java']['jdk']['6']['x86_64']['url'] = "http://repository.cloudifysource.org/com/oracle/java/1.6.0_32/jdk-6u32-linux-x64.bin"
+default['java']['jdk']['6']['x86_64']['checksum'] = '269d05b8d88e583e4e66141514d8294e636f537f55eb50962233c9e33d8f8f49'
 
 # i586
-default['java']['jdk']['6']['i586']['url'] = 'http://download.example.com/otn-pub/java/jdk/6u30-b12/jdk-6u30-linux-i586.bin'
-default['java']['jdk']['6']['i586']['checksum'] = 'b551be83a690bc9fec0107d9aa4f828cd47e150fa54cbedbfa8f80c99e2f18b5'
+default['java']['jdk']['6']['i586']['url'] = "http://repository.cloudifysource.org/com/oracle/java/1.6.0_32/jdk-6u32-linux-i586.bin"
+default['java']['jdk']['6']['i586']['checksum'] = 'ab840c7de8f452b09d53ebe9477ffdb4622fa8cabbf962474d1914fde9a20f19'
 
 # jdk7 attributes
 # x86_64

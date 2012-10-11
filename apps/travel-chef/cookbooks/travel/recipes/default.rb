@@ -26,6 +26,7 @@ remote_file tarball  do
   notifies :run, "execute[unzip -o #{tarball} -d #{webapp_dir}]", :immediately
 end
 
+package "unzip"  # in case it doesn't exist on the ami
 execute "unzip -o #{tarball} -d #{webapp_dir}" do
   notifies :restart, "service[tomcat]"
   action :nothing
