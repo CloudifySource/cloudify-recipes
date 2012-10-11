@@ -16,7 +16,6 @@
 
 package org.openspaces.bigdata.processor;
 
-import java.io.IOException;
 import java.util.logging.Logger;
 
 import javax.annotation.Resource;
@@ -40,7 +39,7 @@ import com.j_spaces.core.client.SQLQuery;
  * @author Dotan Horovits
  */
 @EventDriven
-@Polling(gigaSpace = "gigaSpace", passArrayAsIs = true, concurrentConsumers = 2, maxConcurrentConsumers = 2, receiveTimeout = 10000)
+@Polling(gigaSpace = "gigaSpace", passArrayAsIs = true, concurrentConsumers = 2, maxConcurrentConsumers = 2)
 @TransactionalEvent
 public class TweetPersister {
     private static final Logger log = Logger.getLogger(TweetPersister.class.getName());
@@ -54,9 +53,7 @@ public class TweetPersister {
     @ReceiveHandler
     ReceiveOperationHandler receiveHandler() {
         MultiTakeReceiveOperationHandler receiveHandler = new MultiTakeReceiveOperationHandler();
-        receiveHandler.setMaxEntries(BATCH_SIZE);
-        receiveHandler.setNonBlocking(true);
-        receiveHandler.setNonBlockingFactor(1);
+        receiveHandler.setMaxEntries(BATCH_SIZE);        
         return receiveHandler;
     }
 
@@ -70,7 +67,7 @@ public class TweetPersister {
         log.info("writing behind a bulk of " + tweetArray.length + " tweets to backend persistence store");
         try {
             persister.writeBulk(tweetArray);
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.severe("error persisting tweet bulk: " + e.getMessage());
         }
     }

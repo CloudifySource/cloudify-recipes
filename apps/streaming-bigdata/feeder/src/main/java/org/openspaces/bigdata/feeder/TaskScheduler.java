@@ -30,14 +30,15 @@ import java.util.logging.Logger;
  * @author Dotan Horovits
  */
 public class TaskScheduler {
-    private static final Logger log = Logger.getLogger(TaskScheduler.class.getName());
+	
+	private static final Logger log = Logger.getLogger(TaskScheduler.class.getSimpleName());
 
     @Resource
     private Runnable task;
-
     private int delayInMs = 1000;
 
     public void setDelayInMs(int delayInMs) {
+    	log.info("task scheduler initialized with delay miliseconds of " + delayInMs);
         this.delayInMs = delayInMs;
     }
 
@@ -47,9 +48,11 @@ public class TaskScheduler {
         new TaskScheduler().execute();
     }
 
+    
     @PostConstruct
     public void execute() {
-        executorService.scheduleWithFixedDelay(task, delayInMs, delayInMs, TimeUnit.MILLISECONDS);
+    	log.info("schedualing twitter feeder fetch public tweets interval:" + delayInMs + " milliseconds");
+        executorService.scheduleWithFixedDelay(task, 0, delayInMs, TimeUnit.MILLISECONDS);
     }
 
     @PreDestroy

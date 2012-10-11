@@ -43,8 +43,8 @@ import com.j_spaces.core.client.SQLQuery;
  * @author Dotan Horovits
  */
 @EventDriven
-@Polling(gigaSpace = "gigaSpace", concurrentConsumers = 2, maxConcurrentConsumers = 2, receiveTimeout = 60)
-@TransactionalEvent(timeout = 100)
+@Polling(gigaSpace = "gigaSpace", concurrentConsumers = 2, maxConcurrentConsumers = 2)
+@TransactionalEvent
 public class TweetParser {
     private static final Logger log = Logger.getLogger(TweetParser.class.getName());
     private static final int MIN_TOKEN_LENGTH = 3;

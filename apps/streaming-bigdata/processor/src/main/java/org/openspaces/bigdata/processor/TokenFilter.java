@@ -45,7 +45,7 @@ import org.openspaces.events.polling.receive.ReceiveOperationHandler;
  * @author Dotan Horovits
  */
 @EventDriven
-@Polling(gigaSpace = "gigaSpace", concurrentConsumers = 2, maxConcurrentConsumers = 2, receiveTimeout = 5000)
+@Polling(gigaSpace = "gigaSpace", concurrentConsumers = 2, maxConcurrentConsumers = 2)
 @TransactionalEvent
 public class TokenFilter {
     private static final Logger log = Logger.getLogger(TokenFilter.class.getName());
@@ -62,9 +62,7 @@ public class TokenFilter {
     @ReceiveHandler
     ReceiveOperationHandler receiveHandler() {
         MultiTakeReceiveOperationHandler receiveHandler = new MultiTakeReceiveOperationHandler();
-        receiveHandler.setMaxEntries(BATCH_SIZE);
-        receiveHandler.setNonBlocking(true);
-        receiveHandler.setNonBlockingFactor(1);
+        receiveHandler.setMaxEntries(BATCH_SIZE);        
         return receiveHandler;
     }
 

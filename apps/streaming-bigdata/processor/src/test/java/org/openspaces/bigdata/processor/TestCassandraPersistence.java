@@ -37,11 +37,11 @@ public class TestCassandraPersistence {
     @Test
     public void testPersistence() {
         Long id = currentTimeMillis();
-        persister.write(new SpaceDocument("Tweet") //
-                .setProperty("Id", id) //
-                .setProperty("Text", "text") //
-                .setProperty("CreatedAt", "now") //
-                .setProperty("FromUserId", "uri1803") //
+        persister.write(new SpaceDocument("Tweet") 
+                .setProperty("Id", id) 
+                .setProperty("Text", "text") 
+                .setProperty("CreatedAt", "now") 
+                .setProperty("FromUserId", "uri1803") 
                 .setProperty("ToUserId", "natishalom"));
     }
 }

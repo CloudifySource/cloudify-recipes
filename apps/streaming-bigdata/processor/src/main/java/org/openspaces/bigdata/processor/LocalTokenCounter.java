@@ -42,7 +42,7 @@ import static com.google.common.collect.Maps.newHashMap;
  * @author Dotan Horovits
  */
 @EventDriven
-@Polling(gigaSpace = "gigaSpace", passArrayAsIs = true, concurrentConsumers = 1, maxConcurrentConsumers = 1, receiveTimeout = 1000)
+@Polling(gigaSpace = "gigaSpace", passArrayAsIs = true, concurrentConsumers = 1, maxConcurrentConsumers = 1)
 @TransactionalEvent
 public class LocalTokenCounter {
     private static final Logger log = Logger.getLogger(LocalTokenCounter.class.getName());
@@ -59,9 +59,7 @@ public class LocalTokenCounter {
     @ReceiveHandler
     ReceiveOperationHandler receiveHandler() {
         MultiTakeReceiveOperationHandler receiveHandler = new MultiTakeReceiveOperationHandler();
-        receiveHandler.setMaxEntries(BATCH_SIZE);
-        receiveHandler.setNonBlocking(true);
-        receiveHandler.setNonBlockingFactor(1);
+        receiveHandler.setMaxEntries(BATCH_SIZE);        
         return receiveHandler;
     }
 

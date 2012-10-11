@@ -1,4 +1,3 @@
-package org.openspaces.bigdata.processor.events;
 /*
  * Copyright (c) 2012 GigaSpaces Technologies Ltd. All rights reserved
  *
@@ -15,7 +14,7 @@ package org.openspaces.bigdata.processor.events;
  * limitations under the License.
  */
 
-
+package org.openspaces.bigdata.processor.events;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 
@@ -24,55 +23,58 @@ import com.gigaspaces.annotation.pojo.SpaceId;
 import com.gigaspaces.annotation.pojo.SpaceRouting;
 import com.google.common.base.Objects;
 
+/**
+ * Holds the local count appearance of the token 
+ */
 @SpaceClass
 public class TokenCounter {
 
-    private String token;
-    private Integer count;
+	private String token;
+	private Integer count;
 
-    public TokenCounter() {
-    }
+	public TokenCounter() {
+	}
 
-    public TokenCounter(String token) {
-        this.token = token;
-    }
+	public TokenCounter(String token) {
+		this.token = token;
+	}
 
-    public TokenCounter(String token, Integer count) {
-        this.token = token;
-        this.count = count;
-    }
+	public TokenCounter(String token, Integer count) {
+		this.token = token;
+		this.count = count;
+	}
 
-    @SpaceId(autoGenerate = false)
-    @SpaceRouting
-    public String getToken() {
-        return token;
-    }
+	@SpaceId(autoGenerate = false)
+	@SpaceRouting
+	public String getToken() {
+		return token;
+	}
 
-    public void setToken(String token) {
-        this.token = token;
-    }
+	public void setToken(String token) {
+		this.token = token;
+	}
 
-    public Integer getCount() {
-        return count;
-    }
+	public Integer getCount() {
+		return count;
+	}
 
-    public void setCount(Integer count) {
-        this.count = count;
-    }
+	public void setCount(Integer count) {
+		this.count = count;
+	}
 
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(token);
-    }
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(token);
+	}
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (!(obj instanceof TokenCounter)) {
-            return false;
-        }
-        return new EqualsBuilder().append(token, ((TokenCounter) obj).token).isEquals();
-    }
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!(obj instanceof TokenCounter)) {
+			return false;
+		}
+		return new EqualsBuilder().append(token, ((TokenCounter) obj).token).isEquals();
+	}
 }

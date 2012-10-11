@@ -4,23 +4,8 @@
 	<parent>
 		<groupId>org.openspaces.bigdata</groupId>
 		<artifactId>rt-analytics</artifactId>
-		<version>XAP-9.0</version>
+		<version>XAP-9.1</version>
 	</parent>
 	<artifactId>rt-common</artifactId>
 	<name>${project.artifactId}</name>
-	
-	
-	<dependencies>
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>me.prettyprint</groupId>
-			<artifactId>hector-core</artifactId>
-			<version>1.0-5</version>
-		</dependency>
-	</dependencies>
-	
-	
 </project>

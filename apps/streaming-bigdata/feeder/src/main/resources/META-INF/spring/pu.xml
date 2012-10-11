@@ -27,7 +27,7 @@
     <os-core:giga-space id="gigaSpace" space="space"/>
 
     <bean name="taskScheduler" class="org.openspaces.bigdata.feeder.TaskScheduler">
-        <property name="delayInMs" value="${tweet.delayInMs:1000}"/>
+        <property name="delayInMs" value="${tweet.delayInMs}"/>
     </bean>
 
 	<bean id="tweetTextList" class="java.util.LinkedList">

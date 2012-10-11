@@ -16,20 +16,21 @@
 
 package org.openspaces.bigdata.feeder;
 
-import com.gigaspaces.document.DocumentProperties;
-import com.gigaspaces.document.SpaceDocument;
-import org.openspaces.core.GigaSpace;
-import org.openspaces.core.SpaceInterruptedException;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import static java.lang.System.currentTimeMillis;
 
-import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Logger;
 
-import static java.lang.System.currentTimeMillis;
+import javax.annotation.Resource;
+
+import org.openspaces.core.GigaSpace;
+import org.openspaces.core.SpaceInterruptedException;
+import org.springframework.beans.factory.annotation.Value;
+
+import com.gigaspaces.document.DocumentProperties;
+import com.gigaspaces.document.SpaceDocument;
 
 /**
  * A {{Runnable}} that generates and feeds simulated tweets to a remote space periodically using scheduled task.
@@ -39,11 +40,11 @@ import static java.lang.System.currentTimeMillis;
  */
 //@Component
 public class ListBasedFeederTask implements Runnable {
-    private Logger log = Logger.getLogger(getClass().getSimpleName());
+	
+    private static final Logger log = Logger.getLogger(ListBasedFeederTask.class.getSimpleName());
 
     @Value("${tweet.numberOfUsers:10}")
     private int numberOfUsers = 10;
-
 
     @Resource
     private List<String> tweetTextList;
@@ -54,7 +55,8 @@ public class ListBasedFeederTask implements Runnable {
     private long counter = 1;
     private Random randomGenerator = new Random();
 
-    public void run() {
+    @Override
+	public void run() {
         try {
             SpaceDocument tweet = buildRandomTweet();
             gigaSpace.write(tweet);
@@ -68,10 +70,10 @@ public class ListBasedFeederTask implements Runnable {
 
     private SpaceDocument buildRandomTweet() {
         String randomTweet = tweetTextList.get(randomGenerator.nextInt(tweetTextList.size()));
-        return buildTweet(counter++ //
-                , randomTweet //
-                , currentTimeMillis() //
-                , randomGenerator.nextInt(numberOfUsers) //
+        return buildTweet(counter++ 
+                , randomTweet 
+                , currentTimeMillis() 
+                , randomGenerator.nextInt(numberOfUsers) 
                 , randomGenerator.nextInt(numberOfUsers));
     }
 
@@ -81,12 +83,12 @@ public class ListBasedFeederTask implements Runnable {
 
 
     public SpaceDocument buildTweet(long id, String text, long createdAt, long toUserId, long fromUserId) {
-        return new SpaceDocument("Tweet", new DocumentProperties() //
-                .setProperty("Id", id) //
-                .setProperty("Text", text) //
-                .setProperty("CreatedAt", new Date(createdAt)) //
-                .setProperty("FromUserId", fromUserId) //
-                .setProperty("ToUserId", toUserId) //
+        return new SpaceDocument("Tweet", new DocumentProperties() 
+                .setProperty("Id", id) 
+                .setProperty("Text", text) 
+                .setProperty("CreatedAt", new Date(createdAt)) 
+                .setProperty("FromUserId", fromUserId) 
+                .setProperty("ToUserId", toUserId) 
                 .setProperty("Processed", false));
     }
 }

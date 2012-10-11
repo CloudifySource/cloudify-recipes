@@ -1,4 +1,3 @@
-package org.openspaces.bigdata.processor.events;
 /*
  * Copyright (c) 2012 GigaSpaces Technologies Ltd. All rights reserved
  *
@@ -15,7 +14,7 @@ package org.openspaces.bigdata.processor.events;
  * limitations under the License.
  */
 
-
+package org.openspaces.bigdata.processor.events;
 
 import java.util.Map;
 
@@ -29,9 +28,10 @@ import com.gigaspaces.annotation.pojo.SpaceId;
  */
 @SpaceClass
 public class TokenizedTweet {
+	
     private Long id;
     private Map<String, Integer> tokenMap;
-    private Boolean filtered;
+    private boolean filtered;
 
     public TokenizedTweet(Long id, Map<String, Integer> tokenMap) {
         this.id = id;
@@ -42,11 +42,11 @@ public class TokenizedTweet {
     public TokenizedTweet() {
     }
 
-    public Boolean getFiltered() {
+    public boolean getFiltered() {
         return filtered;
     }
 
-    public void setFiltered(Boolean filtered) {
+    public void setFiltered(boolean filtered) {
         this.filtered = filtered;
     }
 

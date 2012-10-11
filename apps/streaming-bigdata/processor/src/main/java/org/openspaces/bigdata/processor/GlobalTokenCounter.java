@@ -28,6 +28,10 @@ import org.openspaces.events.polling.ReceiveHandler;
 import org.openspaces.events.polling.receive.MultiTakeReceiveOperationHandler;
 import org.openspaces.events.polling.receive.ReceiveOperationHandler;
 
+import com.gigaspaces.client.ChangeResult;
+import com.gigaspaces.client.ChangeSet;
+import com.gigaspaces.query.IdQuery;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -37,7 +41,7 @@ import java.util.logging.Logger;
  * @author dotan
  */
 @EventDriven
-@Polling(gigaSpace = "gigaSpace", concurrentConsumers = 1, maxConcurrentConsumers = 1, receiveTimeout = 1000)
+@Polling(gigaSpace = "gigaSpace", concurrentConsumers = 1, maxConcurrentConsumers = 1)
 @TransactionalEvent
 public class GlobalTokenCounter {
     private static final Logger log = Logger.getLogger(GlobalTokenCounter.class.getName());
@@ -47,9 +51,7 @@ public class GlobalTokenCounter {
     @ReceiveHandler
     ReceiveOperationHandler receiveHandler() {
         MultiTakeReceiveOperationHandler receiveHandler = new MultiTakeReceiveOperationHandler();
-        receiveHandler.setMaxEntries(BATCH_SIZE);
-        receiveHandler.setNonBlocking(true);
-        receiveHandler.setNonBlockingFactor(1);
+        receiveHandler.setMaxEntries(BATCH_SIZE);        
         return receiveHandler;
     }
 
@@ -61,15 +63,14 @@ public class GlobalTokenCounter {
     @SpaceDataEvent
     public void eventListener(TokenCounter counter,GigaSpace gigaSpace) {
     	log.info("Increment  local token " +counter.getToken() + " by " + counter.getCount());
-        GlobalCounter globalCount =  gigaSpace.readById(GlobalCounter.class,counter.getToken());
-        if ( globalCount == null)
-        	globalCount = new GlobalCounter(counter.getToken(),counter.getCount());
-        else
-        	globalCount.incrementCountBy(counter.getCount());
-        
-        gigaSpace.write(globalCount);
+    	IdQuery<GlobalCounter> counterIdQuery = new IdQuery<GlobalCounter>(GlobalCounter.class, counter.getToken());
+    	ChangeResult<GlobalCounter> changeResult = gigaSpace.change(counterIdQuery, new ChangeSet().increment("count", counter.getCount()));
+    	//No counter for this token already exists
+    	if (changeResult.getNumberOfChangedEntries() == 0)
+    		gigaSpace.write(new GlobalCounter(counter.getToken(),counter.getCount()));
+    	
         if (log.isLoggable(Level.FINE)) {
-            log.fine("+++ token=" + globalCount.getToken() + " count=" + globalCount);
+            log.fine("+++ token=" + counter.getToken() + " count=" + counter.getCount());
         }
     }
 

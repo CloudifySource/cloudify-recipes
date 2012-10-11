@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.openspaces.bigdata</groupId>
 		<artifactId>rt-analytics</artifactId>
-		<version>XAP-9.0</version>
+		<version>XAP-9.1</version>
 	</parent>
 	<artifactId>rt-processor</artifactId>
 	<name>${project.artifactId}</name>
@@ -15,10 +15,7 @@
 		<dependency>
 			<groupId>org.openspaces.bigdata</groupId>
 			<artifactId>rt-common</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
+			<version>${parent.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.cassandra</groupId>
@@ -43,9 +40,9 @@
 					<execution>
 						<configuration>
 							<tasks>
-									<copy
-										file="${basedir}/target/${project.artifactId}-${project.version}.jar"
-										tofile="${basedir}/../bigDataApp/processor/rt-analytics-processor.jar" />
+								<copy
+									file="${basedir}/target/${project.artifactId}-${project.version}.jar"
+									tofile="${basedir}/../bigDataApp/processor/rt-analytics-processor.jar" />
 							</tasks>
 						</configuration>
 						<phase>install</phase>
