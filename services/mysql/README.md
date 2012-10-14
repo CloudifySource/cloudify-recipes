@@ -178,13 +178,15 @@ Example: <strong>invoke mysql mysqldump root myPrefix_ myDbName</strong>
 **B) query**:  
  
 This custom command enables users to invoke an SQL statement.  
-Usage :  <strong>invoke mysql query actionUser dbName query</strong>  
+Usage :  <strong>invoke mysql query actionUser [puserPassword] dbName query</strong>  
 Examples: 
 
 1. If you want to update the users table in myDbName with the following statement :    
 <strong>update users set name='James' where uid=1</strong>   
    then you need to run the following custom command :   
 <strong>invoke mysql query root myDbName \\\"update users set name=\\\'James\\\' where uid=1\\\"</strong>  
+or
+<strong>invoke mysql query myUser pmyUserpassword myDbName \\\"update users set name=\\\'James\\\' where uid=1\\\"</strong>  
 
 2. If you want to insert a new user named Dan, into the users table in myDbName, and you need the following SQL statement:  
 <strong>INSERT INTO users VALUES (17,'Dan','hisPassword','hisemail@his.com',0)</strong>  

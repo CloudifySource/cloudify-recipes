@@ -74,8 +74,11 @@ service {
 			
 		/* 
 			This custom command enables users to invoke an SQL statement
-			Usage :  invoke mysql query actionUser dbName query
-			Example: invoke mysql query root myDbName "update users set city=\"NY\" where uid=15"
+			Usage :  invoke mysql query actionUser [puserPassword] dbName query
+			Examples: 			
+				1. invoke mysql query root myDbName "update users set city=\"NY\" where uid=15"
+				2. invoke mysql query root pmyRootPassword myDbName "update users set city=\"NY\" where uid=15"			
+			
 		*/			
 		"query" : "mysql_query.groovy" ,
 		

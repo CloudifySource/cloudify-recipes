@@ -16,16 +16,27 @@
 import java.text.SimpleDateFormat
 
 def static runMysqlQuery(binFolder,execFile,osName,currQuery,dbName,dbUser,debugMsg,outputpropertyName,displayOutputProperty) {	
+	return runMysqlQuery(binFolder,execFile,osName,currQuery,dbName,dbUser,"",debugMsg,outputpropertyName,displayOutputProperty)
+}
+
+def static runMysqlQuery(binFolder,execFile,osName,currQuery,dbName,dbUser,dbUserPassword,debugMsg,outputpropertyName,displayOutputProperty) {	
 
   def outputPropertyStr
   def builder
+  def currPassword = ""
+
+  if ( dbUserPassword.length() > 0  ) {
+	currPassword = "-p${dbUserPassword}"
+  }
+
+  
   try {		
 	builder = new AntBuilder()
 	builder.sequential {		 
       echo(message:"runMysqlQuery: os ${osName}: ${debugMsg}")
-      echo(message:"runMysqlQuery: ${binFolder}/${execFile} -u ${dbUser} -D ${dbName} -e ${currQuery}")
+      echo(message:"runMysqlQuery: ${binFolder}/${execFile} -u ${dbUser} ${currPassword} -D ${dbName} -e ${currQuery}")
       exec(executable:"${binFolder}/${execFile}", osfamily:"${osName}", outputproperty:"${outputpropertyName}") {	  
-	    arg(line:"-u ${dbUser} -D ${dbName} -e ${currQuery}")
+	    arg(line:"-u ${dbUser} ${currPassword} -D ${dbName} -e ${currQuery}")
      }	
    }		
   } 

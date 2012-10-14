@@ -21,8 +21,10 @@ import static mysql_runner.*
 
 /* 
 	This file enables users to invoke an SQL statement
-	Usage :  invoke mysql query actionUser dbName query
-	Example: invoke mysql query root myDbName "update users set city=\"NY\" where uid=15"
+	Usage :  invoke mysql query actionUser [puserPassword] dbName query
+	Examples: 
+	 1. invoke mysql query root myDbName "update users set city=\"NY\" where uid=15"
+	 2. invoke mysql query root pmyRootPassword myDbName "update users set city=\"NY\" where uid=15"
 */	
 
 config=new ConfigSlurper().parse(new File('mysql-service.properties').toURL())
@@ -52,17 +54,33 @@ switch (currVendor) {
 
 
 if (args.length < 3) {
-	println "mysql_query.groovy: query error: Missing parameters\nUsage: invoke serviceName query actionUser dbName query"
+	println "mysql_query.groovy: query error: Missing parameters\nUsage: invoke serviceName query actionUser [-puserPassword] dbName query"
 	System.exit(-1)
 }
 
-
+def currActionDbName
+def currPassword
+def currQuery
+def tmpArg
 def currActionUser = args[0]
-def currActionDbName = args[1]
-def currQuery = "\"" + args[2] + "\""
+tmpArg = args[1]
+if ( tmpArg.toLowerCase().startsWith("p") ) {
+	/* retrieve the password , remove the 1st char(p)*/ 
+	currPassword = tmpArg.substring(1) 
+	currActionDbName = args[2]
+	currQuery = "\"" + args[3] + "\""
+}
+else {
+	/* invoke without a password */ 
+	currPassword = ""
+	currActionDbName = tmpArg
+	currQuery = "\"" + args[2] + "\""
+}
+
+
 def currDebugMsg = "Invoking query: ${currQuery}"
 
-runMysqlQuery(binFolder,osConfig.mysqlProgram,currOsName,currQuery,currActionDbName,currActionUser,currDebugMsg,"queryOutput",true)
+runMysqlQuery(binFolder,osConfig.mysqlProgram,currOsName,currQuery,currActionDbName,currActionUser,currPassword,currDebugMsg,"queryOutput",true)
 							
 println "mysql_query.groovy: End"
 	
