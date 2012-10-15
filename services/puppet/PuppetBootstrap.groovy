@@ -20,21 +20,26 @@ import org.cloudifysource.dsl.context.ServiceContext
 import groovy.json.JsonOutput
 import static Shell.*
 
-class puppetBootstrap {
+class PuppetBootstrap {
+    Map puppetConfig
+    def osConfig
+    def os
+    ServiceContext context = null
+    def puppetPackages = ["puppet"]
+    String local_repo_dir = underHomeDir("cloudify-recipes")
+
     // factory method for getting the appropriate bootstrap class
     def static getBootstrap(options=[:]) {
         def os = OperatingSystem.getInstance()
         def cls
-        def puppetPackages = ["puppet"]
-        String local_repo_dir = underHomeDir("cloudify-recipes")
         switch (os.getVendor()) {
             case ["Ubuntu", "Debian", "Mint"]: cls = new DebianBootstrap(options); break
-            case ["Red Hat", "CentOS", "Fedora", "Amazon"]: cls = new RHELBootstrap(options); break
+            case ["Red Hat", "CentOS", "Fedora"]: cls = new RHELBootstrap(options); break
             case "SuSE":  cls = new SuSEBootstrap(options); break
             case "Win32": cls = new WindowsBootstrap(options); break
             case "" /*returned by ec2linux*/:
                 if (test("grep 'Amazon Linux' /etc/issue")) {
-                    cls = new RHELBootstrap(options); break
+                    cls = new AmazonBootstrap(options); break
                 }
             default: throw new Exception("Support for the OS ${os.getVendor()} is not implemented")
         }
@@ -61,9 +66,14 @@ class puppetBootstrap {
     }
 
     def install(options) { 
-        puppetConfTemplate = new File("templates", "puppet.conf").getText()
+        def templates_dir = pathJoin(context.getServiceDirectory(),"templates")
+        def puppetConfTemplate = new File(templates_dir, "puppet.conf").getText()
+        def templateEngine = new groovy.text.SimpleTemplateEngine()
         def binding = [environment: puppetConfig.environment, server: puppetConfig.server]
-        sudoWriteFile("/etc/puppet/puppet.conf", SimpleTemplateEngine(puppetConfTemplate).make(binding).toString())     
+        sudoWriteFile("/etc/puppet/puppet.conf", 
+                      templateEngine.createTemplate(puppetConfTemplate).make(binding).toString()) 
+
+        sh("mkdir -p ${local_repo_dir}")
     }
 
     def loadManifest(manifestOriginType, manifestOriginUrl) {
@@ -76,17 +86,18 @@ class puppetBootstrap {
     }
 
     def appplyManifest() {
-        manifest = pathJoin(local_repo_dir, "manifests/site.pp") //TODO: move to parameter
+        def manifest = pathJoin(local_repo_dir, "manifests/site.pp") //TODO: move to parameter
         sudo("puppet apply ${manifest}")
     }
 
 }
 
-class DebianBootstrap extends puppetBootstrap {
+class DebianBootstrap extends PuppetBootstrap {
     def DebianBootstrap(options) { super(options) }
+
     def install(options) {
         installPuppetlabsRepo()
-        installPkgs(puppetPkgs)
+        installPkgs(puppetPackages)
         return super.install(options)
     }
 
@@ -94,21 +105,24 @@ class DebianBootstrap extends puppetBootstrap {
         def versionName = os.getVendorCodeName().toLowerCase()
         dpkg(puppetConfig.puppetlabsRepoDpkg."${versionName}")
     }
+
     def dpkg(deb_url) { 
-        local_deb = underHomeDir("deb")
+        def local_deb = underHomeDir("deb")
         download(local_deb, deb_url)
         sudo("dpkg -i ${local_deb}")    
     }
+
     def installPkgs(List pkgs) {
         sudo("apt-get install -y ${pkgs.join(" ")}")
     }
 }
 
-class RHELBootstrap extends puppetBootstrap {
+class RHELBootstrap extends PuppetBootstrap {
     def RHELBootstrap(options) { super(options) }
+
     def install(options) {
         installPuppetlabsRepo()
-        installPkgs(puppetPkgs)
+        installPkgs(puppetPackages)
         return super.install(options)
     }
 
@@ -116,18 +130,53 @@ class RHELBootstrap extends puppetBootstrap {
         def shortVersion = os.getVendorVersion().tokenize(".")[0]
         rpm(puppetConfig.puppetlabsRepoRpm."rhel${shortVersion}")
     }
+
     def rpm(repo) { 
         sudo("rpm -ivh ${repo}")    
     }
+
     def installPkgs(List pkgs) {
         sudo("yum install -y ${pkgs.join(" ")}")
     }
-    def gemInstall() {  //not currently used
-        sudo("gem update --system")
-        super.gemInstall()
-    }
-    
 }
 
-class WindowsBootstrap extends puppetBootstrap {
+class AmazonBootstrap extends PuppetBootstrap {
+    def AmazonBootstrap(options) { super(options) }
+
+    def install(options) {
+        installPkgs(puppetPackages)
+        return super.install(options)
+    }
+
+    def installPkgs(List pkgs) {
+        //the puppet repo is already available on amazon linux
+        sudo("yum install -y ${pkgs.join(" ")}")
+    }
+}
+
+class SuSEBootstrap extends PuppetBootstrap {
+    def SuSEBootstrap(options) { super(options) }
+
+    def install(options) {
+        installPuppetlabsRepo()
+        installPkgs(puppetPackages)
+        return super.install(options)
+    }
+
+    def installPuppetlabsRepo() {
+        def shortVersion = os.getVendorVersion().tokenize(".")[0]
+        zypper(puppetConfig.puppetlabsRepoRpm."zypper${shortVersion}")
+    }
+
+    def zypper(repo) { 
+        sudo("zypper ar ${repo} puppet")    
+        sudo("zypper update")
+    }
+
+    def installPkgs(List pkgs) {
+        sudo("zypper install -y ${pkgs.join(" ")}")
+    }
+}
+
+class WindowsBootstrap extends PuppetBootstrap {
 }

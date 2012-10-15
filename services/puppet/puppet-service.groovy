@@ -30,17 +30,21 @@ service {
         //TODO: pull additional properties from config?
         manifestsType = "tar" // Or git or svn
         manifestsUrl = "http://fewbytes-development.s3.amazonaws.com/clients/gigaspaces/manifests.tgz"
-        bootstrap.runAgent(manifestsType, manifestsUrl)
+        bootstrap.loadManifest(manifestsType, manifestsUrl)
+        bootstrap.appplyManifest()
       } 
-      start { //TODO: Or would the the init service installed above be enough?
+      start {
+        bootstrap = PuppetBootstrap.getBootstrap(context:context)
+        bootstrap.appplyManifest()
       }
     }
 
     customCommands([
-      "run_agent": {manifestOriginType, manifestOriginUrl ->
+      "run_puppet": {manifestOriginType, manifestOriginUrl ->
         bootstrap = PuppetBootstrap.getBootstrap(context:context)
         try{ //hack - to see the error text, we must exit successfully(CLOUDIFY-915)
-            bootstrap.runAgent(manifestsType, manifestsUrl)
+            bootstrap.loadManifest(manifestsType, manifestsUrl)
+            bootstrap.appplyManifest()
         } catch(Exception e) {
           println "Puppet agent run encountered an exception:\n${e}" //goes to the gsc log
         }
