@@ -16,7 +16,7 @@
 
 service {
     extend "../../../services/puppet"
-    name "hello"
+    name "git"
     type "APP_SERVER"
     
     elastic true

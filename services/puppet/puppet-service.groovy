@@ -30,7 +30,7 @@ service {
       start {
         bootstrap = PuppetBootstrap.getBootstrap(context:context)
         if (binding.variables["puppetRepo"]) {
-            bootstrap.loadManifest(puppetRepo.repoType, puppetRepo.url)
+            bootstrap.loadManifest(puppetRepo.repoType, puppetRepo.repoUrl)
             bootstrap.appplyManifest(puppetRepo.manifestPath)
         } else {
             println "Puppet repository undefined in the properties file."
@@ -40,14 +40,18 @@ service {
     }
 
     customCommands([
-      "run_puppet": {manifestOriginType, manifestOriginUrl, manifestPath=null ->
-        bootstrap = PuppetBootstrap.getBootstrap(context:context)
-        try{ //hack - to see the error text, we must exit successfully(CLOUDIFY-915)
-            bootstrap.loadManifest(manifestOriginType, manifestOriginUrl)
-            bootstrap.appplyManifest(manifestPath)
-        } catch(Exception e) {
-          println "Puppet agent run encountered an exception:\n${e}" //goes to the gsc log
+        "run_puppet": {repoType, repoUrl, manifestPath=null ->
+            bootstrap = PuppetBootstrap.getBootstrap(context:context)
+            try{ //hack - to see the error text, we must exit successfully(CLOUDIFY-915)
+                bootstrap.loadManifest(repoType, repoUrl)
+                bootstrap.appplyManifest(manifestPath)
+            } catch(Exception e) {
+              println "Puppet agent run encountered an exception:\n${e}" //goes to the gsc log
+            }
+        },
+        "cleanup_repo": { 
+            bootstrap = PuppetBootstrap.getBootstrap(context:context)
+            bootstrap.cleanup_local_repo()
         }
-      },
     ])   
 }

@@ -60,7 +60,7 @@ class PuppetBootstrap {
         // Load puppet config from context attributes
         puppetConfig = context.attributes.thisInstance.containsKey("puppetConfig") ? context.attributes.thisInstance.get("puppetConfig") : [:]
         // merge configs: defaults from properties file, persisted config from attributes, options given to this function
-        puppetConfig = puppetProperties.puppet.flatten() + puppetConfig + options.findAll(){ it.key != "context" }
+        puppetConfig = puppetProperties.puppet + puppetConfig + options.findAll(){ it.key != "context" }
         // persist to context attributes
         context.attributes.thisInstance["puppetConfig"] = puppetConfig
     }
@@ -76,12 +76,38 @@ class PuppetBootstrap {
         sh("mkdir -p ${local_repo_dir}")
     }
 
-    def loadManifest(manifestOriginType, manifestOriginUrl) {
-        /*stuff like in ChefLoader -- TODO Refactoring into groovy-utils*/
-        if (manifestOriginType == "tar") {
+    def loadManifest(repoType, repoUrl) {
+        /*stuff like in ChefLoader -- TODO Refactoring into groovy-utils after resolving CLOUDIFY-1147*/
+        switch (repoType) {
+        case "git":
+            if (! test("which git >/dev/null")) {
+                installPkgs(["git"])
+            }
+            def git_dir = pathJoin(local_repo_dir, ".git")
+            if (pathExists(git_dir)) {
+                sh("cd ${local_repo_dir}; git pull origin master")
+            } else {
+                sh("git clone ${repoUrl} ${local_repo_dir}")
+            }
+            break
+        case "svn":
+            if (! test("which svn >/dev/null")) {
+                installPkgs(["subversion"])
+            }
+            def svn_dir = pathJoin(local_repo_dir, ".svn")
+            if (pathExists(svn_dir)) {
+                sh("cd ${local_repo_dir}; svn update")
+            } else {
+                sh("svn co ${repoUrl} ${local_repo_dir}")
+            }
+            break
+        case "tar":
             String local_tarball_path = underHomeDir("manifests.tgz")
-            download(local_tarball_path, manifestOriginUrl)
+            download(local_tarball_path, repoUrl)
             sh("tar -xzf ${local_tarball_path} -C ${local_repo_dir}")
+            break
+        default:
+            throw new Exception("Unrecognized type '${repoType}', please use one of: 'git', 'svn' or 'tar'")
         }
     }
 
@@ -90,6 +116,9 @@ class PuppetBootstrap {
         sudo("puppet apply ${manifest}")
     }
 
+    def cleanup_local_repo() {
+        sh("rm -rf ${pathJoin(local_repo_dir,"*")}")
+    }
 }
 
 class DebianBootstrap extends PuppetBootstrap {
@@ -109,7 +138,8 @@ class DebianBootstrap extends PuppetBootstrap {
     def dpkg(deb_url) { 
         def local_deb = underHomeDir("deb")
         download(local_deb, deb_url)
-        sudo("dpkg -i ${local_deb}")    
+        sudo("dpkg -i ${local_deb}")
+        sudo("apt-get update")
     }
 
     def installPkgs(List pkgs) {
@@ -165,7 +195,8 @@ class SuSEBootstrap extends PuppetBootstrap {
 
     def installPuppetlabsRepo() {
         def shortVersion = os.getVendorVersion().tokenize(".")[0]
-        zypper(puppetConfig.puppetlabsRepoRpm."zypper${shortVersion}")
+        //TODO: possibly need to add additional repos for SuSE
+        zypper(puppetConfig.puppetlabsRepoRpm."${shortVersion}")
     }
 
     def zypper(repo) { 
