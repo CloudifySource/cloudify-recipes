@@ -20,31 +20,31 @@ import PuppetBootstrap
 service { 
     extend "../groovy-utils"
     name "puppet"
-    icon "puppet.png" //eventually we should probably only use it for the master
+    icon "puppet.png"
 
     lifecycle {
       install {
         bootstrap = PuppetBootstrap.getBootstrap(context:context)
         bootstrap.install()
-
-        //TODO: pull additional properties from config?
-        manifestsType = "tar" // Or git or svn
-        manifestsUrl = "http://fewbytes-development.s3.amazonaws.com/clients/gigaspaces/manifests.tgz"
-        bootstrap.loadManifest(manifestsType, manifestsUrl)
-        bootstrap.appplyManifest()
-      } 
+      }
       start {
         bootstrap = PuppetBootstrap.getBootstrap(context:context)
-        bootstrap.appplyManifest()
+        if (binding.variables["puppetRepo"]) {
+            bootstrap.loadManifest(puppetRepo.repoType, puppetRepo.url)
+            bootstrap.appplyManifest(puppetRepo.manifestPath)
+        } else {
+            println "Puppet repository undefined in the properties file."
+            println "Skipping manifest application."
+        }
       }
     }
 
     customCommands([
-      "run_puppet": {manifestOriginType, manifestOriginUrl ->
+      "run_puppet": {manifestOriginType, manifestOriginUrl, manifestPath=null ->
         bootstrap = PuppetBootstrap.getBootstrap(context:context)
         try{ //hack - to see the error text, we must exit successfully(CLOUDIFY-915)
-            bootstrap.loadManifest(manifestsType, manifestsUrl)
-            bootstrap.appplyManifest()
+            bootstrap.loadManifest(manifestOriginType, manifestOriginUrl)
+            bootstrap.appplyManifest(manifestPath)
         } catch(Exception e) {
           println "Puppet agent run encountered an exception:\n${e}" //goes to the gsc log
         }
