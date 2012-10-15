@@ -22,6 +22,10 @@ service {
 
 	icon "mysql.png"
 	type "DATABASE"
+	elastic true
+	numInstances 1
+	minAllowedInstances 1
+	maxAllowedInstances 3	
 	
 	compute {
 		template "SMALL_LINUX"
@@ -70,10 +74,48 @@ service {
 			
 		/* 
 			This custom command enables users to invoke an SQL statement
-			Usage :  invoke mysql query actionUser dbName query
-			Example: invoke mysql query root myDbName "update users set city=\"NY\" where uid=15"
+			Usage :  invoke mysql query actionUser [puserPassword] dbName query
+			Examples: 			
+				1. invoke mysql query root myDbName "update users set city=\"NY\" where uid=15"
+				2. invoke mysql query root pmyRootPassword myDbName "update users set city=\"NY\" where uid=15"			
+			
 		*/			
-		"query" : "mysql_query.groovy" 
+		"query" : "mysql_query.groovy" ,
+		
+		/* 
+			This custom command enables users to add a slave to the master.
+	        It should be invoked only on a master instance (by a remote slave) 
+			and only if masterSlaveMode is set to true on both the slave and master.
+	        As a result, the following will be invoked :  
+	        mysql -u root -D dbName -e 
+			  "GRANT REPLICATION SLAVE, REPLICATION CLIENT ON *.* TO slaveUser@'slaveHostIP' IDENTIFIED BY 'slavePassword';"
+	
+	       Usage :  invoke mysqlmaster addSlave actionUser dbName slaveUser slavePassword slaveHostIP 			
+			
+		*/
+		"addSlave": "mysql_addSlave.groovy" , 
+		
+		/* 
+			This custom command enables users to show the master's status.
+	        It should be invoked only on a master instance (either by the master or by a remote slave) 
+			and only if masterSlaveMode is set to true.
+	        As a result, the following will be invoked :  
+	        mysql -u root -D dbName -e "show master status;" 
+		    and the mysql-bin will be stored in context.attributes.thisApplication["masterBinLogFile"] 
+		    and the master's log's position will be stored in context.attributes.thisApplication["masterBinLogPos"]  
+		
+	       Usage :  invoke mysqlmaster showMasterStatus actionUser dbName  			
+			
+		*/
+		"showMasterStatus": "mysql_showMasterStatus.groovy" , 
+		
+		/* 
+			This custom command enables users to import a zipped file to a database
+			Usage :  invoke import actionUser dbName zipFileURL
+			Example: invoke import root myDbName http://www.mysite.com/myFile.zip
+		*/
+		
+		"import" : "mysql_import.groovy"
 	])
 	
 

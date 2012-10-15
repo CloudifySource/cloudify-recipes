@@ -16,4 +16,7 @@
 service {
 	extend "../../../services/cassandra"
 	numInstances 3
+	lifecycle{		
+		postStart 	"cassandra_poststart.groovy"
+	}	
 }

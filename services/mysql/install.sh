@@ -1,6 +1,17 @@
 #!/bin/bash
 
 # args:
+# $1 A command separated list of my.cnf section names
+# $2 A command separated list of my.cnf variable names
+# $3 A command separated list of my.cnf values for the above variable names
+# 
+
+sectionNames=$1
+variableNames=$2
+newValues=$3
+
+
+# args:
 # $1 the error code of the last command (should be explicitly passed)
 # $2 the message to print in case of an error
 # 
@@ -45,31 +56,63 @@ sudo rm -rf /var/log/mysql* || error_exit $? "Failed on: sudo rm -rf /var/log/my
 #sudo rm -f /home/`whoami`/{.,}*mysql* || error_exit $? "Failed on: sudo rm -f /home/`whoami`/{.,}*mysql*" 
 
 echo "Using yum. Installing mysql on one of the following : Red Hat, CentOS, Fedora, Amazon"
-sudo yum install -y -q mysql mysql-server || error_exit $? "Failed on: sudo yum install -y -q mysql mysql-server "
-echo "Reinstalling mysql-libs ..."
-sudo yum reinstall -y -q mysql-libs || error_exit $? "Failed on: sudo yum install -y -q mysql mysql-server "
+
+# This master-slave implementation requires mysql5.1+ version. 
+# So if the available version is 5.0, the recipe retrievs mysql5.5 from the webtatic repo.
+currMysqlVersion=`yum list mysql mysql-server | grep mysql | grep -cv "5.0"`
+if [ $currMysqlVersion -eq 0 ] ; then
+  echo "Getting rpm repo.webtatic.com ..." 
+  sudo rpm --force -Uvh http://repo.webtatic.com/yum/centos/5/latest.rpm || error_exit $? "Failed on: sudo rpm -Uvh http://repo.webtatic.com/yum/centos/5/latest.rpm"
+  echo "Installing libmysqlclient15 from webtatic repo ..." 
+  sudo yum install -y -q libmysqlclient15 --enablerepo=webtatic || error_exit $? "Failed on: sudo yum install -y -q libmysqlclient15 --enablerepo=webtatic"
+  echo "Installing mysql55 from webtatic repo ..." 
+  sudo yum install -y -q mysql55 mysql55-server --enablerepo=webtatic || error_exit $? "Failed on: sudo yum install -y -q mysql55 mysql55-server --enablerepo=webtatic"
+  echo "Reinstalling mysql55-libs from webtatic repo ..." 
+  sudo yum reinstall -y -q mysql55-libs --enablerepo=webtatic || error_exit $? "Failed on: sudo reinstall -y -q mysql55-libs --enablerepo=webtatic"
+else
+  sudo yum install -y -q mysql mysql-server || error_exit $? "Failed on: sudo yum install -y -q mysql mysql-server "
+  echo "Reinstalling mysql-libs ..."
+  sudo yum reinstall -y -q mysql-libs || error_exit $? "Failed on: sudo yum install -y -q mysql mysql-server "
+fi
 
 echo "Killing old mysql process if exists b4 ending the installation..."
 killMySqlProcess
 
+sectionNamesLen=`expr length "$sectionNames"`
+if [ $sectionNamesLen -gt 0 ] ; then
 
-myCnfPath=`sudo find / -name "my.cnf"`
-if [ -f "${myCnfPath}" ] ; then
-    allZeroes="0.0.0.0"
-	bindcount=`grep -c "bind-address" $myCnfPath`
-    if [ $bindcount -eq 0 ] ; then
-	  bindStr="bind-address=${allZeroes}"
-	  mysqldStr="\[mysqld\]"
-	  jointStr="${mysqldStr}\n${bindStr}"
-	  echo "Adding ${bindStr} $myCnfPath ... "
-      sudo sed -i -e "s/$mysqldStr/$jointStr/g" $myCnfPath
-	else
-		orig127="127.0.0.1"
-		echo "Replacing $orig127 with $allZeroes in $myCnfPath ... "
-		sudo sed -i -e "s/$orig127/$allZeroes/g" $myCnfPath
+	myCnfPath=`sudo find / -name "my.cnf"`
+	if [ -f "${myCnfPath}" ] ; then
+
+		sectionNames=$1
+		variableNames=$2
+		newValues=$3
+
+		IFS=, read -a sectionNamesArr <<< "$sectionNames"
+		IFS=, read -a variableNamesArr <<< "$variableNames"
+		IFS=, read -a newValuesArr <<< "$newValues"
+		echo "IFS is ${IFS}"
+		echo "${sectionNamesArr[@]}"
+		echo "${variableNamesArr[@]}"
+		echo "${newValuesArr[@]}"
+
+		variableCounter=${#variableNamesArr[@]}
+
+		for (( i=0; i<${variableCounter}; i++ ));
+		do
+			currSection="\[${sectionNamesArr[$i]}\]"
+			currVariable="${variableNamesArr[$i]}"
+			currNewValue="${newValuesArr[$i]}"
+			currNewLine="${currVariable}=${currNewValue}"
+			echo "Commenting $currVariable in $myCnfPath ... "
+			sudo sed -i -e "s/^$currVariable/#$currVariable/g" $myCnfPath
+			
+			jointStr="${currSection}\n${currNewLine}"
+			echo "Setting ${currNewLine} in the ${currSection} section of $myCnfPath ... "
+			sudo sed -i -e "s/$currSection/$jointStr/g" $myCnfPath		
+		done
 	fi
 fi
-
 echo "End of $0"
 
 

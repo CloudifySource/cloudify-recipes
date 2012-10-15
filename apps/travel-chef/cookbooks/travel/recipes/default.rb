@@ -17,21 +17,23 @@ end
 tarball = ::File.join(node["travel"]["war_directory"], node["travel"]["war_name"])
 webapp_dir = ::File.join(node["tomcat"]["webapp_dir"], "travel")
 
+package "unzip"  # in case it doesn't exist on the ami
+execute "unzip war" do
+  command "unzip -o #{tarball} -d #{webapp_dir}"
+  notifies :restart, "service[tomcat]"
+  action :nothing
+end
+
 remote_file tarball  do
   #source "http://repository.cloudifysource.org/org/cloudifysource/2.0.0/travel-mongo-example.war"
   source node["travel"]["war_url"]
   checksum node["travel"]["war_checksum"]
   mode "0644"
   action :create
-  notifies :run, "execute[unzip -o #{tarball} -d #{webapp_dir}]", :immediately
+  notifies :run, "execute[unzip war]", :immediately
 end
 
-execute "unzip -o #{tarball} -d #{webapp_dir}" do
-  notifies :restart, "service[tomcat]"
-  action :nothing
-end
-
-mysql_host = search(:node, "role:mysql").first.ipaddress
+mysql_host = search(:node, 'run_list:recipe\[mysql\:\:server\]').first.ipaddress
 template ::File.join(webapp_dir, "WEB-INF", "classes", "jdbc.properties") do
   mode "0644"
   variables :mysql_host => mysql_host,

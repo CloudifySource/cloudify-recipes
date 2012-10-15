@@ -24,7 +24,7 @@ service {
 	numInstances 1
 
     compute {
-        template "MEDIUM_LINUX"
+        template "SMALL_UBUNTU"
     }
 
 	lifecycle{
@@ -33,7 +33,7 @@ service {
             def config = bootstrap.getConfig()
             bootstrap.runSolo([
                 "chef_server": [
-                    "server_url": "http://localhost:8080",
+                    "server_url": "http://localhost:4000",
                     "init_style": "${config.initStyle}"
                 ],
                 "chef_packages": [
@@ -55,6 +55,7 @@ service {
 		startDetection {
 			ServiceUtils.isPortOccupied(4000)
 		}
+		
 		details {
 			def publicIp = System.getenv()["CLOUDIFY_AGENT_ENV_PUBLIC_IP"]
 			def serverRestUrl = "https://${publicIp}:443"
@@ -87,6 +88,16 @@ service {
         "cleanupCookbooks": { 
             chef_loader = ChefLoader.get_loader() 
             chef_loader.cleanup_local_repo()
+        },
+        "listCookbooks": {
+            chef_loader = ChefLoader.get_loader()
+            return chef_loader.listCookbooks()
+        },
+        "knife": { String... args=[] ->
+            chef_loader = ChefLoader.get_loader()
+            return chef_loader.invokeKnife(args)
         }
+
+
     ])
 }

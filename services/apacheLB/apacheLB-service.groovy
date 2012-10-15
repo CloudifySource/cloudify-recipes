@@ -65,7 +65,8 @@ service {
 			"Win.*":"killAllHttpd.bat",		
 			"Linux.*":"apacheLB_stop.groovy"
 			])
-		shutdown ([			
+		shutdown ([	
+			"Win.*": "echo There's no need to uninstall on Windows"  ,
 			"Linux.*":"apacheLB_uninstall.groovy"
 		])
 			

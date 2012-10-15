@@ -11,7 +11,7 @@
 [Cloudify 2.2.0 M4](http://repository.cloudifysource.org/org/cloudifysource/2.2.0/gigaspaces-cloudify-2.2.0-m4-b2493-77.zip)     
 **Linux* sudoer permissions**:	Mandatory  
 **Windows* Admin permissions**:  Not required    
-**Release Date**: July 25th 2012  
+**Release Date**: September 24th 2012  
 
 
 Tested on:
@@ -38,7 +38,13 @@ Synopsis
 
 This folder contains a service recipe for MySQL.
 
-Its default port is 3306, but it can be modified in the mysql-service.properties.
+This recipe enables users to install MySQL in two modes: standalone and master-slave.
+
+In a master-slave mode, the first instance of the service is the master and all the other instances are slaves.
+
+In order to work in a master-slave mode, you need to set the masterSlaveMode property to true in mysql-service.properties file.
+
+The default port is 3306, but it can be modified in the mysql-service.properties file.
 
 You can inherit and extend this recipe very easily, just by changing the mysql-service.properties file, without changing even one line of code in the recipe.
 
@@ -127,27 +133,101 @@ Examples :
 </code></pre>
 
 
+3:	<strong>my.cnf variables Replacement</strong> 
+
+In the properties file you can insert an array of my.cnf variables and their corresponding values (as many as you want).  
+Do NOT set the server-id variable, as it will be set by this recipe.
+
+These variables will be replaced during the install lifecycle event.
+   
+Examples :  
+   
+<pre><code>   
+   /* In this case, the value of the log-bin, 
+      will be set to mysql-bin in the mysqld section of my.cnf.
+   */      
+	[  
+		"section" : "mysqld", 
+		"variable" : "log-bin" ,
+		"newValue"  : "mysql-bin"
+	], 
+
+   /* In this case, the value of the binlog_format   , 
+      will be set to MIXED (ROW and STATEMENT) in the mysqld section of my.cnf.
+   */ 	
+	
+	[  
+		"section" : "mysqld", 
+		"variable" : "binlog_format" ,
+		"newValue"  : "MIXED"
+	]
+
+</code></pre>
+	
+   
+
 ## Custom Commands 
 
-**mysqldump**:   
+**A) mysqldump**:   
 
 This custom command enables users to create a database snapshot (mysqldump).  
 Usage :  <strong>invoke mysql mysqldump actionUser dumpPrefix [dbName]</strong>    
 Example: <strong>invoke mysql mysqldump root myPrefix_ myDbName</strong>  
-		
-**query**:  
+	
+	
+**B) query**:  
  
 This custom command enables users to invoke an SQL statement.  
-Usage :  <strong>invoke mysql query actionUser dbName query</strong>  
+Usage :  <strong>invoke mysql query actionUser [puserPassword] dbName query</strong>  
 Examples: 
 
 1. If you want to update the users table in myDbName with the following statement :    
 <strong>update users set name='James' where uid=1</strong>   
    then you need to run the following custom command :   
 <strong>invoke mysql query root myDbName \\\"update users set name=\\\'James\\\' where uid=1\\\"</strong>  
+or
+<strong>invoke mysql query myUser pmyUserpassword myDbName \\\"update users set name=\\\'James\\\' where uid=1\\\"</strong>  
 
 2. If you want to insert a new user named Dan, into the users table in myDbName, and you need the following SQL statement:  
 <strong>INSERT INTO users VALUES (17,'Dan','hisPassword','hisemail@his.com',0)</strong>  
    then you need to run the following custom command :   
 <strong>invoke mysql query root tamirDB \\\"INSERT INTO users VALUES \\\\(17,\\\'Dan\\\',\\\'hisPassword\\\',\\\'hisemail@his.com\\\',0\\\\)\\\"</strong>  
 
+
+**C) import**:
+
+This custom command enables users to import a zipped file to a database
+Usage :  <strong>invoke import actionUser dbName zipFileURL</strong>
+Example: <strong>invoke import root myDbName http://www.mysite.com/myFile.zip</strong>
+
+
+**D) addSlave**:
+
+This custom command enables users to add a slave to the master.
+It should be invoked only on a master instance (by a remote slave) 
+and only if masterSlaveMode is set to true on both the slave and master.
+As a result, the following will be invoked :  
+mysql -u root -D dbName -e "GRANT REPLICATION SLAVE, REPLICATION CLIENT ON *.* TO slaveUser@'slaveHostIP' IDENTIFIED BY 'slavePassword';"
+
+Usage :  <strong>invoke mysqlmaster addSlave actionUser dbName slaveUser slavePassword slaveHostIP</strong>
+			
+			
+**E) showMasterStatus**:	
+					
+This custom command enables users to show the master's status.
+It should be invoked only on a master instance (either by the master or by a remote slave) 
+and only if masterSlaveMode is set to true.
+As a result, the following will be invoked :  
+mysql -u root -D dbName -e "show master status;" 
+and then the mysql-bin will be stored in context.attributes.thisApplication["masterBinLogFile"] 
+and the master's log's position will be stored in context.attributes.thisApplication["masterBinLogPos"]  
+		
+Usage :  <strong>invoke mysqlmaster showMasterStatus actionUser dbName</strong>
+
+
+## Known Issues
+
+ * Monitoring is not implemented yet. It will be available in the future.  
+ * Failover in the master-slave mode is NOT implemented yet. It will be available in the future.  
+ 
+ 

@@ -1,0 +1,52 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.openspaces.bigdata</groupId>
+		<artifactId>rt-analytics</artifactId>
+		<version>XAP-9.1</version>
+	</parent>
+	<artifactId>rt-feeder</artifactId>
+	<name>${project.artifactId}</name>
+	<properties>
+		<gsType>PU</gsType>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>org.openspaces.bigdata</groupId>
+			<artifactId>rt-common</artifactId>
+            <version>${parent.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.social</groupId>
+			<artifactId>spring-social-twitter</artifactId>
+			<version>1.0.2.RELEASE</version>
+		</dependency>
+	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<configuration>
+							<tasks>
+									<copy
+										file="${basedir}/target/${project.artifactId}-${project.version}.jar"
+										tofile="${basedir}/../bigDataApp/feeder/rt-analytics-feeder.jar" />
+							</tasks>
+						</configuration>
+						<phase>install</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>

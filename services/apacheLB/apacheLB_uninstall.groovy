@@ -32,8 +32,8 @@ switch (currVendor) {
 		break	
 	case ~/.*(?i)(Microsoft|Windows).*/:		
 		// Need to add Windows impl here
-		break		
-	default: throw new Exception("Support for ${currVendor} is not implemented")
+	default: 
+		System.exit(0)
 }
 
 builder = new AntBuilder()

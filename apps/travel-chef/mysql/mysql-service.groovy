@@ -16,21 +16,6 @@
 import java.net.InetAddress 
 
 service {
-    extend "../../../services/chef"
+    extend "../../../services/chef-services/mysql-vanilla"
     name "mysql"
-    type "DATABASE"
-    icon "mysql.png"
-    numInstances 1
-
-    compute {
-        template "MEDIUM_LINUX"
-    }
-
-    lifecycle {
-        startDetectionTimeoutSecs 240
-        startDetection {
-            ServiceUtils.isPortOccupied(System.getenv()["CLOUDIFY_AGENT_ENV_PRIVATE_IP"], 3306)
-        }
-    }
-
 }

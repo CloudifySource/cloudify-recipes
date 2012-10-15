@@ -14,34 +14,56 @@
 * limitations under the License.
 *******************************************************************************/
 import java.text.SimpleDateFormat
-def static runMysqlQuery(binFolder,execFile,osName,currQuery,dbName,dbUser,debugMsg) {	
 
+def static runMysqlQuery(binFolder,execFile,osName,currQuery,dbName,dbUser,debugMsg,outputpropertyName,displayOutputProperty) {	
+	return runMysqlQuery(binFolder,execFile,osName,currQuery,dbName,dbUser,"",debugMsg,outputpropertyName,displayOutputProperty)
+}
+
+def static runMysqlQuery(binFolder,execFile,osName,currQuery,dbName,dbUser,dbUserPassword,debugMsg,outputpropertyName,displayOutputProperty) {	
+
+  def outputPropertyStr
+  def builder
+  def currPassword = ""
+
+  if ( dbUserPassword.length() > 0  ) {
+	currPassword = "-p${dbUserPassword}"
+  }
+
+  
   try {		
-	def builder = new AntBuilder()
+	builder = new AntBuilder()
 	builder.sequential {		 
       echo(message:"runMysqlQuery: os ${osName}: ${debugMsg}")
-      echo(message:"runMysqlQuery: ${binFolder}/${execFile} -u ${dbUser} -D ${dbName} -e ${currQuery}")
-      exec(executable:"${binFolder}/${execFile}", osfamily:"${osName}") {	  
-	    arg(line:"-u ${dbUser} -D ${dbName} -e ${currQuery}")
+      echo(message:"runMysqlQuery: ${binFolder}/${execFile} -u ${dbUser} ${currPassword} -D ${dbName} -e ${currQuery}")
+      exec(executable:"${binFolder}/${execFile}", osfamily:"${osName}", outputproperty:"${outputpropertyName}") {	  
+	    arg(line:"-u ${dbUser} ${currPassword} -D ${dbName} -e ${currQuery}")
      }	
    }		
   } 
   catch (Exception ioe) {
 	println "runMysqlQuery: Connection Failed!"
 	ioe.printStackTrace();
-  } 
+  }
+  
+  outputPropertyStr = builder.project.properties."${outputpropertyName}"
+  if ( displayOutputProperty ) {
+	println "runMysqlQuery: outputproperty (${outputpropertyName}) is : ${outputPropertyStr}"
+  }
   
   println "runMysqlQuery: Ended"
+  return outputPropertyStr
 }	
 
 
-def static importMysqlDB(binFolder,execFile,osName,importedFile,dbName,dbUser,debugMsg) {	
+def static importMysqlDB(binFolder,execFile,osName,importedFile,dbName,dbUser,debugMsg,outputpropertyName,displayOutputProperty) {	
 
+  def outputPropertyStr
+  def builder
   try {		
-	def builder = new AntBuilder()
+	builder = new AntBuilder()
 	builder.sequential {		 
       echo(message:"importMysqlDB: ${debugMsg}")
-      exec(executable:"${binFolder}/${execFile}", osfamily:"${osName}" ,input:"${importedFile}") {        
+      exec(executable:"${binFolder}/${execFile}", osfamily:"${osName}" ,input:"${importedFile}", outputproperty:"${outputpropertyName}") {       
 		arg(value:"-u")
 		arg(value:"${dbUser}")
 		arg(value:"${dbName}")
@@ -53,17 +75,24 @@ def static importMysqlDB(binFolder,execFile,osName,importedFile,dbName,dbUser,de
 	ioe.printStackTrace();
   } 
   
+  outputPropertyStr = builder.project.properties."${outputpropertyName}"
+  if ( displayOutputProperty ) {
+	println "importMysqlDB: outputproperty (${outputpropertyName}) is : ${outputPropertyStr}"
+  }  
   println "importMysqlDB: Ended"
+  return outputPropertyStr
 }	
 
 
-def static runMysqlAdmin(binFolder,execFile,osName,actionName,dbName,dbUser,debugMsg) {	
+def static runMysqlAdmin(binFolder,execFile,osName,actionName,dbName,dbUser,debugMsg,outputpropertyName,displayOutputProperty) {	
 
+  def outputPropertyStr
+  def builder
   try {		
-	def builder = new AntBuilder()
+	builder = new AntBuilder()
 	builder.sequential {		 
       echo(message:"runMysqlAdmin: ${debugMsg}")
-      exec(executable:"${binFolder}/${execFile}", osfamily:"${osName}") {        
+      exec(executable:"${binFolder}/${execFile}", osfamily:"${osName}", outputproperty:"${outputpropertyName}") {	
 		arg(value:"-u")
 		arg(value:"${dbUser}")
 		arg(value:"${actionName}")
@@ -76,10 +105,16 @@ def static runMysqlAdmin(binFolder,execFile,osName,actionName,dbName,dbUser,debu
 	ioe.printStackTrace();
   } 
   
+  outputPropertyStr = builder.project.properties."${outputpropertyName}"
+  if ( displayOutputProperty ) {
+	println "runMysqlAdmin: outputproperty (${outputpropertyName}) is : ${outputPropertyStr}"
+  } 
+  
   println "runMysqlAdmin: Ended"
+  return outputPropertyStr
 }	
 
-def static runMysqlDump(binFolder,execFile,osName,actionArgs,dbName,dbUser,debugMsg,dumpFolder,dumpPrefix) {	
+def static runMysqlDump(binFolder,execFile,osName,actionArgs,dbName,dbUser,debugMsg,dumpFolder,dumpPrefix) {		
 
   try {		
       
@@ -131,8 +166,42 @@ def static importFileToDB(binFolder,osConfig,currOsName,currActionDbName,currImp
 	def fullPathToImport="${context.serviceDirectory}/${importedFile}"
 	def currImportFile = new File(fullPathToImport) 
 	def importText = currImportFile.text
-	println "groovy: Replacing REPLACE_WITH_DB_NAME with ${config.dbName} in ${context.serviceDirectory}/${importedFile} ..."
+	println "importFileToDB: Replacing REPLACE_WITH_DB_NAME with ${config.dbName} in ${context.serviceDirectory}/${importedFile} ..."
 	currImportFile.text = importText.replace("REPLACE_WITH_DB_NAME",currActionDbName)	   
 
-	importMysqlDB(binFolder,osConfig.mysqlProgram,currOsName,fullPathToImport,currActionDbName,currActionUser,currDebugMsg)
+	importMysqlDB(binFolder,osConfig.mysqlProgram,currOsName,fullPathToImport,currActionDbName,currActionUser,currDebugMsg,"dummy",false)
+}
+
+def static showMasterStatus(context,binFolder,execFile,currOsName,currQuery,currActionDbName,currActionUser,currDebugMsg,outputpropertyName,displayOutputProperty) {
+              
+	def binLogData = runMysqlQuery(binFolder,execFile,currOsName,currQuery,currActionDbName,currActionUser,currDebugMsg,outputpropertyName,displayOutputProperty)
+
+	def binLogName="mysql-bin"
+	
+	println "showMasterStatus: binLogData is "+binLogData
+	println "showMasterStatus: binLogData length is "+binLogData.length()
+	
+	if  ( binLogData.length() > 0 && binLogData.contains("Position") ) { 
+		println "showMasterStatus: splitting binLogData ... "
+		def rawData = binLogData.split(binLogName)[1]
+		println "showMasterStatus: splitting rawData ... "
+		def dataArr = rawData.split()
+
+		println "showMasterStatus: setting binLog ... "
+		def binLog=binLogName+dataArr[0].trim()
+		
+		println "showMasterStatus: setting logPos ... "
+		def logPos=dataArr[1].trim()
+		
+		println "showMasterStatus: masterBinLogFile is "+binLog
+		println "showMasterStatus: masterBinLogPos is "+logPos
+
+		context.attributes.thisApplication["masterBinLogFile"] = binLog
+		context.attributes.thisApplication["masterBinLogPos"]  = logPos
+		return true
+	}
+	else {
+		println "showMasterStatus: master is NOT ready yet"
+		return false
+	}
 }	
