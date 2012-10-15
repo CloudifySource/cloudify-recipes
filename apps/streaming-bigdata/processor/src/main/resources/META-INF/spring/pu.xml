@@ -39,10 +39,10 @@
 
 
 	<!-- fileExternalPersistence is meant for testing purposes, and persists to a file in the local file system -->
-	<bean id="fileExternalPersistence" class="org.openspaces.bigdata.processor.FileExternalPersistence">
+	<!-- <bean id="fileExternalPersistence" class="org.openspaces.bigdata.processor.FileExternalPersistence">
 		<constructor-arg index="0" value="tweetRepo.txt"/>
-	</bean>
+	</bean>-->
 
 	<!-- cassandraExternalPersister persists to a cassandra DB -->
-<!--     <bean id="cassandraExternalPersister" class="org.openspaces.bigdata.processor.CassandraExternalPersistence"/> -->
+	<bean id="cassandraExternalPersister" class="org.openspaces.bigdata.processor.CassandraExternalPersistence"/>
 </beans>
