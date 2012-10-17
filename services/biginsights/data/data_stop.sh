@@ -1,9 +1,8 @@
 #! /bin/bash
 
 echo "data_stop.sh: BigInsights is about to be stopped!!!!!"
-def config = new ConfigSlurper().parse(new File("master-service.properties").toURL())
-rm -Rf /hadoop
-rm -Rf config.ibmHome
+rm -Rf /BI/hadoop
+rm -Rf /BI/
 userdel biadmin
 sed -i '/biginsights/d' ~/.bashrc
 

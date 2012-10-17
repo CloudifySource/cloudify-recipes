@@ -22,6 +22,26 @@
     <Console>
         <node>${masterIP}</node>
         <https>false</https>
+		<!--security>
+		<authentication>pam</authentication>
+		<securityrealm>${bidir}/SecurityRealmPlan.xml</securityrealm>
+		<biginsightssystemadministrator>
+		<group>bi-sysadmin</group>
+		<user>biadmin</user>
+		</biginsightssystemadministrator>
+		<biginsightsdataadministrator>
+		<group>bi-dataadmin</group>
+		<user>biadmin</user>
+		</biginsightsdataadministrator>
+		<biginsightsapplicationadministrator>
+		<group>bi-appadmin</group>
+		<user>biadmin</user>
+		</biginsightsapplicationadministrator>
+		<biginsightsuser>
+		<group>bi-user</group>
+		<user>biadmin</user>
+		</biginsightsuser>
+		</security-->
         <management-console-port>8080</management-console-port>
     </Console>
     <Jaql-server>
