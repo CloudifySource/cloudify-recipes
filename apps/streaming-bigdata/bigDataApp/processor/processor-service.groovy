@@ -18,7 +18,7 @@ service {
         def cassandraHost = cassandraInstances?.size() != 0 ? cassandraInstances[0].hostAddress : "localhost"
         println cassandraHost
 
-        contextProperties[
+        contextProperties [
             "cassandra.host": cassandraHost
         ]
     }
