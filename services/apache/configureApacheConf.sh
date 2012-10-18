@@ -5,14 +5,14 @@
 # $2 The required port in the apache2.conf
 # $3 need php or not ? "true" or "false" (string, not boolean)
 # $4 applicationZipUrl full path to the zip file
+# $5 zipContentLevel - Can be either "0" or "1" ("0" means that the content is in the root level folder)
 # 
 
 origPort=$1
 newPort=$2
 needPhp="$3"
 applicationZipUrl="$4"
-
-
+zipContentLevel="$5"
 
 # args:
 # $1 the error code of the last command (should be explicitly passed)
@@ -60,18 +60,33 @@ do
 				echo "wgetting ${applicationZipUrl}"
 				wget $applicationZipUrl
 				ls *.zip | xargs echo "Unzipping"
-				ls *.zip | xargs unzip
-				rm *.zip  
-				echo "mv unzipped folder to appFolder"
-				ls | xargs -I file mv file appFolder
-				cd appFolder
-				echo "Copying application files to ${documentRoot}/ ..."
-				ls | xargs -I file sudo cp -r file $documentRoot/  
-				cd ..
-				rm -rf tmpZipFolder
+				if  [ "${zipContentLevel}" == "0" ] ; then
+					zipLocation=`pwd`
+					cd $documentRoot
+					rm -rf index.php
+					echo "Unzipping to ${documentRoot} ... " 
+					ls $zipLocation/*.zip | xargs sudo unzip -o
+					rm $zipLocation/*.zip  
+				else
+					ls *.zip | xargs sudo unzip -o
+					rm *.zip
+				fi
+				
+
+				if  [ "${zipContentLevel}" != "0" ] ; then
+					echo "mv unzipped folder to appFolder"
+					ls | xargs -I file mv file appFolder
+					cd appFolder
+					echo "Copying application files to ${documentRoot}/ ..."
+					ls | xargs -I file sudo cp -r file $documentRoot/  
+					cd ..
+					rm -rf tmpZipFolder
+				else
+					echo "The content of ${applicationZipUrl} is the root folder of the zip file"
+				fi
 			else
-				sudo cp -f index.html $documentRoot/			
-			fi 									
+				sudo cp -f index.html $documentRoot/
+			fi							
 			echo "End of $0" 
 			exit 0
 		fi	

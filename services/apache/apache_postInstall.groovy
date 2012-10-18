@@ -54,8 +54,18 @@ switch (currVendor) {
 
 
 
-if ( isLinux ) {
+def zipContentLevel
+if ( context.attributes.thisInstance["zipContentLevel"] != null ) {
+	/* This means that the zip's content is in the root folder */
+	zipContentLevel = context.attributes.thisInstance["zipContentLevel"]				
+}
+else {
+	/* This means that the zip's content is in 2nd level folder */
+	zipContentLevel = "1"
+}
 
+if ( isLinux ) {
+	
 	builder.sequential {		
 		echo(message:"apache_install.groovy: Running ${confScript} os is ${currVendor}...")
 		exec(executable: "${confScript}",failonerror: "true") {
@@ -63,6 +73,7 @@ if ( isLinux ) {
 			arg(value:"${currentPort}")			
 			arg(value:"${config.php}")			
 			arg(value:"${config.applicationZipUrl}")			
+			arg(value:"${zipContentLevel}")			
 		}	
 	}
 }
