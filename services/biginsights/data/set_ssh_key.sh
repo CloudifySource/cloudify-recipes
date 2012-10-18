@@ -5,7 +5,7 @@ if [[ $EUID -ne 0 ]]; then
 	if [ ! -d ~/.ssh ]; then
 		sudo mkdir "~/.ssh"
 	fi		
-sudo echo "-----BEGIN RSA PRIVATE KEY-----
+echo "-----BEGIN RSA PRIVATE KEY-----
 MIIEowIBAAKCAQEAxkJMUduPlNYTRhY5HxXqUaR/ENe7jclL4MgZ/hlVphH8v5ioy4yYVEeuExq+
 U8Wn+Kt2UwnbfSlXEo1R0izAsQcrEqY3BO7EPNWt+lCIxSKG6tRcEkvLCyzCf3YkoY6r6tdlmD1B
 qu7Dp1p5H5TVlbsgWDwrx7zMTKzDWVwfSaWJGcl2Woze93bBA9Hme+qDmICaLhmP2R0T/6cH27tm
@@ -27,29 +27,31 @@ H1fml8iYg6vSjKfDCe6eRPkCgYBsdBWfGTDBDLrUo4RiCiOS+1iY72qfRaw/wnwCF+n+7lnAmD0B
 B+YarWFVvYzbfKopx/fWs6b1JYoB+J/XMYxlO4RtknXTkQKBgHDSf/7XLbABz0xF/yzImpAcZeDZ
 4B79byZSvgNBvq1tA79C4q10BkDcwyXBxh+4QZ5cJaw+N4Mh9yMlDw7UmHqOSAhZLCyLjDfZnmDa
 fH96nalQGtwmDwT0KzGQjBYJQ4hwzYEgvD5DEB/fS55/oHO0bf5a4NMlsf+XitCHlmW1
------END RSA PRIVATE KEY-----" > ~root/.ssh/id_rsa
+-----END RSA PRIVATE KEY-----" | sudo tee ~root/.ssh/id_rsa
 	sudo sudo chmod 600 ~root/.ssh/id_rsa
-	sudo echo "StrictHostKeyChecking no" > ~root/.ssh/config
-	sudo echo "CheckHostIP no" >> ~root/.ssh/config
-	sudo echo "PasswordAuthentication no" >> ~root/.ssh/config
+	echo "StrictHostKeyChecking no" | sudo tee ~root/.ssh/config
+	echo "CheckHostIP no" | sudo tee -a ~root/.ssh/config
+	echo "PasswordAuthentication no" | sudo tee -a ~root/.ssh/config
 	sudo chmod 600 ~root/.ssh/config
 	sudo ulimit -n 16384
-	sudo echo "root hard nofile 16384" >> /etc/security/limits.conf
-	sudo echo "root soft nofile 16384" >> /etc/security/limits.conf
+	echo "root hard nofile 16384" | sudo tee -a /etc/security/limits.conf
+	echo "root soft nofile 16384" | sudo tee -a /etc/security/limits.conf
 	sudo resize2fs `df / | awk 'NR == 2 {print $1}'`
 	sudo sed -i 's/^Defaults.*requiretty/#&/g' /etc/sudoers
 	sudo groupadd biadmin
 	sudo useradd -g biadmin -d /home/biadmin biadmin
 	sudo echo $1 | passwd --stdin biadmin
-	sudo echo 'biadmin ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+	echo 'biadmin ALL=(ALL) NOPASSWD:ALL' | sudo tee -a /etc/sudoers
+	ssh-keygen -y -f ~root/.ssh/id_rsa | sudo tee ~root/.ssh/id_rsa.pub
+	cat ~root/.ssh/id_rsa.pub | sudo tee -a ~root/.ssh/authorized_keys
 	sudo cp -R ~root/.ssh ~biadmin/
 	sudo chown -R biadmin.biadmin ~biadmin/.ssh
-	sudo cp ~biadmin/.ssh/authorized_keys ~biadmin/.ssh/id_rsa.pub
+#	cp ~biadmin/.ssh/authorized_keys ~biadmin/.ssh/id_rsa.pub
 
 	sudo mount /dev/xvdj /mnt
 	sudo mkdir $2
-	sudo mkdir /mnt/hadoop && ln -s /mnt/hadoop $2/hadoop
-	sudo mkdir /mnt/ibm && mkdir $2/var && ln -s /mnt/ibm $2/var/ibm
+	sudo mkdir /mnt/hadoop && sudo ln -s /mnt/hadoop $2/hadoop
+	sudo mkdir /mnt/ibm && sudo mkdir $2/var && sudo ln -s /mnt/ibm $2/var/ibm
 
 else
 	if [ ! -d ~/.ssh ]; then
@@ -92,9 +94,11 @@ fH96nalQGtwmDwT0KzGQjBYJQ4hwzYEgvD5DEB/fS55/oHO0bf5a4NMlsf+XitCHlmW1
 	useradd -g biadmin -d /home/biadmin biadmin
 	echo $1 | passwd --stdin biadmin
 	echo 'biadmin ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
-	cp -R ~root/.ssh ~biadmin/
+	ssh-keygen -y -f ~root/.ssh/id_rsa > ~root/.ssh/id_rsa.pub
+	cat ~root/.ssh/id_rsa.pub >> ~root/.ssh/authorized_keys
 	chown -R biadmin.biadmin ~biadmin/.ssh
-	cp ~biadmin/.ssh/authorized_keys ~biadmin/.ssh/id_rsa.pub
+	cp -R ~root/.ssh ~biadmin/
+#	cp ~biadmin/.ssh/authorized_keys ~biadmin/.ssh/id_rsa.pub
 
 	mount /dev/xvdj /mnt
 	mkdir $2

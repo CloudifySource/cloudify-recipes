@@ -12,11 +12,24 @@ println "master_start.groovy: BigInsights is about to start " + hostAddress
 def dataNodeService = serviceContext.waitForService(config.dataNodeService, 120, TimeUnit.SECONDS) 
 def dataNodeInstances = dataNodeService.waitForInstances(dataNodeService.getNumberOfActualInstances(), 120, TimeUnit.SECONDS )
 def dataNodesIPs = []
-
+def newHostsFile = new File(serviceContext.serviceDirectory + "/hosts")
+newHostsFile.write(hostAddress + " IP-" + hostAddress.replaceAll("\\.",'-') + "\n")
+println "Adding to hosts file: " + hostAddress + " IP-" + hostAddress.replaceAll("\\.",'-')
 for(instance in dataNodeInstances)
 {
-	dataNodesIPs.add(instance.getHostAddress())
-	println "Adding data node " + instance.getHostAddress();
+	def dataHostIP = instance.getHostAddress()
+	dataNodesIPs.add(dataHostIP)
+	println "Adding data node " + dataHostIP;
+	newHostsFile.append(dataHostIP + " IP-" + dataHostIP.replaceAll("\\.",'-')+"\n")
+	println "Adding to hosts file: " + dataHostIP + " IP-" + dataHostIP.replaceAll("\\.",'-')
+}
+for(ipaddr in dataNodesIPs)
+{
+	new AntBuilder().sequential {	
+		exec(executable:"scp" , osfamily:"unix", failonerror:"false") {
+			arg("line": serviceContext.serviceDirectory + "/hosts root@"+ipaddr + ":/etc/hosts")	
+		}
+	}
 }
 def folder = new File('/tmp/');
 def bigFolder = ""
@@ -34,9 +47,10 @@ new File(bigFolder + '/silentInstallGenerated.xml').write(installXmlTxt);
 def BI_RuntimeDir = config.BI_DIRECTORY_PREFIX + "opt/ibm/biginsights"
 def cmd = "-i  -e 's/export HADOOP_NAMENODE_OPTS=\\\"/export HADOOP_NAMENODE_OPTS=\\\"-Dcom.sun.management.jmxremote.port=${config.nameNodeJmxPort} -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false /' ${BI_RuntimeDir}/hdm/hadoop-conf-staging/hadoop-env.sh"
 new AntBuilder().sequential {	
+	copy(file:serviceContext.serviceDirectory + "/hosts", tofile:"/etc/hosts", overwrite:"true")
 	touch(file:serviceContext.serviceDirectory + "/installationRunning")
-	exec(executable:bigFolder + "/silent-install/silent-install.sh", osfamily:"unix", failonerror:"false") {
-		arg("value":bigFolder + "/silentInstallGenerated.xml")	
+	exec(executable:"sudo" , osfamily:"unix", failonerror:"false") {
+		arg("line":"-i " + bigFolder + "/silent-install/silent-install.sh " + bigFolder + "/silentInstallGenerated.xml")	
 	}
 }
 

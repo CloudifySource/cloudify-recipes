@@ -9,18 +9,21 @@ def env = System.getenv()
 def hostAddress = env["CLOUDIFY_AGENT_ENV_PRIVATE_IP"];
 
 
-def dataNodeService = serviceContext.waitForService(config.dataNodeService, 120, TimeUnit.SECONDS) 
+def dataNodeService = null
+while (dataNodeService == null)
+{
+	println "Locating data service...";
+	dataNodeService = serviceContext.waitForService(config.dataNodeService, 120, TimeUnit.SECONDS) 
+}
 def dataNodeInstances = null;
 def rowCount=0;
-if (dataNodeService != null)
+while(dataNodeInstances==null)
 {
-	dataNodeInstances = dataNodeService.waitForInstances(dataNodeService.getNumberOfPlannedInstances(), 240, TimeUnit.SECONDS )
-	rowCount = dataNodeInstances.size();
-	println "Found data services count " + dataNodeInstances.size() + " out of " +dataNodeService.getNumberOfPlannedInstances();
-} else
-{
-	println "No data services found";
-} 
+	println "Locating data service instances. Expecting " + dataNodeService.getNumberOfPlannedInstances();
+	dataNodeInstances = dataNodeService.waitForInstances(dataNodeService.getNumberOfPlannedInstances(), 120, TimeUnit.SECONDS )
+}
+rowCount = dataNodeInstances.size();
+println "Found data services count " + dataNodeInstances.size() + " out of " +dataNodeService.getNumberOfPlannedInstances();
 
 File dataNodes = new File(config.dataNodesFilePath)
 println "Create file " +config.dataNodesFilePath+ " that should contain row count=" + rowCount; 

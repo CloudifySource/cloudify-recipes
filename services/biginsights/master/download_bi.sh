@@ -72,22 +72,26 @@ fi
 
 if [[ $EUID -ne 0 ]]; then		
 	echo "Not root, need sudo"		
-	sudo mount /dev/xvdj /mnt
+#	sudo mount /dev/xvdj /mnt
 	sudo mkdir $2
-	sudo mkdir /mnt/hadoop && ln -s /mnt/hadoop $2/hadoop
-	sudo mkdir /mnt/ibm && mkdir $2/var && ln -s /mnt/ibm $2/var/ibm
+	sudo mkdir /mnt/hadoop && sudo ln -s /mnt/hadoop $2/hadoop
+	sudo mkdir /mnt/ibm && sudo mkdir $2/var && sudo ln -s /mnt/ibm $2/var/ibm
 
 	sudo ulimit -n 16384
-	sudo echo "root hard nofile 16384" >> /etc/security/limits.conf
-	sudo echo "root soft nofile 16384" >> /etc/security/limits.conf
-	sudo resize2fs `df / | awk 'NR == 2 {print $1}'`
+	echo "root hard nofile 16384" | sudo tee -a /etc/security/limits.conf
+	echo "root soft nofile 16384" | sudo tee -a /etc/security/limits.conf
+#	sudo resize2fs `df / | awk 'NR == 2 {print $1}'`
 	sudo sed -i 's/^Defaults.*requiretty/#&/g' /etc/sudoers
 	sudo groupadd biadmin
 	sudo useradd -g biadmin -d /home/biadmin biadmin
-	sudo echo $1 | passwd --stdin biadmin
-	sudo echo 'biadmin ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+	sudo echo biadmin:$1 | sudo chpasswd
+	echo 'biadmin ALL=(ALL) NOPASSWD:ALL' | sudo tee -a /etc/sudoers
 	
-	sudo yum -y -q install expect
+	if ! type "yum" > /dev/null; then
+ 		sudo apt-get -q -y install expect
+ 	else
+		sudo yum -y -q install expect
+	fi	
 	sudo groupadd bi-sysadmin
 	sudo groupadd bi-dataadmin
 	sudo groupadd bi-appadmin
@@ -106,7 +110,7 @@ else
 	sed -i 's/^Defaults.*requiretty/#&/g' /etc/sudoers
 	groupadd biadmin
 	useradd -g biadmin -d /home/biadmin biadmin
-	echo $1 | sudo passwd --stdin biadmin
+	sudo echo biadmin:$1 | chpasswd
 	echo 'biadmin ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 	yum -y -q install expect
 	groupadd bi-sysadmin
