@@ -43,16 +43,16 @@ public class CassandraExternalPersistence implements ExternalPersistence {
     private String keyspaceName;
     @Value("${cassandra.cf}")
     private String columnFamily;
-    @Value("${cassandra.host}")
+
     private String host = "localhost";
     @Value("${cassandra.port}")
     private int port = 9160;
-
+   
     private Cluster cluster;
     private Keyspace keyspace;
-
+    
     @PostConstruct
-    public void init() throws Exception {
+    public void init() throws Exception {    	
         log.info(format("initializing connection to Cassandra DB: host=%s port=%d keyspace=%s column-family=%s\n" //
                 , host, port, keyspaceName, columnFamily));
         cluster = getOrCreateCluster(keyspaceName, host + ":" + port);
@@ -86,4 +86,13 @@ public class CassandraExternalPersistence implements ExternalPersistence {
             write(o);
         }
     }
+
+	public void setHost(String host) {
+		this.host = host;
+	}
+    
+    
+
+	    
+    
 }
