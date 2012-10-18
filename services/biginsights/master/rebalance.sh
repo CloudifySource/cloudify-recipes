@@ -9,6 +9,6 @@
 #     sleep 30
 # done
 
-echo rebalance.sh sudo -i -u biadmin /opt/ibm/biginsights/IHC/bin/start-balancer.sh  
+echo rebalance.sh sudo -i -u biadmin $BIGINSIGHTS_HOME/IHC/bin/start-balancer.sh  
 sudo -i -u biadmin $BIGINSIGHTS_HOME/IHC/bin/start-balancer.sh 
 echo rebalance.sh completed
