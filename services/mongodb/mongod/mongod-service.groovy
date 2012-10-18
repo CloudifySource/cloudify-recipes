@@ -16,7 +16,7 @@ service {
 	lifecycle {
 		install "mongod_install.groovy"
 		start "mongod_start.groovy"			
-		startDetectionTimeoutSecs 240
+		startDetectionTimeoutSecs 400
 		startDetection {
 			ServiceUtils.isPortOccupied(context.attributes.thisInstance["port"])
 		}

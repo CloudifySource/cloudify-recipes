@@ -17,7 +17,7 @@ service {
 	lifecycle {
 		install "mongoConfig_install.groovy"
 		start "mongoConfig_start.groovy"		
-		startDetectionTimeoutSecs 240
+		startDetectionTimeoutSecs 400
 		startDetection {
 			ServiceUtils.isPortOccupied(context.attributes.thisInstance["port"])
 		}

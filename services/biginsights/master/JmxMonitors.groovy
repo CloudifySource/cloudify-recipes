@@ -54,6 +54,7 @@ def objectName=objectsArr[0]
 def attributeName=objectsArr[1]
 def currMetricValue = getJMXAttribute(server,objectName , attributeName)
 metrics.put(metricName,currMetricValue)
+print "metric received: " + metricName + " " + objectName + " " + attributeName+ " " + currMetricValue
 }
 
 

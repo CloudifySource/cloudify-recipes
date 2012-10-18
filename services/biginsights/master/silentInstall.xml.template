@@ -3,21 +3,21 @@
     <operation>install</operation>
     <vendor>ibm</vendor>
     <general>
-        <biginsights-install-directory>${BigInsightInstall}</biginsights-install-directory>
-        <biginsights-data-log-directory>${BigInsightLogs}</biginsights-data-log-directory>
-        <directory-prefix>${ibmHome}</directory-prefix>
-        <overwrite>false</overwrite>
+		<biginsights-install-directory>opt/ibm/biginsights</biginsights-install-directory>
+		<biginsights-data-log-directory>var/ibm/biginsights</biginsights-data-log-directory>
+        <directory-prefix>${BI_DIRECTORY_PREFIX}</directory-prefix>
+        <overwrite>true</overwrite>
         <file-system>hdfs</file-system>
         <shared-directory/>
     </general>
     <ssh>
-        <configure>configure_ssh</configure>
+        <configure>root_configured</configure>
         <auth-method/>
-        <password>${userPassword}</password>
+		<password>{xor}</password>
         <biadmin-userid>biadmin</biadmin-userid>
         <biadmin-groupid>biadmin</biadmin-groupid>
-        <biadmin-password>${biadminPassword}</biadmin-password>
-        <current-user-password>${userPassword}</current-user-password>
+		<biadmin-password>{xor}Lz4sLChvLTs=</biadmin-password>
+		<current-user-password>{xor}</current-user-password>
     </ssh>
     <Console>
         <node>${masterIP}</node>
@@ -25,16 +25,16 @@
         <management-console-port>8080</management-console-port>
     </Console>
     <Jaql-server>
-        <configure>false</configure>
+        <configure>true</configure>
         <node>${masterIP}</node>
         <jaql-server-port>8200</jaql-server-port>
     </Jaql-server>
     <Jaql>
-        <configure>false</configure>
-        <log-directory>${BigInsightLogs}/jaql/logs</log-directory>
+        <configure>true</configure>
+        <log-directory>/var/ibm/biginsights/jaql/logs</log-directory>
     </Jaql>
     <Derby>
-        <configure>false</configure>
+        <configure>true</configure>
         <node>${masterIP}</node>
         <backup-node/>
         <port>1528</port>
@@ -42,7 +42,7 @@
     <hadoop>
         <general>
             <cache-directory>hadoop/mapred/local</cache-directory>
-            <log-directory>${BigInsightLogs}/hadoop/logs</log-directory>
+            <log-directory>/var/ibm/biginsights/hadoop/logs</log-directory>
             <mapred-system-directory>/hadoop/mapred/system</mapred-system-directory>
         </general>
         <hdfs>
@@ -60,7 +60,7 @@
             <jobtracker-http-port>50030</jobtracker-http-port>
         </jobtracker>
         <secondarynamenode>
-            <node>${dataIPs[0]}</node>
+            <node>${masterIP}</node>
             <secondarynamenode-http-port>50090</secondarynamenode-http-port>
             <data-directory-2nn>hadoop/hdfs/namesecondary</data-directory-2nn>
         </secondarynamenode>
@@ -78,30 +78,30 @@
         <configure>false</configure>
     </Avro>
     <Hive>
-        <configure>false</configure>
+        <configure>true</configure>
         <hwi-node>${masterIP}</hwi-node>
-        <query-directory>${BigInsightLogs}/hive/query</query-directory>
-        <log-directory>${BigInsightLogs}/hive/logs</log-directory>
+        <query-directory>/var/ibm/biginsights/hive/query</query-directory>
+        <log-directory>/var/ibm/biginsights/hive/logs</log-directory>
         <hwi-port>9999</hwi-port>
         <server-port>10000</server-port>
     </Hive>
     <Lucene>
-        <configure>false</configure>
+        <configure>true</configure>
     </Lucene>
     <Pig>
-        <configure>false</configure>
-        <log-directory>${BigInsightLogs}/pig/logs</log-directory>
+        <configure>true</configure>
+        <log-directory>/var/ibm/biginsights/pig/logs</log-directory>
     </Pig>
     <Oozie>
-        <configure>false</configure>
+        <configure>true</configure>
         <node>${masterIP}</node>
         <oozie-port>8280</oozie-port>
     </Oozie>
     <Zookeeper>
         <configure>true</configure>
         <nodes>${masterIP}</nodes>
-        <data-directory>${BigInsightLogs}/zookeeper/data</data-directory>
-        <log-directory>${BigInsightLogs}/zookeeper/logs</log-directory>
+        <data-directory>/var/ibm/biginsights/zookeeper/data</data-directory>
+        <log-directory>/var/ibm/biginsights/zookeeper/logs</log-directory>
         <client-port>2181</client-port>
         <time-interval>2000</time-interval>
         <init-limit>5</init-limit>
@@ -114,24 +114,24 @@
         <install-mode>fully</install-mode>
         <region-nodes>${masterIP}</region-nodes>
         <root-directory>/hbase</root-directory>
-        <log-directory>${BigInsightLogs}/hbase/logs</log-directory>
+        <log-directory>/var/ibm/biginsights/hbase/logs</log-directory>
         <master-port>60000</master-port>
         <master-ui-port>60010</master-ui-port>
         <regionserver-port>60020</regionserver-port>
         <regionserver-ui-port>60030</regionserver-ui-port>
     </HBase>
     <Flume>
-        <configure>false</configure>
+        <configure>true</configure>
         <zookeeper-mode>shared</zookeeper-mode>
         <master-nodes>${masterIP}</master-nodes>
         <nodes>${masterIP}</nodes>
-        <pid-directory>${BigInsightLogs}/flume/pids</pid-directory>
-        <log-directory>${BigInsightLogs}/flume/logs</log-directory>
+        <pid-directory>/var/ibm/biginsights/flume/pids</pid-directory>
+        <log-directory>/var/ibm/biginsights/flume/logs</log-directory>
     </Flume>
     <node-list>
         <node>
             <name-or-ip>${masterIP}</name-or-ip>
-            <password>${userPassword}</password>
+			<password>{xor}</password>
             <rack/>
             <hdfs-data-directory>hadoop/hdfs/data</hdfs-data-directory>
             <gpfs-node-designation/>
@@ -140,9 +140,47 @@
         </node><%for (ip in dataIPs) {%>
 			<node>
 				<name-or-ip>${ip}</name-or-ip>
-				<password>${userPassword}</password>
+				<password>{xor}</password>
 				<rack/>
 	            <hdfs-data-directory>hadoop/hdfs/data</hdfs-data-directory>
+				<gpfs-node-designation/>
+				<gpfs-admin-node/>
+				<gpfs-rawdisk-list/>
 			</node>
         <%}%></node-list>
+<GPFS>
+<install>false</install>
+<cluster>
+<cluster-name>bigpfs</cluster-name>
+<primary-configuration-server/>
+<secondary-configuration-server/>
+</cluster>
+<file-system>
+<default-metadata-replication>1</default-metadata-replication>
+<max-metadata-replication>3</max-metadata-replication>
+<default-data-replication>1</default-data-replication>
+<max-data-replication>3</max-data-replication>
+<block-allocation>hcluster</block-allocation>
+<block-group-factor>128</block-group-factor>
+<write-affinity-depth>1</write-affinity-depth>
+<striping-method>failureGroupRoundRobin</striping-method>
+<failuregroup-maskbits>8</failuregroup-maskbits>
+<estimated-cluster-size>32</estimated-cluster-size>
+<mount-point/>
+<tmp-fileset>tmp</tmp-fileset>
+<log-fileset>log</log-fileset>
+</file-system>
+</GPFS>
+<enterprise>
+<Orchestrator>
+<configure>true</configure>
+<node>${masterIP}</node>
+<port>8888</port>
+</Orchestrator>
+</enterprise>
+<TaskController>
+<directory>/var/bi-task-controller-conf</directory>
+<groups>*</groups>
+<hosts>*</hosts>
+</TaskController>
 </cluster-configuration>

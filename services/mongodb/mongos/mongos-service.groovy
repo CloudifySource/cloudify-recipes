@@ -16,7 +16,7 @@ service {
 		install "mongos_install.groovy"
 		start "mongos_start.groovy"		
 		postStart "mongos_poststart.groovy"
-		startDetectionTimeoutSecs 240
+		startDetectionTimeoutSecs 400
 		startDetection {
 			ServiceUtils.isPortOccupied(context.attributes.thisInstance["port"])
 		}
