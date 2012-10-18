@@ -9,16 +9,15 @@ service {
 		
 	lifecycle {
 		install "master_install.groovy"
-		start "master_start.groovy" 		
-		preStop "master_stop.sh ${ibmHome} ${BigInsightInstall}"
+		preStart "master_start.groovy" 		
+		preStop "master_stop.groovy"
 		startDetectionTimeoutSecs 2400	
 		startDetection {
-//			println ":master-service.groovy: start detection: ${nameNodePort} seviceDir=${context.serviceDirectory}"
 			if((new File(context.serviceDirectory + "/installationRunning")).exists())
 			{
-//				println ":master-service.groovy: start detection: installationRunning is still present";
 				return false;
 			}
+			println ":master-service.groovy: start detection: start detection checking port";						
 			ServiceUtils.isPortOccupied(nameNodePort)
 		}
 		locator {			
@@ -30,11 +29,11 @@ service {
 		monitors {
 	
 			def nameNodeJmxBeans = [
-			"Total Files": ["Hadoop:name=FSNamesystem,service=NameNode", "FilesTotal"],
-			"Total Blocks": ["Hadoop:name=FSNamesystem,service=NameNode", "BlocksTotal"],
-			"Capacity Used (GB)": ["Hadoop:name=FSNamesystem,service=NameNode", "CapacityUsedGB"],
-			"Blocks with corrupt replicas": ["Hadoop:name=FSNamesystem,service=NameNode", "CorruptBlocks"],
-			
+			"Total Files": ["Hadoop:name=FSNamesystemMetrics,service=NameNode", "FilesTotal"],
+			"Total Blocks": ["Hadoop:name=FSNamesystemMetrics,service=NameNode", "BlocksTotal"],
+			"Capacity Used (GB)": ["Hadoop:name=FSNamesystemMetrics,service=NameNode", "CapacityUsedGB"],
+			"Blocks with corrupt replicas": ["Hadoop:name=FSNamesystemMetrics,service=NameNode", "CorruptBlocks"],
+			"Storage capacity utilization": ["Hadoop:name=NameNodeInfo,service=NameNode", "PercentUsed"],
 			"Number of active metrics sources": ["Hadoop:name=MetricsSystem,service=NameNode,sub=Stats", "num_sources"],
 			"Number of active metrics sinks": ["Hadoop:name=MetricsSystem,service=NameNode,sub=Stats", "num_sinks"],
 			"Number of ops for snapshot stats": ["Hadoop:name=MetricsSystem,service=NameNode,sub=Stats", "snapshot_num_ops"],
@@ -57,7 +56,7 @@ service {
 		details {
 			def currPublicIP
 			currPublicIP =System.getenv()["CLOUDIFY_AGENT_ENV_PUBLIC_IP"]
-			def bigInsightsURL	= "http://${currPublicIP}:8080/BigInsights/console/NodeAdministration.jsp"
+			def bigInsightsURL	= "http://${currPublicIP}:8080"///BigInsights/console/NodeAdministration.jsp"
 
 				return [
 					"BigInsights URL":"<a href=\"${bigInsightsURL}\" target=\"_blank\"><img height=70 width=70 src='https://www.ibm.com/developerworks/mydeveloperworks/wikis/form/anonymous/api/library/77eb08fb-0fa9-4195-bad9-a905a1b2d461/document/8051ab37-10c0-41ca-92ae-888ad7cda61e/attachment/8142cf29-67d2-4035-8f28-6c8d5cfd6745/media/biginsights logo.png'></a>"
@@ -100,6 +99,7 @@ service {
 		"Number of ops for publishing stats",
 		"Average time for publishing stats",
 		"Dropped updates by all sinks",
+		"Storage capacity utilization",
 		])
 		} ,
 		]
@@ -152,12 +152,12 @@ service {
 		} ,
 		widgetGroup {
 		
-		name "Dropped updates by all sinks"
+		name "Storage capacity utilization"
 		widgets([
-		balanceGauge{metric = "Dropped updates by all sinks"},
+		balanceGauge{metric = "Storage capacity utilization"},
 		barLineChart {
-		metric "Dropped updates by all sinks"
-		axisYUnit Unit.REGULAR
+		metric "Storage capacity utilization"
+		axisYUnit Unit.PERCENTAGE
 		}
 		])
 		} ,
