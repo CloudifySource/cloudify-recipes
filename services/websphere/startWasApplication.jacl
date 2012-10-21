@@ -1,0 +1,56 @@
+global AdminControl
+global AdminConfig
+
+set currAppName "APPLICATION_NAME"
+puts "Setting deployments..."
+set deployments [$AdminConfig getid /Deployment:$currAppName/]
+
+puts "Setting deploymentObject..."
+set deploymentObject [$AdminConfig showAttribute $deployments deployedObject]
+
+puts "AdminConfig Modifying warClassLoaderPolicy to MULTIPLE..."
+$AdminConfig modify $deploymentObject {{warClassLoaderPolicy MULTIPLE}}
+$AdminConfig save
+puts "AdminConfig Saved"
+
+puts "warClassLoaderPolicy:"
+$AdminConfig show $deploymentObject warClassLoaderPolicy
+
+puts "AdminConfig Setting classLoaderAttr to PARENT_LAST for $currAppName ..."
+set classLoaderAttr [$AdminConfig showAttribute $deploymentObject classloader]
+$AdminConfig modify $classLoaderAttr {{mode PARENT_LAST}}
+$AdminConfig save
+puts "AdminConfig Saved"
+
+puts "Setting myModules for $currAppName ..."
+set myModules [lindex [$AdminConfig showAttribute $deploymentObject modules] 0]
+
+puts "Looping thru $myModules ..."
+foreach module $myModules {
+ if {[regexp WebModuleDeployment $module] == 1} {
+   puts "Modifying classloaderMode to PARENT_LAST for $module ..."
+   $AdminConfig modify $module {{classloaderMode PARENT_LAST}}
+ }
+}
+
+puts "AdminConfig Saving classloaderMode for $currAppName modules..."
+$AdminConfig save
+puts "AdminConfig Saved"
+
+puts "Setting appManager..."
+set appManager [$AdminControl queryNames "WebSphere:*,type=ApplicationManager,process=server1"]
+
+puts "Invoking startApplication on $currAppName ..."
+$AdminControl invoke $appManager startApplication $currAppName
+
+$AdminConfig save
+puts "AdminConfig Saved"
+puts "End of startApplication"
+
+exit
+
+
+
+
+
+

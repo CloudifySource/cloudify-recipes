@@ -1,0 +1,9 @@
+global AdminApp
+global AdminConfig
+
+set currAppName "APPLICATION_NAME"
+$AdminApp uninstall $currAppName
+
+$AdminConfig save
+
+exit
