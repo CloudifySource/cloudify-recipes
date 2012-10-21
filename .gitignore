@@ -1,9 +1,9 @@
 .DS_Store
 .idea/
 *.iml
-/.classpath
-/.project
-/.settings
+.classpath
+.project
+.settings
 out/
 */*/common/target/
 */*/feeder/target/
@@ -12,4 +12,9 @@ out/
 *.jar
 *.war
 *.ear
-.metadata/
+*/*/.metadata/
+*/*/.project
+*/*/.classpath
+*/*/.settings
+
+

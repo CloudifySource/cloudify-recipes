@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 # args:
 # $1 The original port in the apache2.conf (ususally 80)
@@ -42,14 +42,18 @@ do
 								
 			defaultFile="$i/sites-available/default"			
 			sudo sed -i -e "s/$origPort/$newPort/g" ${defaultFile} || error_exit $? "Failed on: sudo sed -i -e $origPort/$newPort in ${defaultFile}"
+			sudo sed -i -e "s/AllowOverride None/AllowOverride All/g" ${defaultFile} || error_exit $? "Failed on: sudo sed -i -e AllowOverride None/AllowOverride All in ${defaultFile}"
 					
 			if  [ "${needPhp}" == "true" ] ; then
 				sudo echo "<?php phpinfo(); ?>" >> $docRoot/index.php  
 			fi 
-
-
+			
+			sudo a2enmod rewrite
+			
 			if  [ "${applicationZipUrl}" != "NOT_REQUIRED" ] ; then
+			  echo "Deleting ${docRoot}/index.html ..."
 			  sudo rm -rf $docRoot/index.html
+			  echo "Creating tmpZipFolder..."
 			  mkdir tmpZipFolder
 			  cd tmpZipFolder
 			  echo "wgetting ${applicationZipUrl}"

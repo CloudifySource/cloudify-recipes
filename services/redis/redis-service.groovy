@@ -11,11 +11,13 @@ service {
 		init "redis_install.groovy"
 	    start "redis_start.groovy"
 	    
-	    monitors(["keyspace hits": { jedis = new Jedis("localhost")
-					  				 jedis.set("foo", "bar")
-					  				 return 44
-									},
-			"keyspace misses":{33}])
+	    monitors {
+			map = [:]
+			new Jedis("localhost").info().splitEachLine(":") { k,v -> map[(k)] = v } 
+			
+			return ["keyspace hits": map["keyspace_hits"], "keyspace misses": map["keyspace_misses"]]
+			
+	     }
 	}
 	plugins([
 		plugin {
