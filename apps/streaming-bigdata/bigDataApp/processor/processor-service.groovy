@@ -2,24 +2,16 @@ import java.util.concurrent.TimeUnit
 
 service {
     name "processor"
-    numInstances 2
+    numInstances 4
     maxAllowedInstances 4
     statefulProcessingUnit {
         binaries "rt-analytics-processor.jar"
         sla {
-            memoryCapacity 32
-            maxMemoryCapacity 64
+            memoryCapacity 512
+            maxMemoryCapacity 512
             highlyAvailable true
-            memoryCapacityPerContainer 16
+            memoryCapacityPerContainer 128
         }
 
-        def cassandraService = context.waitForService("rt_cassandra", 180, TimeUnit.SECONDS)
-        def cassandraInstances = cassandraService?.waitForInstances(dbService.numberOfPlannedInstances, 180, TimeUnit.SECONDS)
-        def cassandraHost = cassandraInstances?.size() != 0 ? cassandraInstances[0].hostAddress : "localhost"
-        println cassandraHost
-
-        contextProperties [
-            "cassandra.host": cassandraHost
-        ]
     }
 }
