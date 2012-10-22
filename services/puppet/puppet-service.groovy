@@ -16,6 +16,7 @@
 
 import java.util.concurrent.TimeUnit
 import PuppetBootstrap
+import static Shell.*
 
 service { 
     extend "../groovy-utils"
@@ -32,6 +33,7 @@ service {
         if (binding.variables["puppetRepo"]) {
             bootstrap.loadManifest(puppetRepo.repoType, puppetRepo.repoUrl)
             bootstrap.appplyManifest(puppetRepo.manifestPath)
+            //bootstrap.applyClasses(["mysql":["data_dir": "/vol/mysql"]])
         } else {
             println "Puppet repository undefined in the properties file."
             println "Skipping manifest application."

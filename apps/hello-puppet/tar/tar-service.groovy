@@ -27,4 +27,11 @@ service {
     compute {
         template "SMALL_UBUNTU"
     }
+
+    lifecycle {
+      postStart {
+        context.attributes.thisApplication.apptest = "An application attribute"
+        context.attributes.thisService.servicetest = "A service attribute"
+      }
+    }
 }
