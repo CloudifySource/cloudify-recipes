@@ -21,6 +21,6 @@ application {
         name = "tar"
     }
     service {
-        name = "git"
+        name = "mysql"
     }
 }
