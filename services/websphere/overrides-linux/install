@@ -1,0 +1,526 @@
+#!/bin/sh -x
+
+
+# IBM Confidential OCO Source Material
+# 5724-J08, 5724-I63, 5724-H88, 5724-H89, 5655-N02, 5733-W70 (C) COPYRIGHT International Business Machines Corp. 1997, 2008
+# The source code for this program is not published or otherwise divested
+# of its trade secrets, irrespective of what has been deposited with the
+# U.S. Copyright Office.
+
+PWD_DIR=`pwd`
+currentDir=`dirname $0`
+cd "$currentDir"
+currentDir=`pwd`
+cd "$PWD_DIR"
+
+RC=0
+SUCCESS_RC=0
+FAIL_RC=$?
+JAVAHOME=
+DONT_REDIRECT=false
+SET_JAVA_HOME=false
+SET_TEMP_DIR=false
+SET_LOG_FILE=false
+FILE=
+ISJAVACONSOLEOPTION=-is:javaconsole
+ISJAVAHOME=-is:javahome
+ISTEMPDIR=-is:tempdir
+ISLOGS=-is:log
+JVM_TMP_DIR_PARAM=""
+WEBSPHERE_JVM_PARAMS=WEBSPHERE_JVM_PARAMS
+JVM_PARAMS=
+PARAM_CHECK=
+PREFIX_CHECK=
+FAILED=1
+NOT_PRESENT=0
+MSG_PREFIX="Directory "
+MSG_POSTFIX=" could not be validated as a writable directory."
+INSTALL_TYPE=install
+INSTALL_TYPE_CAPS=Install
+UNINSTALL_SH_STRING="uninstall.sh"
+UNINSTALL_STRING="uninstall"
+FOUND_STRING="Found JVM in: "
+LOOKING_STRING="Looking for JVM in: "
+HEAP_MIN_PREFIX=-Xms
+HEAP_MAX_PREFIX=-Xmx
+MIN_HEAP_SIZE_DEFAULT=-Xms256m
+MAX_HEAP_SIZE_DEFAULT=-Xmx512m
+LENGTH_COUNT=4
+LENGTH_START=1
+UMASK_VALUE=022
+HELP_ARG=-help
+FOUND=0
+NUMBER_1=1
+NUMBER_2=2
+NUMBER_4=4
+NUMBER_8=8
+NUMBER_16=16
+NUMBER_32=32
+NUMBER_64=64
+NUMBER_128=128
+
+		############################################
+		#
+		#	Function to aid in is:logs
+		#	
+		#
+		############################################
+log() {
+FILE_CONTENT=""
+cont=true
+	if [ "$FILE" != "" ]
+	then
+		if [ "$FOUND" = "$NUMBER_16" ] && [ "$cont" = "true" ] && [ -f "$JAVAHOME/bin/java" ]
+		then
+			FILE_CONTENT="${FILE_CONTENT}${FOUND_STRING}${JAVAHOME}/bin/java\n"
+			cont=false
+		elif [ "$FOUND" = "$NUMBER_16" ]
+		then
+			FILE_CONTENT="${FILE_CONTENT}${LOOKING_STRING}${JAVAHOME}/bin/java\n"
+			cont=false
+  		fi
+		if [ "$FOUND" = "$NUMBER_1" ] && [ "$cont" = "true" ]
+		then
+	FILE_CONTENT="${FILE_CONTENT}${FOUND_STRING}${currentDir}/../JDK/jre.pak/repository/package.java.jre/java/jre/bin/java\n"
+			cont=false
+		elif [ "$cont" = true ]
+		then	FILE_CONTENT="${FILE_CONTENT}${LOOKING_STRING}${currentDir}/../JDK/jre.pak/repository/package.java.jre/java/jre/bin/java\n"
+  		fi
+		if [ "$FOUND" = "$NUMBER_2" ] && [ "$cont" = "true" ]
+		then
+			FILE_CONTENT="${FILE_CONTENT}${FOUND_STRING}${currentDir}/java/jre/bin/java\n"
+			cont=false
+		elif [ "$cont" = "true" ]
+		then
+			FILE_CONTENT="${FILE_CONTENT}${LOOKING_STRING}${currentDir}/java/jre/bin/java\n"
+  		fi
+		if [ "$FOUND" = "$NUMBER_4" ] && [ "$cont" = "true" ]
+		then
+			FILE_CONTENT="${FILE_CONTENT}${FOUND_STRING}${currentDir}/java/bin/java\n"
+			cont=false
+		elif [ "$cont" = "true" ]
+		then
+			FILE_CONTENT="${FILE_CONTENT}${LOOKING_STRING}${currentDir}/java/bin/java\n"
+  		fi
+		if [ "$FOUND" = "$NUMBER_8" ] && [ "$cont" = "true" ]
+		then
+			FILE_CONTENT="${FILE_CONTENT}${FOUND_STRING}${currentDir}/jre/bin/java\n"
+			cont=false
+		elif [ "$cont" = "true" ]
+		then
+			FILE_CONTENT="${FILE_CONTENT}${LOOKING_STRING}${currentDir}/jre/bin/java\n"
+  		fi
+		if [ "$FOUND" = "$NUMBER_32" ] && [ "$cont" = "true" ]
+		then
+			FILE_CONTENT="${FILE_CONTENT}${FOUND_STRING}${currentDir}/java/jre/bin/java\n"
+			cont=false
+		elif [ "$cont" = "true" ]
+		then
+			FILE_CONTENT="${FILE_CONTENT}${LOOKING_STRING}${currentDir}/java/jre/bin/java\n"
+  		fi
+		if [ "$FOUND" = "$NUMBER_64" ] && [ "$cont" = "true" ]
+		then
+			FILE_CONTENT="${FILE_CONTENT}${FOUND_STRING}${currentDir}/java/bin/java\n"
+			cont=false
+		elif [ "$cont" = "true" ]
+		then
+			FILE_CONTENT="${FILE_CONTENT}${LOOKING_STRING}${currentDir}/java/bin/java\n"
+  		fi
+		if [ "$FOUND" = "$NUMBER_128" ] && [ "$cont" = "true" ]
+		then
+			FILE_CONTENT="${FILE_CONTENT}${FOUND_STRING}${currentDir}/jre/bin/java\n"
+			cont=false
+		elif [ "$cont" = "true" ]
+		then
+			FILE_CONTENT="${FILE_CONTENT}${LOOKING_STRING}${currentDir}/jre/bin/java\n"
+  		fi
+		echo -e $FILE_CONTENT > $FILE
+	fi
+}
+
+		############################################
+		#
+		#	Verify install type
+		#	
+		#
+		############################################
+CMD_NAME=`basename $0`
+if [ "$CMD_NAME" = "$UNINSTALL_SH_STRING" ] || [ "$CMD_NAME" = "$UNINSTALL_STRING" ] ; then
+        INSTALL_TYPE="uninstall"
+        INSTALL_TYPE_CAPS="Uninstall"
+fi
+
+HELP_MSG=" Function:
+      ${INSTALL_TYPE_CAPS}s the WebSphere product.
+
+   Syntax:
+      $CMD_NAME <argument> 
+
+   Example:
+      $CMD_NAME -is:javaconsole
+
+   The available arguments are:
+      -is:javahome JAVA_HOME_DIRECTORY				 Change java home path
+      -is:javaconsole 						 Redirect output to java console
+      -is:tempdir TEMP_DIRECTORY					 Change temp directory path
+      -is:log LOG_FILE						 Log JVM Search
+      WEBSPHERE_JVM_PARAMS=\"{JVMPARAMETERS} [JVMPARAMETERS]\"     Specify other JVM parameters for $INSTALL_TYPE
+
+   Note: Command-line arguments are case sensitive.
+   Note: For detailed help on an argument enter:
+                            $CMD_NAME -<argument> -help"
+
+HELP_ISJAVAHOME_MSG=" Function:
+      ${INSTALL_TYPE_CAPS}s the WebSphere product.
+
+   Example:
+     $CMD_NAME -is:javahome /usr/share/myjavahome/"
+     
+HELP_ISTEMPDIR_MSG=" Function:
+      ${INSTALL_TYPE_CAPS}s the WebSphere product.
+
+   Example:
+     $CMD_NAME -is:tempdir /usr/share/mytmp/"
+     
+HELP_WEBSPHERE_JVM_PARAMS_MSG=" Function:
+      ${INSTALL_TYPE_CAPS}s the WebSphere product.
+
+   Example:
+     $INSTALL_TYPE WEBSPHERE_JVM_PARAMS=\"-Duser.user=/IBM/INSTALLED/PRODUCTS/WAS/ -Xms1024m\""
+     
+HELP_ISJAVACONSOLEOPTION_MSG=" Function:
+      ${INSTALL_TYPE_CAPS}s the WebSphere product.
+
+   Example:
+     $CMD_NAME -is:javaconsole"
+
+HELP_ISLOGS_MSG=" Function:
+      ${INSTALL_TYPE_CAPS}s the WebSphere product.
+
+   Example:
+     $CMD_NAME -is:logs /usr/share/log.txt"
+     
+HELP_MSG_HELP=" Function:
+      ${INSTALL_TYPE_CAPS}s the WebSphere product.
+
+   Example:
+     $CMD_NAME -<arguement> -help"
+
+		############################################
+		#
+		#	Help Parameter Check
+		#	
+		#
+		############################################
+if [ "$1" = "$HELP_ARG" ] 
+then
+	echo "$HELP_MSG"
+	exit $SUCCESS_RC
+fi
+
+if [ "$2" = "$HELP_ARG" ] 
+then
+	if [ "$1" = "$ISJAVAHOME" ] 
+	then
+		echo "$HELP_ISJAVAHOME_MSG"
+		exit $SUCCESS_RC
+	elif [ "$1" = "$ISTEMPDIR" ]
+	then
+		echo "$HELP_ISTEMPDIR_MSG"
+		exit $SUCCESS_RC		
+   	elif [ "$1" = "-$WEBSPHERE_JVM_PARAMS" ]
+	then
+		echo "$HELP_WEBSPHERE_JVM_PARAMS_MSG"
+		exit $SUCCESS_RC
+  	elif [ "$1" = "$ISJAVACONSOLEOPTION" ]
+	then
+		echo "$HELP_ISJAVACONSOLEOPTION_MSG"
+		exit $SUCCESS_RC
+  	elif [ "$1" = "$ISLOGS" ]
+	then
+		echo "$HELP_ISLOGS_MSG"
+		exit $SUCCESS_RC
+	else
+		echo "$HELP_MSG_HELP"
+		exit $FAIL_RC
+	fi
+fi
+		############################################
+		#
+		#	Argument Analysis Loop
+		#	
+		#
+		############################################
+PARSED_CMD_LINE=
+for CMDLINE_ARG in "$@"
+do
+	if [ "${CMDLINE_ARG:=}" = "$ISJAVACONSOLEOPTION" ]
+	then
+		DONT_REDIRECT=true
+  	elif [ "$SET_LOG_FILE" = "true" ]
+	then
+		FILE="${CMDLINE_ARG:=}"
+		SET_LOG_FILE=false		
+   	elif [ "${CMDLINE_ARG:=}" = "$ISLOGS" ]
+	then
+		SET_LOG_FILE=true
+  	elif [ "$SET_JAVA_HOME" = "true" ]
+	then
+		JAVAHOME="${CMDLINE_ARG:=}"
+		SET_JAVA_HOME=false		
+   	elif [ "${CMDLINE_ARG:=}" = "$ISJAVAHOME" ]
+	then
+		SET_JAVA_HOME=true
+  	elif [ "$SET_TEMP_DIR" = "true" ]
+	then
+		############################################
+		#
+		#	Temp directory initialization
+		#	
+		#
+		############################################
+		TMP="${CMDLINE_ARG:=}"
+		`touch $TMP/junk.txt`
+		PARAM_CHECK=$?
+		if [ "$PARAM_CHECK" = "$FAILED" ]	
+		then
+			echo $MSG_PREFIX$TMP$MSG_POSTFIX
+			exit $FAIL_RC	
+		else
+			`rm $TMP/junk.txt`
+			JVM_TMP_DIR_PARAM="-Djava.io.tmpdir=""${TMP}"
+		fi
+		
+		SET_TEMP_DIR=false
+		
+   	elif [ "${CMDLINE_ARG:=}" = "$ISTEMPDIR" ]
+	then
+		SET_TEMP_DIR=true
+	else
+		############################################
+		#
+		#	JVM Parameter setup for App
+		#	
+		#
+		############################################
+		PARAM_CHECK=`echo ${CMDLINE_ARG:=} | cut -d '=' -f 1`
+		if [ "$PARAM_CHECK" = "$WEBSPHERE_JVM_PARAMS" ]
+	        then
+		    STARTINDEX=`echo $PARAM_CHECK | wc -m`
+		    STARTINDEX=`expr $STARTINDEX + 1`
+	            JVM_PARAMS=`echo ${CMDLINE_ARG} | cut -c$STARTINDEX- | tr "\'" "\""`
+		elif [ "${PARSED_CMD_LINE:=}" = "" ]
+	        then
+	            PARSED_CMD_LINE="${CMDLINE_ARG}"
+		else
+	            PARSED_CMD_LINE="${PARSED_CMD_LINE} ${CMDLINE_ARG}"
+       		fi
+	fi
+done
+
+############################################
+#
+#	Search for Default Heap Size
+#
+#
+############################################
+
+STARTINDEX="MS"
+for CMDLINE_ARG in $JVM_PARAMS
+do
+	PREFIX_CHECK=`echo ${CMDLINE_ARG} | cut -c$LENGTH_START-$LENGTH_COUNT`
+	if [ "$PREFIX_CHECK" = "$HEAP_MIN_PREFIX" ]
+	then
+		STARTINDEX=`echo ${STARTINDEX} | tr 'S' ' '`
+	elif [ "$PREFIX_CHECK" = "$HEAP_MAX_PREFIX" ]
+	then	
+		STARTINDEX=`echo ${STARTINDEX} | tr 'M' ' '`
+	fi
+done
+
+############################################
+#
+#	Define Default Heap Size
+#
+#
+############################################
+
+PARAM_CHECK=`echo $STARTINDEX | grep "S"`
+PARAM_CHECK=$?
+if [ $PARAM_CHECK -eq "$NOT_PRESENT" ]
+then
+	JVM_PARAMS="$JVM_PARAMS $MIN_HEAP_SIZE_DEFAULT"
+fi
+
+PARAM_CHECK=`echo $STARTINDEX | grep "M"`
+PARAM_CHECK=$?
+if [ $PARAM_CHECK -eq "$NOT_PRESENT" ]
+then
+	JVM_PARAMS="$JVM_PARAMS $MAX_HEAP_SIZE_DEFAULT"
+fi
+
+############################################
+#
+#	Setup Javahome Path
+#
+#
+############################################
+if [ -f "$currentDir"/setup.jar ]
+then
+  	if [ "$JAVAHOME" != "" ] 
+  	then
+   		JAVAHOME=$JAVAHOME
+		FOUND=$NUMBER_16  
+	elif [ -f "$currentDir"/../JDK/jre.pak/repository/package.java.jre/java/jre/bin/java ]
+	then
+    		JAVAHOME=$currentDir/../JDK/jre.pak/repository/package.java.jre/java/jre
+		FOUND=$NUMBER_1
+  	elif [ -f "$currentDir"/java/jre/bin/java ]
+	then
+    		JAVAHOME=$currentDir/java/jre
+		FOUND=$NUMBER_2
+	elif [ -f "$currentDir"/java/bin/java ]
+	then
+    		JAVAHOME=$currentDir/java
+		FOUND=$NUMBER_4
+	elif [ -f "$currentDir"/jre/bin/java ]
+	then
+        	JAVAHOME=$currentDir/jre
+		FOUND=$NUMBER_8
+  	elif [ -d "$currentDir"/../java ]
+	then
+		if [ -r /etc/redhat-release ]
+		then
+##########################################################################		
+#The following has been modified by GigaSpaces to support a non Red Hat Linux.
+#In Red Hat, cat /etc/redhat-release returns: Red Hat Enterprise Linux ES release 4 (Nahant Update 3)
+#In Centos , cat /etc/redhat-release returns: CentOS release 5.7 (Final)
+#
+            isRedHat=`cat /etc/redhat-release | grep -ci "Red Hat"`
+			if [ $isRedHat -gt 0 ]			  
+			then
+			  release=`cat /etc/redhat-release | awk '{print $7}'`
+			else
+			  release=`cat /etc/redhat-release | awk '{print $3}'`
+			fi			
+#			
+#End of GigaSpaces modifications.
+##########################################################################			
+			version=${release%%\.*}
+			if [ $version -ge 5 ]
+			then
+				if [ -x /usr/sbin/selinuxenabled ] && /usr/sbin/selinuxenabled;
+				then
+					cp -R -c $currentDir/../java $currentDir/java
+				else
+			        	cp -R $currentDir/../java $currentDir/java
+				fi
+ 			else
+				cp -R $currentDir/../java $currentDir/java
+			fi
+		else
+			cp -R $currentDir/../java $currentDir/java
+		fi
+		if [ -f "$currentDir"/java/jre/bin/java ]
+		then
+			JAVAHOME=$currentDir/java/jre
+			FOUND=$NUMBER_32
+		elif [ -f "$currentDir"/java/bin/java ]
+		then
+			JAVAHOME=$currentDir/java
+			FOUND=$NUMBER_64
+		elif [ -f "$currentDir"/jre/bin/java ]
+		then
+			JAVAHOME=$currentDir/jre    
+			FOUND=$NUMBER_128
+		fi	
+	else
+		log
+		echo
+		echo	Did not find JAVA_HOME under the WebSphere installer directory.
+		echo	Exiting
+		echo
+	exit $FAIL_RC
+	fi
+	log
+	if [ -r /etc/redhat-release ]
+	then
+##########################################################################		
+#The following has been modified by GigaSpaces to support a non Red Hat Linux.
+#In Red Hat, cat /etc/redhat-release returns: Red Hat Enterprise Linux ES release 4 (Nahant Update 3)
+#In Centos , cat /etc/redhat-release returns: CentOS release 5.7 (Final)
+#
+            isRedHat=`cat /etc/redhat-release | grep -ci "Red Hat"`
+			if [ $isRedHat -gt 0 ]			  
+			then
+			  release=`cat /etc/redhat-release | awk '{print $7}'`
+			else
+			  release=`cat /etc/redhat-release | awk '{print $3}'`
+			fi			
+#			
+#End of GigaSpaces modifications.
+##########################################################################		
+		version=${release%%\.*}
+                if [ $version -ge 5 ]
+	        then
+        		if [ -x /usr/sbin/selinuxenabled ] && /usr/sbin/selinuxenabled
+			then
+				scontext=`ls --scontext "$JAVAHOME"/bin/java | awk '{ split($1, a, ":"); print a[3] }'`
+		                case $scontext in
+				textrel_shlib_t | java_exec_t | nfs_t)
+				;;
+				iso9660_t) 
+                    			echo SELinux is preventing the installer from running. Please mount the install CD with option \'-o context=system_u:object_r:textrel_shlib_t\' 
+					exit $FAIL_RC
+				;;
+                		*) 
+			if [ "${DONT_REDIRECT:=}" = "false" ]
+			then
+                        	"$currentDir"/relabel_java.sh "$JAVAHOME" > /dev/null 2>&1
+			else
+                        	"$currentDir"/relabel_java.sh "$JAVAHOME"
+			fi
+			;;
+			esac
+			fi
+		fi
+	fi
+	
+	cd "$currentDir"
+   
+	umask "$UMASK_VALUE"
+   
+############################################
+#
+#	Redirect Console
+#
+#
+############################################
+	if [ "${DONT_REDIRECT:=}" = "false" ]
+	then
+		if [ -f "$currentDir"/mediaSpanInfo.xml ]
+   		then
+			"$JAVAHOME"/bin/java ${JVM_TMP_DIR_PARAM} -cp "$currentDir"/preSetup.jar:"$currentDir"/setup.jar $JVM_PARAMS PreInstallSetup ${PARSED_CMD_LINE}> /dev/null 2>&1
+		else
+			"$JAVAHOME"/bin/java ${JVM_TMP_DIR_PARAM} -cp "$currentDir"/setup.jar $JVM_PARAMS run ${PARSED_CMD_LINE} > /dev/null 2>&1
+		fi
+	else
+		if [ -f "$currentDir"/mediaSpanInfo.xml ]
+		then
+			"$JAVAHOME"/bin/java  ${JVM_TMP_DIR_PARAM} -cp "$currentDir"/preSetup.jar:"$currentDir"/setup.jar $JVM_PARAMS PreInstallSetup ${PARSED_CMD_LINE}
+		else
+			"$JAVAHOME"/bin/java  ${JVM_TMP_DIR_PARAM} -cp "$currentDir"/setup.jar $JVM_PARAMS run ${PARSED_CMD_LINE}
+		fi
+	fi
+   
+   	RC=$?
+	cd "$PWD_DIR"		
+	exit $RC
+    
+else
+	echo
+	echo	The file setup.jar file does not exist.
+	echo	Exiting
+	echo
+	exit $FAIL_RC
+fi

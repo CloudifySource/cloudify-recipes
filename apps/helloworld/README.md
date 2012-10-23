@@ -7,10 +7,10 @@
 **Contributors**:    [tamirko](https://github.com/tamirko)  
 **Homepage**:   [http://www.cloudifysource.org](http://www.cloudifysource.org)  
 **License**:      Apache 2.0   
-**Build**: [Cloudify 2.2.0 M4](http://repository.cloudifysource.org/org/cloudifysource/2.2.0/gigaspaces-cloudify-2.2.0-m4-b2493-77.zip)   
+**Build**: http://repository.cloudifysource.org/org/cloudifysource/2.2.0-RELEASES/gigaspaces-cloudify-2.2.0-ga-b2500.zip  
 **Linux* sudoer permissions**:	Not required  
 **Windows* Admin permissions**:	Not required  
-**Release Date**: Sept 4th 2012  
+**Release Date**: October 23rd 2012    
 
 
 Tested on:

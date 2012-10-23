@@ -17,8 +17,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.j_spaces.core.IJSpace;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath:META-INF/spring/pu.xml")
 public class WriteLocalCountBulkTest {
     Logger log = Logger.getLogger(WriteLocalCountBulkTest.class);
 

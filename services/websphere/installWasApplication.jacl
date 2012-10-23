@@ -1,0 +1,26 @@
+global AdminApp
+global AdminControl
+global AdminConfig
+
+set contextroot "APPLICATION_CONTEXT_ROOT"
+set warFileName "APPLICATION_WAR_OR_EAR_NAME"
+set currAppName "APPLICATION_NAME"
+set rootFolder "ROOT_FOLDER"
+
+
+set options {}
+
+lappend options -contextroot $contextroot -usedefaultbindings -nocreateMBeansForResources -appname $currAppName -installed.ear.destination "\$(APP_INSTALL_ROOT)/\$(CELL)" -node node01 -server server1 -nodeployejb
+
+puts "Installing $rootFolder/$warFileName app name is $currAppName ..."
+$AdminApp install "$rootFolder/$warFileName" $options
+puts "$currAppName Installed"
+
+
+$AdminConfig save
+puts "$currAppName Saved"
+
+exit
+
+
+

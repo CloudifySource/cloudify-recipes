@@ -1,14 +1,17 @@
+import java.util.concurrent.TimeUnit
+
 service {
-  name "processor"
-  numInstances 2
-  maxAllowedInstances 2
-  statefulProcessingUnit {
-    binaries "rt-analytics-processor.jar"   		
-    sla {
-      memoryCapacity 32
-      maxMemoryCapacity 32
-      highlyAvailable true
-      memoryCapacityPerContainer 16 
+    name "processor"
+    numInstances 4
+    maxAllowedInstances 4
+    statefulProcessingUnit {
+        binaries "rt-analytics-processor.jar"
+        sla {
+            memoryCapacity 512
+            maxMemoryCapacity 512
+            highlyAvailable true
+            memoryCapacityPerContainer 128
+        }
+
     }
-  }	
 }

@@ -30,6 +30,8 @@ export PATH=$PATH:/usr/sbin:/sbin || error_exit $? "Failed on: export PATH=$PATH
 echo "Using yum. Updating yum on one of the following : Red Hat, CentOS, Fedora, Amazon. " > usingYum
 sudo yum -y -q update || error_exit $? "Failed on: sudo yum -y -q update"
 
+sudo yum -y -q install unzip
+
 killApacheProcess
 
 if  [ "${needPhp}" == "true" ] ; then

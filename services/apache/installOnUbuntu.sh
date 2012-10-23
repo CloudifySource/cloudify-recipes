@@ -32,6 +32,7 @@ export PATH=$PATH:/usr/sbin:/sbin:/usr/bin || error_exit $? "Failed on: export P
 echo "Using apt-get. Updating apt-get on one of the following : Ubuntu, Debian, Mint" > usingAptGet
 sudo apt-get -y -q update || error_exit $? "Failed on: sudo apt-get -y update"
 
+sudo apt-get -y -q install unzip
 
 #sudo /etc/init.d/apache2 stop
 # Just in case the above doesn't work

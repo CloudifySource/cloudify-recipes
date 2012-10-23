@@ -6,6 +6,11 @@
 	<version>XAP-9.1</version>
 	<name>rt-analytics</name>
 	<packaging>pom</packaging>
+	
+	<properties>
+		<gsVersion>9.1.1-SNAPSHOT</gsVersion>
+	</properties>
+	
 	<modules>
 		<module>common</module>
 		<module>processor</module>
@@ -15,7 +20,7 @@
 		<dependency>
 			<groupId>com.gigaspaces</groupId>
 			<artifactId>gs-openspaces</artifactId>
-			<version>9.1.0-rc</version>
+			<version>${gsVersion}</version>
 			<scope>compile</scope>
 		</dependency>
         <dependency>

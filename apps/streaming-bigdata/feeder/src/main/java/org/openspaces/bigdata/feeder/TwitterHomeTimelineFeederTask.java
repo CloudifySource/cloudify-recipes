@@ -43,7 +43,7 @@ import com.gigaspaces.document.SpaceDocument;
 public class TwitterHomeTimelineFeederTask implements Runnable {
 
 	private static final Logger log = Logger.getLogger(TwitterHomeTimelineFeederTask.class.getSimpleName());
-
+	
 	@Resource
 	private GigaSpace gigaSpace;
 	private final Set<Long> previousTimeLineTweets = new HashSet<Long>();	
@@ -61,11 +61,11 @@ public class TwitterHomeTimelineFeederTask implements Runnable {
 	
 	@Override
 	public void run() {
-    	List<Tweet> publicTimeline;
+    	List<Tweet> userTimeline;
     	try {
     		log.info("Getting latest tweets from public timeline and feeding them into processing grid");
     		// Return all the tweets from the Twitter API
-    		publicTimeline = twitterTemplate.timelineOperations().getPublicTimeline();
+    		userTimeline = twitterTemplate.timelineOperations().getUserTimeline("BriefingcomSMU");
     	}
         catch(ApiException e){
         	log.log(Level.SEVERE, "Error getting tweets from public timeline from twitter", e);
@@ -74,7 +74,7 @@ public class TwitterHomeTimelineFeederTask implements Runnable {
     	try {
     		//according to the API we may get duplicate tweets if invoked with frequency of lower than 60 seconds.
     		//We will filter tweets which are duplicates
-    		for (Tweet publicTweet : publicTimeline) {
+    		for (Tweet publicTweet : userTimeline) {
     			if (previousTimeLineTweets.contains(publicTweet.getId())){
     				continue;
     			}
@@ -86,7 +86,7 @@ public class TwitterHomeTimelineFeederTask implements Runnable {
     	}
     	finally {
     		previousTimeLineTweets.clear();
-    		for (Tweet publicTweet : publicTimeline) {
+    		for (Tweet publicTweet : userTimeline) {
     			previousTimeLineTweets.add(publicTweet.getId());
     		}
     	}

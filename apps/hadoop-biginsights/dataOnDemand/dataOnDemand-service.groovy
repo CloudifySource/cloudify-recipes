@@ -7,10 +7,9 @@ service {
 
 	icon "biginsights.png"
 
+    elastic true
 	numInstances 1
-
 	minAllowedInstances 1
-
 	maxAllowedInstances 3
 
 	
@@ -76,13 +75,4 @@ service {
 	}
 
 		
-
-    network {
-
-        port = dataNodePort
-
-        protocolDescription ="DataNode"
-
-    }
-
 }

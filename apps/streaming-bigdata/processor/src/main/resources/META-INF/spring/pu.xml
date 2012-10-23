@@ -21,7 +21,7 @@
 
     <!--
         A bean representing a space (an IJSpace implementation).
-        Note, we do not specify here the cluster topology of the space. It is declated outside of
+        Note, we do not specify here the cluster topology of the space. It is declared outside of
         the processing unit or within the SLA bean.
     -->
 	<os-core:space id="space" url="/./space">
@@ -44,5 +44,9 @@
 	</bean>
 
 	<!-- cassandraExternalPersister persists to a cassandra DB -->
-<!--     <bean id="cassandraExternalPersister" class="org.openspaces.bigdata.processor.CassandraExternalPersistence"/> -->
+	<!--<bean id="cassandraExternalPersister" class="org.openspaces.bigdata.processor.CassandraExternalPersistence">-->
+		<!--<property name="host">-->
+			<!--<bean class="org.openspaces.bigdata.processor.CassandraHostProvider"/>-->
+		<!--</property>-->
+	<!--</bean>-->
 </beans>

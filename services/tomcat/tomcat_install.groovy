@@ -27,16 +27,30 @@ applicationWar = "${installDir}/${config.warName}"
 //download apache tomcat
 new AntBuilder().sequential {	
 	mkdir(dir:"${installDir}")
-	get(src:"${config.downloadPath}", dest:"${installDir}/${config.zipName}", skipexisting:true)
+	
+	if ( config.downloadPath.toLowerCase().startsWith("http") || config.downloadPath.toLowerCase().startsWith("ftp")) { 	
+		echo(message:"Getting ${config.downloadPath} to ${installDir}/${config.zipName} ...")
+		get(src:"${config.downloadPath}", dest:"${installDir}/${config.zipName}", skipexisting:true)
+	}		
+	else {
+		echo(message:"Copying ${context.serviceDirectory}/${config.downloadPath} to ${installDir}/${config.zipName} ...")		
+		copy(tofile: "${installDir}/${config.zipName}", file:"${context.serviceDirectory}/${config.downloadPath}", overwrite:false)
+	}
 	unzip(src:"${installDir}/${config.zipName}", dest:"${installDir}", overwrite:true)
 	move(file:"${installDir}/${config.name}", tofile:"${home}")	
 	chmod(dir:"${home}/bin", perm:'+x', includes:"*.sh")
 }
 
 if ( warUrl != null && "${warUrl}" != "" ) {    
-	new AntBuilder().sequential {	
-		echo(message:"Getting ${warUrl} to ${applicationWar} ...")
-		get(src:"${warUrl}", dest:"${applicationWar}", skipexisting:false)
+	new AntBuilder().sequential {
+		if ( warUrl.toLowerCase().startsWith("http") || warUrl.toLowerCase().startsWith("ftp")) { 	
+			echo(message:"Getting ${warUrl} to ${applicationWar} ...")
+			get(src:"${warUrl}", dest:"${applicationWar}", skipexisting:false)
+		}
+		else {
+			echo(message:"Copying ${context.serviceDirectory}/${warUrl} to ${applicationWar} ...")			
+			copy(tofile: "${applicationWar}", file:"${context.serviceDirectory}/${warUrl}", overwrite:true)			
+		}
 		echo(message:"Copying ${applicationWar} to ${home}/webapps ...")
 		copy(tofile: "${home}/webapps/${ctxPath}.war", file:"${applicationWar}", overwrite:true)
 	}

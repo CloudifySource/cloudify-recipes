@@ -1,0 +1,24 @@
+-OPT allowNonRootSilentInstall="true"
+-OPT disableOSPrereqChecking="true"
+-OPT disableNonBlockingPrereqChecking="true"
+-OPT installType="installNew"
+-OPT feature="samplesSelected"
+-OPT PROF_samplesPassword="123"
+-OPT installLocation="REPLACE_WITH_INSTALL_DIR"
+-OPT PROF_enableAdminSecurity="true"
+-OPT PROF_adminUserName=REPLACE_WITH_ADMIN_USER
+-OPT PROF_adminPassword=REPLACE_WITH_ADMIN_PASSWORD
+-OPT PROF_profileName=AppSrv01
+-OPT PROF_hostName="localhost"
+-OPT PROF_nodeName="node01"
+-OPT traceLevel=INFO
+-OPT PROF_serverName="server1"
+-OPT silentInstallLicenseAcceptance="true"
+-OPT PROF_startingPort="STARTING_PORT"
+-OPT PROF_validatePorts="true"
+
+
+
+
+
+

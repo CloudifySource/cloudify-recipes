@@ -10,6 +10,6 @@ do
     sleep 30
 done
 
-echo removenode.sh sudo -i -u biadmin /opt/ibm/biginsights/bin/removenode.sh $2 $1 >> /tmp/removenode.log
+echo removenode.sh sudo -i -u biadmin $BIGINSIGHTS_HOME/bin/removenode.sh $2 $1 >> /tmp/removenode.log
 sudo -i -u biadmin $BIGINSIGHTS_HOME/bin/removenode.sh hadoop $2 $1 >> /tmp/removenode.log
 echo removenode.sh completed
