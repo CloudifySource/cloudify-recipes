@@ -32,11 +32,16 @@ service {
         bootstrap = PuppetBootstrap.getBootstrap(context:context)
         if (binding.variables["puppetRepo"]) {
             bootstrap.loadManifest(puppetRepo.repoType, puppetRepo.repoUrl)
-            bootstrap.appplyManifest(puppetRepo.manifestPath)
-            //bootstrap.applyClasses(["mysql":["data_dir": "/vol/mysql"]])
+            if (puppetRepo.manifestPath) {
+                bootstrap.appplyManifest(puppetRepo.manifestPath)
+            } else if (puppetRepo.classes) {
+                bootstrap.applyClasses(puppetRepo.classes)
+            } else {
+                println "Puppet repository loaded but nothing to run."
+            }
+
         } else {
             println "Puppet repository undefined in the properties file."
-            println "Skipping manifest application."
         }
       }
     }

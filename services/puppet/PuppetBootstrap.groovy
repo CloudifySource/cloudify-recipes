@@ -26,8 +26,8 @@ class PuppetBootstrap {
     def os
     ServiceContext context = null
     def puppetPackages = ["puppet"]
-    String local_repo_dir = underHomeDir("cloudify-recipes")
-    String local_custom_facts = "/opt/cloudify/custom_facts"
+    String local_repo_dir = underHomeDir("cloudify/puppet")
+    String local_custom_facts = "/opt/cloudify/puppet/facts"
     String metadata_file = "/opt/cloudify/metadata.json"
 
     // factory method for getting the appropriate bootstrap class
@@ -72,7 +72,10 @@ class PuppetBootstrap {
         def templateEngine = new groovy.text.SimpleTemplateEngine()
         def puppetConfTemplate = new File(templatesDir, "puppet.conf").getText()
         def puppetConf = templateEngine.createTemplate(puppetConfTemplate).make(
-                            [environment: puppetConfig.environment, server: puppetConfig.server])
+                            [environment: puppetConfig.environment,
+                            server: puppetConfig.server,
+                            cloudify_module_path:pathJoin(local_repo_dir, "modules")]
+                        )
         sudoWriteFile("/etc/puppet/puppet.conf", puppetConf.toString())
 
         sh("mkdir -p '${local_repo_dir}'")
@@ -104,7 +107,7 @@ class PuppetBootstrap {
             if (pathExists(git_dir)) {
                 sh("cd ${local_repo_dir}; git pull origin master")
             } else {
-                sh("git clone ${repoUrl} ${local_repo_dir}")
+                sh("git clone --recursive ${repoUrl} ${local_repo_dir}")
             }
             break
         case "svn":
@@ -131,6 +134,30 @@ class PuppetBootstrap {
     def appplyManifest(manifestPath="manifests/site.pp") {
         def manifest = pathJoin(local_repo_dir, manifestPath)
         sudo("puppet apply ${manifest}")
+    }
+
+    def to_puppet(ArrayList expr) {
+        "[" + expr.collect() { i -> "\"${i}\"" }.join(",\n") + "]"
+    }
+    def to_puppet(Map expr) {
+        "{\n" + expr.collect() { k, v -> "${k} => ${to_puppet(v)}"}.join(",\n") + "}"
+    }
+    def to_puppet(expr) {
+        expr.toString()
+    }
+
+    def applyClasses(Map classes) {
+        puppetExecute(
+            classes.collect() { kls, params ->
+                "class{'${kls}':\n" +
+                to_puppet(params)[1..-1]// slice of the first curly cause it isn't really a hash
+            }.join("\n")
+        )
+    }
+    def puppetExecute(puppetCode) {
+        File tmp_file = File.createTempFile("apply_manifest", ".pp")
+        tmp_file.withWriter { it.write(puppetCode)}
+        sudo("puppet apply ${tmp_file}")
     }
 
     def cleanup_local_repo() {
@@ -165,6 +192,8 @@ class DebianBootstrap extends PuppetBootstrap {
 }
 
 class RHELBootstrap extends PuppetBootstrap {
+    def puppetPackages = super.puppetPackages + ["rubygem-json"]
+
     def RHELBootstrap(options) { super(options) }
 
     def install(options) {
@@ -188,6 +217,8 @@ class RHELBootstrap extends PuppetBootstrap {
 }
 
 class AmazonBootstrap extends PuppetBootstrap {
+    def puppetPackages = super.puppetPackages + ["rubygem-json"]
+
     def AmazonBootstrap(options) { super(options) }
 
     def install(options) {
@@ -199,6 +230,7 @@ class AmazonBootstrap extends PuppetBootstrap {
         //the puppet repo is already available on amazon linux
         sudo("yum install -y ${pkgs.join(" ")}")
     }
+
 }
 
 class SuSEBootstrap extends PuppetBootstrap {
