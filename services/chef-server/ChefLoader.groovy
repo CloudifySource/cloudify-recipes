@@ -21,10 +21,13 @@ class ChefLoader{
            switch (type) {
             case "git":
                 return new ChefGitLoader()
+                //break unneeded
             case "svn":
                 return new ChefSvnLoader()
+                //break unneeded
             case "tar":
                 return new ChefTarLoader()
+                //break unneeded
             default:
               throw new Exception("Unrecognized type(${type}), please use one of: 'git', 'svn' or 'tar'")
             }

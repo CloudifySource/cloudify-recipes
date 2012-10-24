@@ -16,34 +16,49 @@
 
 import java.util.concurrent.TimeUnit
 import PuppetBootstrap
+import static Shell.*
 
 service { 
     extend "../groovy-utils"
     name "puppet"
-    icon "puppet.png" //eventually we should probably only use it for the master
+    icon "puppet.png"
 
     lifecycle {
       install {
         bootstrap = PuppetBootstrap.getBootstrap(context:context)
         bootstrap.install()
+      }
+      start {
+        bootstrap = PuppetBootstrap.getBootstrap(context:context)
+        if (binding.variables["puppetRepo"]) {
+            bootstrap.loadManifest(puppetRepo.repoType, puppetRepo.repoUrl)
+            if (puppetRepo.manifestPath) {
+                bootstrap.appplyManifest(puppetRepo.manifestPath)
+            } else if (puppetRepo.classes) {
+                bootstrap.applyClasses(puppetRepo.classes)
+            } else {
+                println "Puppet repository loaded but nothing to run."
+            }
 
-        //TODO: pull additional properties from config?
-        manifestsType = "tar" // Or git or svn
-        manifestsUrl = "http://fewbytes-development.s3.amazonaws.com/clients/gigaspaces/manifests.tgz"
-        bootstrap.runAgent(manifestsType, manifestsUrl)
-      } 
-      start { //TODO: Or would the the init service installed above be enough?
+        } else {
+            println "Puppet repository undefined in the properties file."
+        }
       }
     }
 
     customCommands([
-      "run_agent": {manifestOriginType, manifestOriginUrl ->
-        bootstrap = PuppetBootstrap.getBootstrap(context:context)
-        try{ //hack - to see the error text, we must exit successfully(CLOUDIFY-915)
-            bootstrap.runAgent(manifestsType, manifestsUrl)
-        } catch(Exception e) {
-          println "Puppet agent run encountered an exception:\n${e}" //goes to the gsc log
+        "run_puppet": {repoType, repoUrl, manifestPath=null ->
+            bootstrap = PuppetBootstrap.getBootstrap(context:context)
+            try{ //hack - to see the error text, we must exit successfully(CLOUDIFY-915)
+                bootstrap.loadManifest(repoType, repoUrl)
+                bootstrap.appplyManifest(manifestPath)
+            } catch(Exception e) {
+              println "Puppet agent run encountered an exception:\n${e}" //goes to the gsc log
+            }
+        },
+        "cleanup_repo": { 
+            bootstrap = PuppetBootstrap.getBootstrap(context:context)
+            bootstrap.cleanup_local_repo()
         }
-      },
     ])   
 }
