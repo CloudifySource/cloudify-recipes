@@ -56,14 +56,31 @@ killApacheProcess
 
 if  [ "${needPhp}" == "true" ] ; then
 
-  needPhpdb=""
-  if  [ "${dbType}" == "mysql" ] ; then
-	  needPhpdb="php-mysql"
-  else    
-	echo "You need to implement code for another database (e.g. : for postgres)"
-  fi
+	needPhpdb=""
 
-  sudo yum -y -q install php php-common php-pear php-pdo $needPhpdb php-gd php-mbstring php-mcrypt php-xml php-xmlrpc php-dom php-mhash
+	# Our applications require php5.3 version. 
+	# So if the available version is earlier, 
+	# the recipe retrievs php5.3 from.
+	currApacheVersion=`yum list php | grep php | grep -cv "5.3"`
+	if [ $currApacheVersion -eq 0 ] ; then	
+		echo "The default php version is 5.3 ..."
+		if  [ "${dbType}" == "mysql" ] ; then
+			needPhpdb="php-mysql"
+		else
+			echo "You need to implement code for another database (e.g. : for postgres)"
+		fi
+		echo "Installing default php version(5.3) ..."
+		sudo yum -y -q install php php-common php-pear php-pdo $needPhpdb php-gd php-mbstring php-mcrypt php-xml php-xmlrpc php-dom php-mhash
+	else
+		echo "About to install php 5.3 ..."
+		if  [ "${dbType}" == "mysql" ] ; then
+			needPhpdb="php53-mysql"
+		else
+			echo "You need to implement code for another database (e.g. : for postgres)"
+		fi
+		echo "Installing php 5.3 ..."
+		sudo yum install -y -q php53 php53-bcmath php53-cli php53-common php53-dba php53-devel php53-gd php53-imap php53-intl php53-ldap php53-mbstring $needPhpdb php53-odbc php53-pdo php53-pgsql php53-process php53-pspell php53-snmp php53-soap php53-xml php53-xmlrpc 
+	fi
 fi  
 
 killApacheProcess
