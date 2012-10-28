@@ -131,7 +131,7 @@ class PuppetBootstrap {
         }
     }
 
-    def appplyManifest(manifestPath="manifests/site.pp") {
+    def applyManifest(manifestPath="manifests/site.pp") {
         def manifest = pathJoin(local_repo_dir, manifestPath)
         sudo("puppet apply ${manifest}")
     }

@@ -33,7 +33,7 @@ service {
         if (binding.variables["puppetRepo"]) {
             bootstrap.loadManifest(puppetRepo.repoType, puppetRepo.repoUrl)
             if (puppetRepo.manifestPath) {
-                bootstrap.appplyManifest(puppetRepo.manifestPath)
+                bootstrap.applyManifest(puppetRepo.manifestPath)
             } else if (puppetRepo.classes) {
                 bootstrap.applyClasses(puppetRepo.classes)
             } else {
@@ -51,7 +51,7 @@ service {
             bootstrap = PuppetBootstrap.getBootstrap(context:context)
             try{ //hack - to see the error text, we must exit successfully(CLOUDIFY-915)
                 bootstrap.loadManifest(repoType, repoUrl)
-                bootstrap.appplyManifest(manifestPath)
+                bootstrap.applyManifest(manifestPath)
             } catch(Exception e) {
               println "Puppet agent run encountered an exception:\n${e}" //goes to the gsc log
             }
