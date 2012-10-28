@@ -21,6 +21,11 @@ if (mongodService == null) {
 }
 mongodHostInstances = mongodService.waitForInstances(mongodService.numberOfPlannedInstances, 60, TimeUnit.SECONDS) 
 
+if (mongodHostInstances == null) {
+	throw new IllegalStateException("mongod service instances are not ready. They must be ready before mongos. Increasing the timeout in waitForInstances above, might solve it");
+}
+
+
 println "mongos_poststart.groovy: mongodHostInstances length is "+mongodHostInstances.length
 
 currPort = serviceContext.attributes.thisInstance["port"] as int
