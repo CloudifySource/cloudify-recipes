@@ -131,8 +131,18 @@ class PuppetBootstrap {
         }
     }
 
-    def applyManifest(manifestPath="manifests/site.pp") {
-        def manifest = pathJoin(local_repo_dir, manifestPath)
+    def applyManifest(manifestPath="manifests/site.pp", manifestSource="repo") {
+        String manifest
+        switch (manifestSource) {
+        case "repo":
+            manifest = pathJoin(local_repo_dir, manifestPath)
+            break
+        case "service":
+            manifest = pathJoin(context.getServiceDirectory(), manifestPath)
+            break
+        default:
+            throw new Exception("Unrecognized manifest source '${manifestSource}', please use either 'repo' or 'service'")
+        }
         sudo("puppet apply ${manifest}")
     }
 
@@ -150,7 +160,7 @@ class PuppetBootstrap {
         puppetExecute(
             classes.collect() { kls, params ->
                 "class{'${kls}':\n" +
-                to_puppet(params)[1..-1]// slice of the first curly cause it isn't really a hash
+                to_puppet(params)[1..-1]// slice off the first curly cause it isn't really a hash
             }.join("\n")
         )
     }

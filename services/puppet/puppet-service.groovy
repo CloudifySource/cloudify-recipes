@@ -16,6 +16,7 @@
 
 import java.util.concurrent.TimeUnit
 import PuppetBootstrap
+import groovy.json.JsonSlurper
 import static Shell.*
 
 service { 
@@ -37,24 +38,24 @@ service {
             } else if (puppetRepo.classes) {
                 bootstrap.applyClasses(puppetRepo.classes)
             } else {
-                println "Puppet repository loaded but nothing to run."
+                println "Puppet repository loaded but nothing was applied."
             }
-
         } else {
-            println "Puppet repository undefined in the properties file."
+            println "Puppet repository is undefined in the properties file."
         }
       }
     }
 
     customCommands([
-        "run_puppet": {repoType, repoUrl, manifestPath=null ->
-            bootstrap = PuppetBootstrap.getBootstrap(context:context)
-            try{ //hack - to see the error text, we must exit successfully(CLOUDIFY-915)
-                bootstrap.loadManifest(repoType, repoUrl)
-                bootstrap.applyManifest(manifestPath)
-            } catch(Exception e) {
-              println "Puppet agent run encountered an exception:\n${e}" //goes to the gsc log
-            }
+        "load_manifest": {repoType, repoUrl ->
+            PuppetBootstrap.getBootstrap(context:context).loadManifest(repoType, repoUrl)
+        },
+        "apply_manifest": {manifestPath, manifestSource="repo" ->
+            PuppetBootstrap.getBootstrap(context:context).applyManifest(manifestPath, manifestSource)
+        },
+        "apply_classes": {classesJson ->
+            Map classes = new JsonSlurper().parseText(classesJson)
+            PuppetBootstrap.getBootstrap(context:context).applyClasses(classes)
         },
         "cleanup_repo": { 
             bootstrap = PuppetBootstrap.getBootstrap(context:context)
