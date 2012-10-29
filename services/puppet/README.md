@@ -1,7 +1,14 @@
 # Common Puppet service files
 This folder contains common files and a base service recipe for Puppet based services. The idea is of using `extend` to include this recipe and supporting files.
 
-In the extending service, create a properties file with contents similar to the following:
+> *Important*: Currently the chef recipes have only been tested on an Ubuntu or Amazon liunx environment on Amazon EC2. Please make sure to use the [EC2 ubuntu cloud driver](https://github.com/CloudifySource/cloudify-cloud-drivers/tree/master/ec2-ubuntu) when installing services or applications that are based on this recipe
+
+To use this integration, in a service recipe, one might use:
+    service {
+        extend "../services/puppet"
+    }
+
+To run puppet, create a .properties file in the extending service with contents similar to the following:
 
     puppetRepo = [ 
       "repoType": "git",
@@ -19,8 +26,20 @@ Explanation of the puppetRepo parameters above:
 
 Note that only one of "classes" or "manifestPath" will be used, with priority given to "manifestPath". If neither are defined, the repository will still be fetched but nothing will be applied. Even if no properties are defined, you will still be able to load and apply puppet configuration afterwards via custom commands.
 
-Additional info
----------------
-This recipe includes the custom facter script "cloudify_facts" that imports cloudify attributes into puppet facts. The imported attributes are the global attributes, those of the current application, the current service and the current instance. The cloudify attributes are coerced into simple string key-value pairs where the original key hierarchy is flattened and separated by dots (e.g. ["k1": ["k2": "v"]] becomes "k1.k2" = "v").
 
-Tested under Ubuntu and Amazon linux.
+## The PuppetBootstrap class
+The PuppetBootstrap class is used to bootstrap puppet. Use the `getBootsrap` factory method to obtain a class instance.
+
+<strong>Factory method</strong>
+`getBootsrap()` - factory method.
+
+<strong>Class methods:</strong>
+`install` - Install Puppet
+`loadManifest(String repoType, String repoUrl)` - Load a repository of puppet manifests and libraries from git, svn or a tarball.
+`applyManifest(String manifestPath, String manifestSource)` - Apply a puppet manifest to the node. The manifest source can be either the loaded repository, or the service directory.
+`applyClasses(Map classes)` - Apply a hash-map of classes and their parameters to the node.
+`puppetExecute(String puppetCode)` - Apply arbitrary puppet code to the node.
+
+## Additional modules
+This recipe includes the custom facter script `cloudify_facts` that imports cloudify attributes into puppet facts. The imported attributes are the global attributes, those of the current application, the current service and the current instance. The cloudify attributes are coerced into simple string key-value pairs where the original key hierarchy is flattened, prefixed by the attribute type and delimited by underscores (e.g. the global attribute `["k1": ["k2": "v"]]` would become `"global_k1_k2" = "v"`).
+Note that you can expand upon this example to load additional custom modules to your puppet deployment.
