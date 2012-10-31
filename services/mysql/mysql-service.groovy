@@ -111,8 +111,8 @@ service {
 		
 		/* 
 			This custom command enables users to import a zipped file to a database
-			Usage :  invoke import actionUser dbName zipFileURL
-			Example: invoke import root myDbName http://www.mysite.com/myFile.zip
+			Usage :  invoke mysql import actionUser dbName zipFileURL
+			Example: invoke mysql import root myDbName http://www.mysite.com/myFile.zip
 		*/
 		
 		"import" : "mysql_import.groovy"

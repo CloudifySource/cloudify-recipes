@@ -197,8 +197,8 @@ or
 **C) import**:
 
 This custom command enables users to import a zipped file to a database
-Usage :  <strong>invoke import actionUser dbName zipFileURL</strong>
-Example: <strong>invoke import root myDbName http://www.mysite.com/myFile.zip</strong>
+Usage :  <strong>invoke mysql import actionUser dbName zipFileURL</strong>
+Example: <strong>invoke mysql import root myDbName http://www.mysite.com/myFile.zip</strong>
 
 
 **D) addSlave**:
