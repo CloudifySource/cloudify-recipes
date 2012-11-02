@@ -100,16 +100,7 @@ config.importThemes.each {
 	}
 }
 
-
-
-/*
-builder.sequential {
-	echo(message:"drupal_postInstall.groovy: Chmodding a-w ${drRoot}/sites/default/settings.php ...")
-	chmod(file:"${drRoot}/sites/default/settings.php", perm:'a-w')
-}
-
-*/	
-
-
+println "drupal_postInstall.groovy: Storing drupalVersion (${config.drupalVersion}) in context.attributes.thisApplication ... "
+context.attributes.thisApplication["drupalVersion"]="${config.drupalVersion}"
 println "drupal_postInstall.groovy: Ended successfully"
 
