@@ -28,6 +28,7 @@ class PuppetBootstrap {
     def puppetPackages = ["puppet"]
     String local_repo_dir = underHomeDir("cloudify/puppet")
     String local_custom_facts = "/opt/cloudify/puppet/facts"
+    String cloudify_module_dir = "/opt/cloudify/puppet/modules/cloudify"
     String metadata_file = "/opt/cloudify/metadata.json"
 
     // factory method for getting the appropriate bootstrap class
@@ -81,9 +82,11 @@ class PuppetBootstrap {
         sh("mkdir -p '${local_repo_dir}'")
 
         //import facter plugin
+        sudo("mkdir -p ${local_custom_facts} ${cloudify_module_dir}")
         def custom_facts_dir = pathJoin(context.getServiceDirectory(),"custom_facts")
-        sudo("mkdir -p ${local_custom_facts}")
         sudo("cp -r '${custom_facts_dir}'/* '${local_custom_facts}'")
+        def additional_lib_dir = pathJoin(context.getServiceDirectory(),"lib")
+        sudo("cp -r '${additional_lib_dir}' '${cloudify_module_dir}'/")
 
         //write down the management machine and instance metadata for use by puppet modules
         def metadata = [:]
