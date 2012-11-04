@@ -6,6 +6,7 @@
 **Maintainer email**: cloudifysource@gigaspaces.com  
 **Contributors**:  [tamirko](https://github.com/tamirko)  
 **Homepage**:   [http://www.cloudifysource.org](http://www.cloudifysource.org)  
+**Demo**: [http://www.cloudifysource.org/cloudifysourcetv][http://www.cloudifysource.org/cloudifysourcetv#6Li_lCZXaKY]  
 **License**:      Apache 2.0   
 **Build**:  [Cloudify 2.2.0 M4](http://repository.cloudifysource.org/org/cloudifysource/2.2.0/gigaspaces-cloudify-2.2.0-m4-b2493-77.zip)   
 **Linux* sudoer permissions**:	Mandatory     
