@@ -10,6 +10,10 @@ Puppet::Type.newtype(:cloudify_attribute) do
     newparam(:value) do
         desc "Attribute value"
     end
+    newparam(:type) do
+        desc "Attribute type"
+        defaultto "global"
+    end
     newparam(:application) do
         desc "Application name"
     end
