@@ -40,6 +40,44 @@ The PuppetBootstrap class is used to bootstrap puppet. Use the `getBootsrap` fac
 `applyClasses(Map classes)` - Apply a hash-map of classes and their parameters to the node.
 `puppetExecute(String puppetCode)` - Apply arbitrary puppet code to the node.
 
-## Additional modules
-This recipe includes the custom facter script `cloudify_facts` that imports cloudify attributes into puppet facts. The imported attributes are the global attributes, those of the current application, the current service and the current instance. The cloudify attributes are coerced into simple string key-value pairs where the original key hierarchy is flattened, prefixed by the attribute type and delimited by underscores (e.g. the global attribute `["k1": ["k2": "v"]]` would become `"global_k1_k2" = "v"`).
-Note that you can expand upon this example to load additional custom modules to your puppet deployment.
+
+## custom puppet features
+<strong>Custom facts</strong>
+A basic integration of cloudify attributes into puppet is provided by the custom facter script `cloudify_facts` which imports the global attributes, those of the current application, the current service and the current instance. The cloudify attributes are coerced into simple string key-value pairs where the original key hierarchy is flattened, prefixed by the attribute type and delimited by underscores (e.g. the global attribute `["k1": ["k2": "v"]]` would become `"global_k1_k2" = "v"`).
+Note that the facts are cached and not updated during the puppet run.
+
+<strong>Custom function</strong>
+The `get_cloudify_attribute` custom function performs fetching of cloudify attributes during recipe application and allows interaction with other instance, services and application.
+The arguments to the function are:
+
+1. name - name of the attribute (no default)
+2. type - global/application/service/instance (defaults to global)
+3. application - application name (defaults to current application)
+4. service - service name (defaults to service service)
+5. instance_id - instance id (defaults to current instance)
+
+example (the following will write the myname attribute of the `hello-puppet` application):
+    file {'my-name':
+      path    => '/tmp/myname',
+      ensure  => present,
+      mode    => 0666,
+      content => get_cloudify_attribute('myname', 'application'), 
+    }
+
+<strong>Custom type</strong>
+The `cloudify_attribute` custom type allows setting a cloudify attributes of any type. The arguments are similar to those of the `get_cloudify_attribute` function:
+
+1. name - name of the attribute (no default)
+2. value - the new value (no default)
+3. type - global/application/service/instance (defaults to global)
+4. application - application name (defaults to current application)
+5. service - service name (defaults to service service)
+6. instance_id - instance id (defaults to current instance)
+
+example (the following will set/change the myname attribute of the `hello-puppet` application):
+    cloudify_attribute { 'myname':
+        value => 'Inigo Montoya',
+        type => 'application',
+        ensure  => present,
+        application => 'hello-puppet'
+    }

@@ -2,7 +2,9 @@ require 'net/http'
 require 'rubygems'
 require 'json'
 
+#ruby helper functions for interacting with the cloudify management machine
 module Cloudify
+    #read and return cloudifify metadata for this node
     def self.metadata
         if not @metadata
             @metadata = JSON.parse open("/opt/cloudify/metadata.json").read()
@@ -15,6 +17,7 @@ module Cloudify
         @metadata
     end
 
+    #a wrapper for et::HTTP.start that yields a connection to REST interface
     def self.cloudify_rest
         result = Net::HTTP.start(::Cloudify.metadata['managementIP'],
                                  ::Cloudify.metadata["REST_port"]
@@ -30,6 +33,7 @@ module Cloudify
         end
     end
 
+    #returns a resource url to be used in a REST request
     def self.resource_url(resource)
         application = resource[:application] || ::Cloudify.metadata['application']
         service     = resource[:service]     || ::Cloudify.metadata['service']
