@@ -8,10 +8,9 @@ if @metadata.nil? or @metadata.empty?
     raise Exception.new """Cloudify metadata was not found in /opt/cloudify/metadata.json
                            It should have been written during instance installation."""
 end
-@rest_port = 8100
 
 def get_json(resource)
-    res = Net::HTTP.start(@metadata['managementIP'], @rest_port) {|http| http.get(resource)}
+    res = Net::HTTP.start(@metadata['managementIP'], @metadata["REST_port"]) {|http| http.get(resource)}
     JSON.parse(res.body)
 end
 

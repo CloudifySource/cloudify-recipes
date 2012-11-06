@@ -91,6 +91,7 @@ class PuppetBootstrap {
         //write down the management machine and instance metadata for use by puppet modules
         def metadata = [:]
         metadata["managementIP"] = System.getenv("LOOKUPLOCATORS").split(":")[0]
+        metadata["REST_port"] = 8100
         metadata["application"] = context.getApplicationName()
         metadata["service"] = context.getServiceName()
         metadata["instanceID"] = context.getInstanceId()
