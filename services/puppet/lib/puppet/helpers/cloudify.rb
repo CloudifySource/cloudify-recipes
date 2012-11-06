@@ -1,3 +1,7 @@
+require 'net/http'
+require 'rubygems'
+require 'json'
+
 module Cloudify
     def self.metadata
         if not @metadata

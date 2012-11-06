@@ -1,11 +1,10 @@
 require 'net/http'
-require 'uri'
 require 'rubygems'
 require 'json'
 require ::File.expand_path("../../helpers/cloudify.rb", ::File.dirname(__FILE__))
 
 Puppet::Type.type(:cloudify_attribute).provide(:cloudify_attribute) do
-    desc "Cloudify attribute setter"
+    desc "Set cloudify attribute using REST interface"
 
     def create
         request = Net::HTTP::Post.new ::Cloudify.resource_url(resource)
