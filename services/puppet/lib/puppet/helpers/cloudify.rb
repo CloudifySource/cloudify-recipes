@@ -1,5 +1,4 @@
 require 'net/http'
-require 'rubygems'
 require 'json'
 
 #ruby helper functions for interacting with the cloudify management machine

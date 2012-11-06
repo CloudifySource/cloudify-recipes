@@ -1,5 +1,4 @@
 require 'net/http'
-require 'rubygems'
 require 'json'
 require ::File.expand_path("../../helpers/cloudify.rb", ::File.dirname(__FILE__))
 
