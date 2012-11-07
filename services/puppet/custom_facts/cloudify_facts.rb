@@ -8,24 +8,23 @@ if @metadata.nil? or @metadata.empty?
     raise Exception.new """Cloudify metadata was not found in /opt/cloudify/metadata.json
                            It should have been written during instance installation."""
 end
-@rest_port = 8100
 
 def get_json(resource)
-    res = Net::HTTP.start(@metadata['managementIP'], @rest_port) {|http| http.get(resource)}
+    res = Net::HTTP.start(@metadata['managementIP'], @metadata["REST_port"]) {|http| http.get(resource)}
     JSON.parse(res.body)
 end
 
 attributes = {}
-["/attributes/globals/",
- "/attributes/applications/#{@metadata['application']}",
- "/attributes/services/#{@metadata['application']}/#{@metadata['service']}/",
- "/attributes/instances/#{@metadata['application']}/#{@metadata['service']}/#{@metadata['instanceID']}/"
-].each do |resource|
-    attributes.merge! get_json(resource)
+{"global" => "/attributes/globals/",
+ "application" => "/attributes/applications/#{@metadata['application']}",
+ "service" => "/attributes/services/#{@metadata['application']}/#{@metadata['service']}/",
+ "instance" => "/attributes/instances/#{@metadata['application']}/#{@metadata['service']}/#{@metadata['instanceID']}/"
+}.each do |category, resource|
+    attributes.merge!({category => get_json(resource)})
 end
 
 class Hash
-    def flatten_to_hash(current_prefix="", separator=".")
+    def flatten_to_hash(current_prefix="", separator="_")
         {}.tap do |hash|
             self.each do |key, value|
                 if value.is_a?(Hash)
@@ -39,9 +38,8 @@ class Hash
         end
     end
 end
-attributes = attributes.flatten_to_hash
 
-attributes.each do |key, value|
+attributes.flatten_to_hash.each do |key, value|
     Facter.add(key) do
       setcode do
         value.to_s

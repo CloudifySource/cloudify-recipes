@@ -28,6 +28,7 @@ class PuppetBootstrap {
     def puppetPackages = ["puppet"]
     String local_repo_dir = underHomeDir("cloudify/puppet")
     String local_custom_facts = "/opt/cloudify/puppet/facts"
+    String cloudify_module_dir = "/opt/cloudify/puppet/modules/cloudify"
     String metadata_file = "/opt/cloudify/metadata.json"
 
     // factory method for getting the appropriate bootstrap class
@@ -81,13 +82,16 @@ class PuppetBootstrap {
         sh("mkdir -p '${local_repo_dir}'")
 
         //import facter plugin
+        sudo("mkdir -p ${local_custom_facts} ${cloudify_module_dir}")
         def custom_facts_dir = pathJoin(context.getServiceDirectory(),"custom_facts")
-        sudo("mkdir -p ${local_custom_facts}")
         sudo("cp -r '${custom_facts_dir}'/* '${local_custom_facts}'")
+        def additional_lib_dir = pathJoin(context.getServiceDirectory(),"lib")
+        sudo("cp -r '${additional_lib_dir}' '${cloudify_module_dir}'/")
 
         //write down the management machine and instance metadata for use by puppet modules
         def metadata = [:]
         metadata["managementIP"] = System.getenv("LOOKUPLOCATORS").split(":")[0]
+        metadata["REST_port"] = 8100
         metadata["application"] = context.getApplicationName()
         metadata["service"] = context.getServiceName()
         metadata["instanceID"] = context.getInstanceId()
@@ -131,8 +135,18 @@ class PuppetBootstrap {
         }
     }
 
-    def appplyManifest(manifestPath="manifests/site.pp") {
-        def manifest = pathJoin(local_repo_dir, manifestPath)
+    def applyManifest(manifestPath="manifests/site.pp", manifestSource="repo") {
+        String manifest
+        switch (manifestSource) {
+        case "repo":
+            manifest = pathJoin(local_repo_dir, manifestPath)
+            break
+        case "service":
+            manifest = pathJoin(context.getServiceDirectory(), manifestPath)
+            break
+        default:
+            throw new Exception("Unrecognized manifest source '${manifestSource}', please use either 'repo' or 'service'")
+        }
         sudo("puppet apply ${manifest}")
     }
 
@@ -150,7 +164,7 @@ class PuppetBootstrap {
         puppetExecute(
             classes.collect() { kls, params ->
                 "class{'${kls}':\n" +
-                to_puppet(params)[1..-1]// slice of the first curly cause it isn't really a hash
+                to_puppet(params)[1..-1]// slice off the first curly cause it isn't really a hash
             }.join("\n")
         )
     }
