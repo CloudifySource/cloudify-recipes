@@ -8,7 +8,7 @@
 **Homepage**:   [http://www.cloudifysource.org](http://www.cloudifysource.org)  
 **Demo**: 1. Drupal:TBD  2. [MySQL](http://www.cloudifysource.org/cloudifysourcetv#6Li_lCZXaKY)    
 **License**:      Apache 2.0   
-**Build**:   [Cloudify 2.2.0 GA](http://repository.cloudifysource.org/org/cloudifysource/2.2.0-RELEASE/gigaspaces-cloudify-2.2.0-ga-b2500) 
+**Build**:   [Cloudify 2.2.0 GA](http://repository.cloudifysource.org/org/cloudifysource/2.2.0-RELEASE/gigaspaces-cloudify-2.2.0-ga-b2500)     
 **Linux* sudoer permissions**:	Mandatory  
 **Windows* Admin permissions**:  Not required    
 **Release Date**: Nov 4th 2012  
