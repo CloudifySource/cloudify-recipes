@@ -1,7 +1,7 @@
 # Drupal 
 
 **Status**: Tested  
-**Description**:  Drupal   
+**Description**:  A recipe for installing Drupal version 6 or 7  
 **Maintainer**:       Cloudify  
 **Maintainer email**: cloudifysource@gigaspaces.com  
 **Contributors**:    [tamirko](https://github.com/tamirko)  
@@ -30,7 +30,9 @@ Synopsis
 This folder contains a service recipe for [Drupal](http://drupal.org/) which is an open source content management platform powering millions of websites and applications.
 
 This application recipe enables users to install Drupal (version 6 or 7) on any cloud.
+
 After the installation it enables users to update modules,themes and files without accessing the Cloud VMs.
+
 Users can delete the site's cache, put the site in maintenance mode and also bring it back to "life" (online status) from the CLI, without accessing the Cloud VMs and without accessing the site (in the browser).
 
 This recipe is comprised of two services : 
