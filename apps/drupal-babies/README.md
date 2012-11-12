@@ -10,8 +10,7 @@
 **License**:      Apache 2.0   
 **Build**:   [Cloudify 2.2.0 GA](http://repository.cloudifysource.org/org/cloudifysource/2.2.0-RELEASE/gigaspaces-cloudify-2.2.0-ga-b2500)     
 **Linux* sudoer permissions**:	Mandatory  
-**Windows* Admin permissions**:  Not required    
-**Release Date**: Nov 4th 2012  
+**Release Date**: Nov 4th 2012    
 
 
 Tested on:
@@ -28,7 +27,7 @@ Tested on:
 Synopsis
 --------
 
-This folder contains a service recipe for [Drupal]([http://drupal.org/) which is an open source content management platform powering millions of websites and applications.
+This folder contains a service recipe for [Drupal](http://drupal.org/) which is an open source content management platform powering millions of websites and applications.
 
 This application recipe enables users to install Drupal (version 6 or 7) on any cloud.
 After the installation it enables users to update modules,themes and files without accessing the Cloud VMs.
