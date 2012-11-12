@@ -5,6 +5,7 @@
 **Maintainer**:       Cloudify  
 **Maintainer email**: cloudifysource@gigaspaces.com  
 **Contributors**:    [tamirko](https://github.com/tamirko)  
+**Demo**: [cloudifysourcetv](http://www.cloudifysource.org/cloudifysourcetv#K3p-wNhC9gA)    
 **Homepage**:   [http://www.cloudifysource.org](http://www.cloudifysource.org)  
 **License**:      Apache 2.0   
 **Build**: [Cloudify 2.2.0-rc b2496](http://repository.cloudifysource.org/org/cloudifysource/2.2.0/gigaspaces-cloudify-2.2.0-rc-b2496.zip)  
