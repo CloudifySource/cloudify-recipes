@@ -34,10 +34,10 @@ service {
 			def currPublicIP
 			
 			if (  context.isLocalCloud()  ) {
-				currPublicIP = InetAddress.localHost.hostAddress
+				currPublicIP = InetAddress.localHost.hostAddress				
 			}
 			else {
-				currPublicIP =System.getenv()["CLOUDIFY_AGENT_ENV_PUBLIC_IP"]
+				currPublicIP =context.getPublicAddress()				
 			}
 			def baseURL	= "http://${currPublicIP}:${httpPort}"
 							

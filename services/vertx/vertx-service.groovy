@@ -25,7 +25,8 @@ service {
         appUrl = "http://${InetAddress.localHost.hostAddress}:${applicationPort}${applicationRoot}"
     }
     else {
-        appUrl = "http://${System.getenv()["CLOUDIFY_AGENT_ENV_PUBLIC_IP"]}:${applicationPort}${applicationRoot}"
+		def currPublicIP =context.getPublicAddress()
+        appUrl = "http://${currPublicIP}:${applicationPort}${applicationRoot}"
     }
 
     url appUrl

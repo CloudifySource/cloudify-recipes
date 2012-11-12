@@ -55,7 +55,7 @@ service {
 				currPublicIP = InetAddress.localHost.hostAddress
 			}
 			else {
-				currPublicIP =System.getenv()["CLOUDIFY_AGENT_ENV_PUBLIC_IP"]
+				currPublicIP =context.getPublicAddress()
 			}
 	
 			def ctxPath=("default" == context.applicationName)?"":"${context.applicationName}"			
