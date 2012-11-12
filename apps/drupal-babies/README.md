@@ -34,7 +34,7 @@ After the installation it enables users to update modules,themes and files witho
 Users can delete the site's cache, put the site in maintenance mode and also bring it back to "life" (online status) from the CLI, without accessing the Cloud VMs and without accessing the site (in the browser).
 
 This recipe is comprised of two services : 
-* [drupal](drupal/drupal-service.groovy) which inherits from the base [apache](../../services/websphere/README.md) service and extends it.  
+* [drupal](drupal/drupal-service.groovy) which inherits from the base [apache](../../services/apache/README.md) service and extends it.  
 * [mysql](../../services/mysql/README.md) which inherits from the base mysql service. 
 
 
