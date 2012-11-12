@@ -5,9 +5,8 @@
 **Maintainer**:       Cloudify  
 **Maintainer email**: cloudifysource@gigaspaces.com  
 **Contributors**:    [tamirko](https://github.com/tamirko)  
-**Demo**: 1. Drupal:TBD  2. [MySQL](http://www.cloudifysource.org/cloudifysourcetv#6Li_lCZXaKY)    
 **Homepage**:   [http://www.cloudifysource.org](http://www.cloudifysource.org)  
-**Demo**: [cloudifysourcetv](http://www.cloudifysource.org/cloudifysourcetv#6Li_lCZXaKY)   
+**Demo**: 1. Drupal:TBD  2. [MySQL](http://www.cloudifysource.org/cloudifysourcetv#6Li_lCZXaKY)    
 **License**:      Apache 2.0   
 **Build**:   [Cloudify 2.2.0 GA](http://repository.cloudifysource.org/org/cloudifysource/2.2.0-RELEASE/gigaspaces-cloudify-2.2.0-ga-b2500) 
 **Linux* sudoer permissions**:	Mandatory  
