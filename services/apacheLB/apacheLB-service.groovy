@@ -24,12 +24,10 @@ service {
 		template "SMALL_LINUX"
 	}
 
-	lifecycle {
-	
-	
+	lifecycle {	
+
 		details {
 			def currPublicIP
-			
 			if (  context.isLocalCloud()  ) {
 				currPublicIP = InetAddress.localHost.hostAddress				
 			}
@@ -37,12 +35,9 @@ service {
 				currPublicIP =context.getPublicAddress()
 			}
 			def loadBalancerURL	= "http://${currPublicIP}:${currentPort}"
-			def balancerManagerURL = "${loadBalancerURL}/balancer-manager"
-			
+			def balancerManagerURL = "${loadBalancerURL}/balancer-manager"			
 			def ctxPath=("default" == context.applicationName)?"":"${context.applicationName}"
-			
 			def applicationURL = "${loadBalancerURL}/${ctxPath}"
-		
 				return [
 					"BalancerManager URL":"<a href=\"${balancerManagerURL}\" target=\"_blank\">${balancerManagerURL}</a>",
 					"Application URL":"<a href=\"${applicationURL}\" target=\"_blank\">${applicationURL}</a>"
