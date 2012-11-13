@@ -15,7 +15,7 @@
 *******************************************************************************/
 
 service {
-    extend "../../../services/puppet"
+    extend "puppet"
     name "tar"
     type "APP_SERVER"
     
