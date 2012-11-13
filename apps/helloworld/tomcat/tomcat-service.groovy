@@ -15,7 +15,6 @@ service {
 			
 	lifecycle {
 	
-	
 		details {
 			def currPublicIP
 			
@@ -23,9 +22,9 @@ service {
 				currPublicIP =InetAddress.localHost.hostAddress
 			}
 			else {
-				currPublicIP =System.getenv()["CLOUDIFY_AGENT_ENV_PUBLIC_IP"]
+				currPublicIP = System.getenv()["CLOUDIFY_AGENT_ENV_PUBLIC_IP"]
 			}
-			def tomcatURL	= "http://${currPublicIP}:${currHttpPort}"	
+			def tomcatURL = "http://${currPublicIP}:${currHttpPort}"	
 						
 			def applicationURL = "${tomcatURL}/${ctxPath}"
 			println "tomcat-service.groovy: applicationURL is ${applicationURL}"

@@ -28,14 +28,14 @@ service {
 			def currPublicIP
 			
 			if (  context.isLocalCloud()  ) {
-				currPublicIP =InetAddress.localHost.hostAddress
+				currPublicIP = InetAddress.localHost.hostAddress
 			}
 			else {
-				currPublicIP =context.getPublicAddress()
+				currPublicIP = context.getPublicAddress()
 			}
-			def tomcatURL	= "http://${currPublicIP}:${currHttpPort}"	
-			
-			def ctxPath = ("default" == context.applicationName)?"":"${context.applicationName}"
+			def tomcatURL = "http://${currPublicIP}:${currHttpPort}"	
+		
+			def ctxPath = ("default" == context.applicationName) ? "" : "${context.applicationName}"
 			def applicationURL = "${tomcatURL}/${ctxPath}"
 			println "tomcat-service.groovy: applicationURL is ${applicationURL}"
 		
@@ -46,7 +46,7 @@ service {
 
 		monitors {
 		
-			def ctxPath = ("default" == context.applicationName)?"":"${context.applicationName}"
+			def ctxPath = ("default" == context.applicationName) ? "" : "${context.applicationName}"
 							
 			def metricNamesToMBeansNames = [
 				"Current Http Threads Busy": ["Catalina:type=ThreadPool,name=\"http-bio-${currHttpPort}\"", "currentThreadsBusy"],				
@@ -59,17 +59,15 @@ service {
 			return getJmxMetrics("127.0.0.1",currJmxPort,metricNamesToMBeansNames)										
     	}			
 	
-	
-	
 		install "tomcat_install.groovy"
 		start "tomcat_start.groovy"		
 		preStop "tomcat_stop.groovy"
+		
 		startDetectionTimeoutSecs 240
 		startDetection {
 			println "tomcat-service.groovy(startDetection): arePortsFree http=${currHttpPort} ajp=${currAjpPort} ..."
 			!ServiceUtils.arePortsFree([currHttpPort, currAjpPort] )
-		}
-		
+		}	
 		
 		def instanceID = context.instanceId
 		
@@ -82,8 +80,8 @@ service {
 				def ctxPath = ("default" == context.applicationName)?"":"${context.applicationName}"				
 				
 				def privateIP
-				if (  context.isLocalCloud()  ) {
-					privateIP=InetAddress.getLocalHost().getHostAddress()
+				if ( context.isLocalCloud() ) {
+					privateIP = InetAddress.getLocalHost().getHostAddress()
 				}
 				else {
 					privateIP =System.getenv()["CLOUDIFY_AGENT_ENV_PRIVATE_IP"]
@@ -109,7 +107,7 @@ service {
 						
 						def privateIP
 						if (  context.isLocalCloud()  ) {
-							privateIP=InetAddress.localHost.hostAddress
+							privateIP = InetAddress.localHost.hostAddress
 						}
 						else {
 							privateIP =System.getenv()["CLOUDIFY_AGENT_ENV_PRIVATE_IP"]
@@ -139,8 +137,8 @@ service {
 			context.attributes.thisService["warUrl"] = "${warUrl}"
 			println "tomcat-service.groovy(updateWar customCommand): invoking updateWarFile custom command ..."
 			tomcatService = context.waitForService(serviceName, 60, TimeUnit.SECONDS)
-			tomcatInstances=tomcatService.waitForInstances(tomcatService.numberOfPlannedInstances,60, TimeUnit.SECONDS)				
-			instanceProcessID=context.getInstanceId()			                       
+			tomcatInstances = tomcatService.waitForInstances(tomcatService.numberOfPlannedInstances,60, TimeUnit.SECONDS)				
+			instanceProcessID = context.getInstanceId()			                       
 			tomcatInstances.each {
 				if ( instanceProcessID == it.instanceID ) {
 					println "tomcat-service.groovy(updateWar customCommand):  instanceProcessID is ${instanceProcessID} now invoking updateWarFile..."
@@ -286,7 +284,7 @@ service {
 	
 	network {
         port = currHttpPort
-        protocolDescription ="HTTP"
+        protocolDescription = "HTTP"
     }
 	
 	scaleCooldownInSeconds 25
