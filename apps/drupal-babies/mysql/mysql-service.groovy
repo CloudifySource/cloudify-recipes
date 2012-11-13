@@ -14,7 +14,7 @@
 * limitations under the License.
 *******************************************************************************/
 service {
-	extend "../../../services/mysql"
+	extend "mysql"
 	customCommands ([
 		/* 
 			This custom command enables users to create a database snapshot (mysqldump).

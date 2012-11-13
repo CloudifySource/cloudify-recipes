@@ -1,7 +1,7 @@
 import static JmxMonitors.*
 
 service {
-	extend "../../../services/tomcat"		
+	extend "tomcat"		
 	elastic false
 	numInstances 1
 	minAllowedInstances 1
