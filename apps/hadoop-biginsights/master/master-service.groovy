@@ -1,3 +1,3 @@
 service {
-	extend "../../../services/biginsights/master"
+	extend "biginsights/master"
 }

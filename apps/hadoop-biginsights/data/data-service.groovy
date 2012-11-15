@@ -1,4 +1,4 @@
 service {
-	extend "../../../services/biginsights/data"
+	extend "biginsights/data"
 
 }
