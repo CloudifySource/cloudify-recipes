@@ -14,8 +14,8 @@
 * limitations under the License.
 *******************************************************************************/
 service {
-	extend "../../../services/cassandra"
+	extend "cassandra"
 	lifecycle{		
-		postStart 	"cassandra_poststart.groovy"
+		postStart "cassandra_poststart.groovy"
 	}
 }
