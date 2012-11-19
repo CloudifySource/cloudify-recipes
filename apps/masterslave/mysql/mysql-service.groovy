@@ -1,4 +1,4 @@
 service {
-	extend "../../../services/mysql"	
+	extend "mysql"	
 	numInstances 3	
 }
