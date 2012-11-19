@@ -23,12 +23,14 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.logging.Logger;
 
+import org.openspaces.archive.ArchiveOperationHandler;
+
 /**
  * This is an {@link ExternalPersistence} implementation to a local file system.
  * 
  * @author Dotan Horovits
  */
-public class FileExternalPersistence implements ExternalPersistence {
+public class FileExternalPersistence implements ArchiveOperationHandler {
 
     private static final Logger log = Logger.getLogger(FileExternalPersistence.class.getName());
 
@@ -49,8 +51,7 @@ public class FileExternalPersistence implements ExternalPersistence {
         file.createNewFile();
     }
 
-    @Override
-    public void write(Object data) throws IOException {
+    private void write(Object data) throws IOException {
         FileWriter fileWritter = null;
         BufferedWriter bufferedWriter = null;
         try {
@@ -64,15 +65,22 @@ public class FileExternalPersistence implements ExternalPersistence {
     }
 
     @Override
-    public void writeBulk(Object[] dataArray) throws IOException {
+    public void archive(Object... dataArray) {
+    	log.info("Writing " + dataArray.length + " object(s) to File");
+    	
         if (dataArray.length < 1) {
             return;
         }
+        
         StringBuilder lines = new StringBuilder();
         for (Object obj : dataArray) {
             lines.append(obj).append("\n");
         }
-        write(lines);
+        try {
+			write(lines);
+		} catch (IOException e) {
+			throw new FileExternalPersistenceException(e);
+		}
     }
 
     private void closeQuietly(Closeable closeable) {
@@ -84,4 +92,9 @@ public class FileExternalPersistence implements ExternalPersistence {
             }
         }
     }
+
+	@Override
+	public boolean supportsAtomicBatchArchiving() {
+		return false;
+	}
 }
