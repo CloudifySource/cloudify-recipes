@@ -1,3 +1,3 @@
 service {
-	extend "../../../services/websphere"
+	extend "websphere"
 }

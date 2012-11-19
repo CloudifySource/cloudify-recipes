@@ -1,7 +1,7 @@
 //import java.net.InetAddress 
 
 service {
-    extend "../../../services/chef"
+    extend "chef"
     name "mysql-vanilla"
     type "DATABASE"
     icon "mysql.png"
