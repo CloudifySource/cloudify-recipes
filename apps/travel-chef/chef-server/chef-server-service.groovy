@@ -14,5 +14,5 @@
 * limitations under the License.
 *******************************************************************************/
 service {
-    extend "../../../services/chef-server"
+    extend "chef-server"
 }

@@ -16,6 +16,6 @@
 import java.net.InetAddress 
 
 service {
-    extend "../../../services/chef-services/mysql-vanilla"
+    extend "chef-services/mysql-vanilla"
     name "mysql"
 }

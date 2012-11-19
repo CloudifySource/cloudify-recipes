@@ -76,7 +76,7 @@ service {
 				}
 				println "play-service.groovy: privateIP is ${privateIP} ..."
 				
-				def currURL="http://${privateIP}:${httpPort}/${applicationCtxPath}"
+				def currURL="http://${privateIP}:${httpPort}"
 				println "play-service.groovy: About to add ${currURL} to apacheLB ..."
 				apacheService.invoke("addNode", currURL as String, instanceID as String)			                 
 				println "play-service.groovy: play Post-start ended"
@@ -99,7 +99,7 @@ service {
 						}				
 						
 						println "play-service.groovy: privateIP is ${privateIP} ..."
-						def currURL="http://${privateIP}:${httpPort}/${applicationCtxPath}"
+						def currURL="http://${privateIP}:${httpPort}"
 						println "play-service.groovy: About to remove ${currURL} from apacheLB ..."
 						apacheService.invoke("removeNode", currURL as String, instanceID as String)
 					}
