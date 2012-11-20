@@ -40,10 +40,10 @@
     <os-core:giga-space id="clusteredGigaSpace" space="space" tx-manager="transactionManager" clustered="true"/>
 
 
-	<!-- fileExternalPersistence is meant for testing purposes, and archives to a file in the local file system -->
+	<!-- fileExternalPersistence is meant for testing purposes, and archives to a file in the local file system 
 	<bean id="fileArchiveHandler" class="org.openspaces.bigdata.processor.FileArchiveOperationHandler">
 		<constructor-arg index="0" value="tweetRepo.txt"/>
-	</bean>
+	</bean>-->
 
 	<!-- Archives to cassandra DB -->
 	<bean id="cassandraArchiveHandler" class="org.openspaces.bigdata.processor.CassandraNaiveArchiveOperationHandler" >
@@ -61,8 +61,8 @@
 		max-concurrent-consumers="${archiver.threads}"
 		batch-size="${archiver.batch.size}" >
 		
-		<!-- Change to cassandraArchiveHandler for using Cassandra instead of a local file -->
-		<os-archive:archive-handler ref="fileArchiveHandler" />
+		<!-- Change to fileArchiveHandler for using local file instead of cassandra -->
+		<os-archive:archive-handler ref="cassandraArchiveHandler" />
 		
     	<os-archive:tx-support tx-manager="transactionManager"/>
     	<os-core:template ref="archiverFilter" />
