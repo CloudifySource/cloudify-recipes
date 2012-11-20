@@ -30,17 +30,17 @@ import org.openspaces.archive.ArchiveOperationHandler;
  * 
  * @author Dotan Horovits
  */
-public class FileExternalPersistence implements ArchiveOperationHandler {
+public class FileArchiveOperationHandler implements ArchiveOperationHandler {
 
-    private static final Logger log = Logger.getLogger(FileExternalPersistence.class.getName());
+    private static final Logger log = Logger.getLogger(FileArchiveOperationHandler.class.getName());
 
     private File file;
 
-    public FileExternalPersistence(String fileName) throws IOException {
+    public FileArchiveOperationHandler(String fileName) throws IOException {
         this(new File(fileName));
     }
 
-    public FileExternalPersistence(File file) throws IOException {
+    public FileArchiveOperationHandler(File file) throws IOException {
         this.file = file;
         log.info("using file persistence: " + file.getAbsolutePath());
         if (file.exists()) {
