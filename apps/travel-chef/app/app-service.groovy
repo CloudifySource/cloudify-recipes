@@ -17,7 +17,7 @@ import static JmxMonitors.*
 import java.util.concurrent.TimeUnit;
 
 service {
-    extend "../../../services/chef"
+    extend "chef"
     name "app"
     type "APP_SERVER"
     icon "spring.png"

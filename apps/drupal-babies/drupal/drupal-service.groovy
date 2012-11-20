@@ -14,7 +14,7 @@
 * limitations under the License.
 *******************************************************************************/
 service {
-	extend "../../../services/apache"	
+	extend "apache"	
 	name "drupal"
 	icon "drupal.jpg"
 	lifecycle {

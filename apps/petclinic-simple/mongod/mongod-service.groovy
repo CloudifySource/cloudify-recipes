@@ -1,4 +1,4 @@
 service {
-	extend "../../../services/mongodb/mongod"
+	extend "mongodb/mongod"
 	numInstances 1
 }

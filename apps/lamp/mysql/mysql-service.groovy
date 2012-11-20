@@ -1,3 +1,3 @@
 service {
-	extend "../../../services/mysql"
+	extend "mysql"
 }
