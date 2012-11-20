@@ -94,7 +94,7 @@ public class FileArchiveOperationHandler implements ArchiveOperationHandler {
     }
 
 	@Override
-	public boolean supportsAtomicBatchArchiving() {
+	public boolean supportsBatchArchiving() {
 		return false;
 	}
 }

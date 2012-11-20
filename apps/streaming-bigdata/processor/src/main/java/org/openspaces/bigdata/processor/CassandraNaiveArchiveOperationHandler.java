@@ -113,7 +113,7 @@ public class CassandraNaiveArchiveOperationHandler implements ArchiveOperationHa
 	 * @see org.openspaces.archive.ArchiveOperationHandler#supportsAtomicBatchArchiving()
 	 */
 	@Override
-	public boolean supportsAtomicBatchArchiving() {
+	public boolean supportsBatchArchiving() {
 		return true;
 	}   
 }
