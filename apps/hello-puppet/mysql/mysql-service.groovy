@@ -15,7 +15,7 @@
 *******************************************************************************/
 
 service {
-    extend "puppet"
+    extend "../../../services/puppet"
     name "mysql"
     type "APP_SERVER"
     
