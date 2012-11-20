@@ -31,6 +31,7 @@ new AntBuilder().sequential {
 if (config.sharded) {
 	new AntBuilder().sequential {
 		exec(executable:"${script}") {
+			arg line:"--rest"
 			arg line:"--journal"
 			arg line:"--shardsvr"
 			arg line:"--dbpath \"${dataDir}\""
@@ -40,6 +41,7 @@ if (config.sharded) {
 } else {
 	new AntBuilder().sequential {
 		exec(executable:"${script}") {
+			arg line:"--rest"
 			arg line:"--journal"
 			arg line:"--dbpath \"${dataDir}\""
 			arg line:"--port ${port}"
