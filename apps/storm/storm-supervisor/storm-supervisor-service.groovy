@@ -1,3 +1,3 @@
 service {
-	extend "../../../services/storm/storm-supervisor"
+	extend "storm/storm-supervisor"
 }
