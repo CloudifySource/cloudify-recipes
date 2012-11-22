@@ -57,12 +57,10 @@
 	<os-archive:archive-container 
 		id="archiveContainer" 
 		giga-space="gigaSpace" 
+		archive-handler="cassandraArchiveHandler"
 		concurrent-consumers="${archiver.threads}" 
 		max-concurrent-consumers="${archiver.threads}"
 		batch-size="${archiver.batch.size}" >
-		
-		<!-- Change to fileArchiveHandler for using local file instead of cassandra -->
-		<os-archive:archive-handler ref="cassandraArchiveHandler" />
 		
     	<os-archive:tx-support tx-manager="transactionManager"/>
     	<os-core:template ref="archiverFilter" />
