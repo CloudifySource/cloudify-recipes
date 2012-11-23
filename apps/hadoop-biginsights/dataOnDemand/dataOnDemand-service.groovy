@@ -1,7 +1,7 @@
 import java.util.concurrent.TimeUnit;
 
 service {
-	extend "biginsights/data"
+	extend "../../../services/biginsights/data"
 
 	name "dataOnDemand"
 

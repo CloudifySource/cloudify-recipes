@@ -14,7 +14,7 @@
 * limitations under the License.
 *******************************************************************************/
 service {
-	extend "apacheLB"
+	extend "../../../services/apacheLB"
 	lifecycle {
 	
 	

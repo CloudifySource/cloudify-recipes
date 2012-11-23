@@ -14,7 +14,7 @@
 * limitations under the License.
 *******************************************************************************/
 service {
-	extend "apache"	
+	extend "../../../services/apache"	
 	lifecycle {
 		postInstall "apache_installSample.groovy"
 		

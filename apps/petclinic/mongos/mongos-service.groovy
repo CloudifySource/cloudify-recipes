@@ -1,3 +1,3 @@
 service {
-	extend "mongodb/mongos"
+	extend "../../../services/mongodb/mongos"
 }

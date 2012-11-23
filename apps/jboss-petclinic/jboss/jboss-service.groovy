@@ -1,3 +1,3 @@
 service {
-	extend "jboss"
+	extend "../../../services/jboss"
 }
