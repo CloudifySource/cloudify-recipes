@@ -32,12 +32,12 @@ import com.gigaspaces.document.SpaceDocument;
 public class TestCassandraPersistence {
 
     @Autowired
-    private CassandraExternalPersistence persister;
+    private CassandraNaiveArchiveOperationHandler persister;
 
     @Test
     public void testPersistence() {
         Long id = currentTimeMillis();
-        persister.write(new SpaceDocument("Tweet") 
+        persister.archive(new SpaceDocument("Tweet") 
                 .setProperty("Id", id) 
                 .setProperty("Text", "text") 
                 .setProperty("CreatedAt", "now") 

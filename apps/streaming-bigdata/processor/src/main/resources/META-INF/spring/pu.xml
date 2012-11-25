@@ -5,11 +5,13 @@
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:os-core="http://www.openspaces.org/schema/core"
        xmlns:os-events="http://www.openspaces.org/schema/events"
+       xmlns:os-archive="http://www.openspaces.org/schema/archive"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
        http://www.openspaces.org/schema/core http://www.openspaces.org/schema/8.0/core/openspaces-core.xsd
-       http://www.openspaces.org/schema/events http://www.openspaces.org/schema/8.0/events/openspaces-events.xsd">
+       http://www.openspaces.org/schema/events http://www.openspaces.org/schema/8.0/events/openspaces-events.xsd 
+       http://www.openspaces.org/schema/archive http://www.openspaces.org/schema/9.1/archive/openspaces-archive.xsd">
 
     <context:property-placeholder system-properties-mode="OVERRIDE" location="classpath:META-INF/spring/processor.properties"/>
 	<context:component-scan base-package="org.openspaces.bigdata.processor" />
@@ -38,15 +40,34 @@
     <os-core:giga-space id="clusteredGigaSpace" space="space" tx-manager="transactionManager" clustered="true"/>
 
 
-	<!-- fileExternalPersistence is meant for testing purposes, and persists to a file in the local file system -->
-	<bean id="fileExternalPersistence" class="org.openspaces.bigdata.processor.FileExternalPersistence">
+	<!-- fileExternalPersistence is meant for testing purposes, and archives to a file in the local file system 
+	<bean id="fileArchiveHandler" class="org.openspaces.bigdata.processor.FileArchiveOperationHandler">
 		<constructor-arg index="0" value="tweetRepo.txt"/>
-	</bean>
+	</bean>-->
 
-	<!-- cassandraExternalPersister persists to a cassandra DB -->
-	<!--<bean id="cassandraExternalPersister" class="org.openspaces.bigdata.processor.CassandraExternalPersistence">-->
-		<!--<property name="host">-->
-			<!--<bean class="org.openspaces.bigdata.processor.CassandraHostProvider"/>-->
-		<!--</property>-->
-	<!--</bean>-->
+	<!-- Archives to cassandra DB -->
+	<bean id="cassandraArchiveHandler" class="org.openspaces.bigdata.processor.CassandraNaiveArchiveOperationHandler" >
+		<!--
+			<property name="host">
+				<bean class="org.openspaces.bigdata.processor.CassandraHostProvider"/>
+		 	</property>
+		-->
+	</bean>
+		
+	<os-archive:archive-container 
+		id="archiveContainer" 
+		giga-space="gigaSpace" 
+		archive-handler="cassandraArchiveHandler"
+		concurrent-consumers="${archiver.threads}" 
+		max-concurrent-consumers="${archiver.threads}"
+		batch-size="${archiver.batch.size}" >
+		
+    	<os-archive:tx-support tx-manager="transactionManager"/>
+    	<os-core:template ref="archiverFilter" />
+    	<os-archive:exception-handler ref="archiverFilter"/>
+    	
+    </os-archive:archive-container>
+    
+	<bean id="archiverFilter" class="org.openspaces.bigdata.processor.TweetArchiveFilter" />
+
 </beans>
