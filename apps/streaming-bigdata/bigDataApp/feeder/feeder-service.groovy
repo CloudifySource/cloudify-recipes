@@ -6,7 +6,7 @@ service {
     binaries "rt-analytics-feeder.jar"    
     sla {
       highlyAvailable false
-      memoryCapacityPerContainer 8 
+      memoryCapacityPerContainer 64 
     }
   }	
 }

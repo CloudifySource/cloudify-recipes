@@ -99,7 +99,8 @@ public class TwitterHomeTimelineFeederTask implements Runnable {
 		.setProperty("CreatedAt", tweet.getCreatedAt()) 
 		.setProperty("FromUserId", tweet.getFromUserId()) 
 		.setProperty("ToUserId", tweet.getToUserId()) 
-		.setProperty("Processed", Boolean.FALSE));
+		.setProperty("Processed", Boolean.FALSE)
+		.setProperty("Archived", 0));
 	}
 
 	private void logTweet(Tweet tweet) {

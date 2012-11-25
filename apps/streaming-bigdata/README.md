@@ -44,15 +44,25 @@ processor and the feeder PUs.
 
 `mvn install`
 
-### Manual deployment:
-You can run the example manually by launching Cassandra (see instructions below) and deploying the PUs onto the service grid using 
-the GS-UI or GS CLI (see instructions below).
+The built jar files are copied to the recipes/streaming-bigdata/bigDataApp folder
 
 ### Automatic deployment:
-You can use GigaSpaces Cloudify (see instructions below) to automatically download, configure and deploy Cassandra, bootstrap the 
+You can use GigaSpaces Cloudify to automatically download, configure and deploy Cassandra, bootstrap the 
 Service Grid and deploy the PUs to it, while enforcing the inter-dependencies between the various services, and then monitor the 
 deployment via the Web Console. Cloudify will also take care of handling fail-over and to scale in/out based on the load as per the 
 defined scaling rules.
+
+Run the cloudify command line interface (tools/cloudify/cloudify.sh  - or cloudify.bat on windows)
+Then type the following commands:
+> bootstrap-localcloud
+> install-application ../../recipes/apps/streaming-bigdata/bigDataApp
+
+Open your browser to http://localhost:8099 and click the Login button
+Select the application tab, and select the big_data_app from the application drop menu
+
+### Manual deployment:
+You can run the example manually by launching Cassandra (see instructions below) and deploying the PUs onto the service grid using 
+the GS-UI or GS CLI (see instructions below).
 
 In order to manually deploy the example onto the Service Grid:
 

@@ -62,7 +62,7 @@ public class TweetParser {
      */
     @EventTemplate
     SQLQuery<SpaceDocument> unprocessedTweet() {
-        return new SQLQuery<SpaceDocument>("Tweet", "Processed = " + false);
+        return new SQLQuery<SpaceDocument>("Tweet", "Processed = ?" , false);
     }
 
     /**

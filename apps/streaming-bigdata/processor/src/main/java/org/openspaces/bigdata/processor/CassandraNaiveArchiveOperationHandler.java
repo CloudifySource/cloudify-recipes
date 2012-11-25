@@ -21,6 +21,7 @@ import static me.prettyprint.hector.api.factory.HFactory.createKeyspace;
 import static me.prettyprint.hector.api.factory.HFactory.createMutator;
 import static me.prettyprint.hector.api.factory.HFactory.getOrCreateCluster;
 
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -31,12 +32,20 @@ import me.prettyprint.hector.api.Cluster;
 import me.prettyprint.hector.api.Keyspace;
 import me.prettyprint.hector.api.mutation.Mutator;
 
+import org.openspaces.archive.ArchiveOperationHandler;
 import org.springframework.beans.factory.annotation.Value;
 
 import com.gigaspaces.document.SpaceDocument;
 
-public class CassandraExternalPersistence implements ExternalPersistence {
-    private static final Logger log = Logger.getLogger(CassandraExternalPersistence.class.getName());
+/**
+ * This implementation persists space documents into Cassandra.
+ * It assumes that each 
+ * @author Itai Frenkel
+ *
+ */
+public class CassandraNaiveArchiveOperationHandler implements ArchiveOperationHandler {
+    private static final Random RANDOM = new Random();
+	private static final Logger log = Logger.getLogger(CassandraNaiveArchiveOperationHandler.class.getName());
     private static final StringSerializer stringSerializer = StringSerializer.get();
 
     @Value("${cassandra.keyspace}")
@@ -51,6 +60,9 @@ public class CassandraExternalPersistence implements ExternalPersistence {
     private Cluster cluster;
     private Keyspace keyspace;
     
+    @Value("${cassandra.exception.percentage}")
+	private int exceptionPercentage = 0;
+    
     @PostConstruct
     public void init() throws Exception {    	
         log.info(format("initializing connection to Cassandra DB: host=%s port=%d keyspace=%s column-family=%s\n" //
@@ -59,9 +71,11 @@ public class CassandraExternalPersistence implements ExternalPersistence {
         keyspace = createKeyspace(keyspaceName, cluster);
     }
 
-    @Override
-    public void write(Object data) {
-        if (!(data instanceof SpaceDocument)) {
+    private void write(Object data) {
+    	if (RANDOM.nextInt(100) < exceptionPercentage) {
+    		throw new RuntimeException("injected exception");
+    	}
+    	if (!(data instanceof SpaceDocument)) {
             log.log(Level.WARNING, "Received non document event");
             return;
         }
@@ -80,8 +94,12 @@ public class CassandraExternalPersistence implements ExternalPersistence {
         mutator.execute();
     }
 
+    /**
+	 * @see org.openspaces.archive.ArchiveOperationHandler#archive()
+	 */
     @Override
-    public void writeBulk(Object[] dataArray) {
+    public void archive(Object... dataArray) {
+    	log.info("Writing " + dataArray.length + " object(s) to Cassandra");
         for (Object o : dataArray) {
             write(o);
         }
@@ -90,9 +108,12 @@ public class CassandraExternalPersistence implements ExternalPersistence {
 	public void setHost(String host) {
 		this.host = host;
 	}
-    
-    
 
-	    
-    
+	/**
+	 * @see org.openspaces.archive.ArchiveOperationHandler#supportsAtomicBatchArchiving()
+	 */
+	@Override
+	public boolean supportsBatchArchiving() {
+		return true;
+	}   
 }
