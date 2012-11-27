@@ -1,7 +1,7 @@
 # Common Puppet service files
 This folder contains common files and a base service recipe for Puppet based services. The idea is of using `extend` to include this recipe and supporting files.
 
-> *Important*: Currently the chef recipes have only been tested on an Ubuntu or Amazon liunx environment on Amazon EC2. Please make sure to use the [EC2 ubuntu cloud driver](https://github.com/CloudifySource/cloudify-cloud-drivers/tree/master/ec2-ubuntu) when installing services or applications that are based on this recipe
+> *Important*: Currently the chef recipes have only been tested on an Ubuntu environment on Amazon EC2. Please make sure to use the [EC2 ubuntu cloud driver](https://github.com/CloudifySource/cloudify-cloud-drivers/tree/master/ec2-ubuntu) when installing services or applications that are based on this recipe
 
 To use this integration, in a service recipe, one might use:
     service {
