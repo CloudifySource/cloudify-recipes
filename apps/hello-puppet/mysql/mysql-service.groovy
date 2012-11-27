@@ -25,6 +25,6 @@ service {
     maxAllowedInstances 1
 
     compute {
-        template "SMALL_LINUX"
+        template "SMALL_UBUNTU"
     }
 }
