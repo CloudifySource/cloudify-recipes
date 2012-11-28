@@ -41,12 +41,15 @@ if (serviceContext.isLocalCloud()) {
 currJmxPort=config.jmxPort+portIncrement
 println "tomcat_start.groovy: jmx port is ${currJmxPort}"
 
+javaOpts = config.javaOpts
+println "tomcat_start.groovy: Additional java opts are ${javaOpts}"
+
 new AntBuilder().sequential {
 	exec(executable:"${script}.sh", osfamily:"unix") {
         env(key:"CATALINA_HOME", value: "${home}")
         env(key:"CATALINA_BASE", value: "${home}")
         env(key:"CATALINA_TMPDIR", value: "${home}/temp")
-		env(key:"CATALINA_OPTS", value:"-Dcom.sun.management.jmxremote.port=${currJmxPort} -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false")
+		env(key:"CATALINA_OPTS", value:"-Dcom.sun.management.jmxremote.port=${currJmxPort} -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false ${javaOpts}")
         env(key:"${config.dbHostVarName}", value: "${dbServiceHost}")
         env(key:"${config.dbPortVarName}", value: "${dbServicePort}")		
 		arg(value:"run")
@@ -55,7 +58,7 @@ new AntBuilder().sequential {
         env(key:"CATALINA_HOME", value: "${home}")
         env(key:"CATALINA_BASE", value: "${home}")
         env(key:"CATALINA_TMPDIR", value: "${home}/temp")
-		env(key:"CATALINA_OPTS", value:"-Dcom.sun.management.jmxremote.port=${currJmxPort} -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false")
+		env(key:"CATALINA_OPTS", value:"-Dcom.sun.management.jmxremote.port=${currJmxPort} -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false ${javaOpts}")
         env(key:"${config.dbHostVarName}", value: "${dbServiceHost}")
         env(key:"${config.dbPortVarName}", value: "${dbServicePort}")	
 		arg(value:"run")
