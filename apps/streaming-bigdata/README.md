@@ -57,6 +57,13 @@ Then type the following commands:
 > bootstrap-localcloud
 > install-application ../../recipes/apps/streaming-bigdata/bigDataApp
 
+Inspect cassandra objects:
+run <gshome>\work\processing-units\big_data_app_cassandra_1\ext\apache-cassandra-0.8.7\bin\cassandra-cli.sh (or cassandra-cli.bat on windows)
+> connect localhost/9160;
+> describe keyspace TWITTER;
+> use TWITTER;
+> list Tweet;
+
 Open your browser to http://localhost:8099 and click the Login button
 Select the application tab, and select the big_data_app from the application drop menu
 
