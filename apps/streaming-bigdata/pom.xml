@@ -23,11 +23,6 @@
 			<version>${gsVersion}</version>
 			<scope>compile</scope>
 		</dependency>
-        <dependency>
-            <groupId>me.prettyprint</groupId>
-            <artifactId>hector-core</artifactId>
-            <version>1.0-5</version>
-        </dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
