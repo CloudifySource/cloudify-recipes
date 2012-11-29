@@ -57,6 +57,12 @@ currJmxPort=config.jmxPort+portIncrement
 println "tomcat_start.groovy: jmx port is ${currJmxPort}"
 
 javaOpts = config.javaOpts
+
+// in case this property is not defined, groovy defaults to an empty Map. so we need to convert back to an empty string
+if (! (javaOpts instanceof String) ) {
+	javaOpts = ""
+}
+
 println "tomcat_start.groovy: Additional java opts are ${javaOpts}"
 
 new AntBuilder().sequential {
