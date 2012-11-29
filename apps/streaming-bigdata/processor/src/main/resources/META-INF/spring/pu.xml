@@ -45,14 +45,13 @@
 		<constructor-arg index="0" value="tweetRepo.txt"/>
 	</bean>-->
 
-	<!-- Archives to cassandra DB -->
-	<bean id="cassandraArchiveHandler" class="org.openspaces.bigdata.processor.CassandraNaiveArchiveOperationHandler" >
-		<!--
-			<property name="host">
-				<bean class="org.openspaces.bigdata.processor.CassandraHostProvider"/>
-		 	</property>
-		-->
-	</bean>
+	<os-archive:cassandra-archive-handler id="cassandraArchiveHandler" 
+             giga-space="gigaSpace"
+             host="${cassandra.host}"
+             port="${cassandra.port}"  
+             keyspace="${cassandra.keyspace}"
+  />
+
 		
 	<os-archive:archive-container 
 		id="archiveContainer" 
