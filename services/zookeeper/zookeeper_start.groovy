@@ -18,9 +18,9 @@ def config = new ConfigSlurper().parse(new File("zookeeper-service.properties").
 
 new AntBuilder().sequential {
 	exec(executable:"${config.script}.sh", osfamily:"unix") {
-		arg(value:"start-foreground")
+		arg(value:"start")
 	}
 	exec(executable:"${config.script}.cmd", osfamily:"windows"){
-		arg(value:"start-foreground")
+		arg(value:"start")
 	}
 }
