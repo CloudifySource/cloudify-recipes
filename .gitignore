@@ -9,6 +9,9 @@ out/
 */*/feeder/target/
 */*/processor/target/
 *.class
+*.jar
+*.war
+*.ear
 */*/.metadata/
 */*/.project
 */*/.classpath
