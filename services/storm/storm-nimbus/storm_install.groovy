@@ -53,6 +53,7 @@ sh "./initnode.sh"
 
 new AntBuilder().sequential {
 	mkdir(dir:"${config.installDir}")
+	get(src:"http://maven-repository.cloudifysource.org/storm/starter/storm-starter/0.0.1-SNAPSHOT/storm-starter-0.0.1-SNAPSHOT.jar", dest:"commands", skipexisting:true)
 	get(src:config.downloadPath, dest:"${config.installDir}/${config.zipName}", skipexisting:true)
 	unzip(src:"${config.installDir}/${config.zipName}", dest:config.installDir, overwrite:true)
 	//dos2unix on the linux script files

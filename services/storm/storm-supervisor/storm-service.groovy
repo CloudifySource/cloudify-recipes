@@ -21,7 +21,7 @@ service {
 	type "APP_SERVER"
 	icon "storm.png"
 	elastic true
-	numInstances 4
+	numInstances 4 
 	minAllowedInstances 1
 	maxAllowedInstances 100
 
