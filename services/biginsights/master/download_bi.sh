@@ -11,7 +11,7 @@ then
 else
 	if [ $BIGINSIGHTS_VERSION = 'ENTERPRISE' ]
 	then
-		wget -nv https://s3.amazonaws.com/BigInsights/1.4.0.1-IM-IIBI.EE.tar.gz
+		wget -nv http://repository.cloudifysource.org/com/ibm/biginsights/1.4.0.1/1.4.0.1-IM-IIBI.EE.tar.gz
 		tar --index-file /tmp/biginsights.tar.log -xvvf 1.4.0.1-IM-IIBI.EE.tar.gz -C /tmp/
 		bidir=/tmp/biginsights-enterprise-linux64_*/
 	else
