@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if [ -f /usr/local/lib/libzmq.a ]; then
+  exit 0
+fi
+
 sudo yum -y install gcc-c++ autoconf automake make libtool libuuid-devel git
 
 # zmq
