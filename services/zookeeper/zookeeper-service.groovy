@@ -28,7 +28,7 @@ service {
 		start "zookeeper_start.groovy"
 		stop "zookeeper_stop.groovy"
 		locator {
-		    NO_PROCESS_LOCATORS
+			ServiceUtils.ProcessUtils.getPidsWithMainClass("org.apache.zookeeper.server.quorum.QuorumPeerMain")
 		}
 		monitors{
 			def dir=context.serviceDirectory

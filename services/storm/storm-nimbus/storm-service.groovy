@@ -30,6 +30,8 @@ service {
     }
 
 	lifecycle{
+
+
 		init "storm_install.groovy"
 		start "storm_start.groovy"
 		preStop "storm_stop.groovy"
@@ -43,7 +45,7 @@ service {
 						"TimeoutInSeconds" : 60,
 						"Host" : "127.0.0.1"
 					])
-		},
+		}/*,
 		plugin {
 			name "storm-nimbus"
 			className "org.cloudifysource.storm.plugins.StormNimbusPlugin"
@@ -54,7 +56,7 @@ service {
 				"Task Count":"task_count",
 				"Worker Count":"worker_count"
 			])
-		}
+		}*/
 
 	])
 
