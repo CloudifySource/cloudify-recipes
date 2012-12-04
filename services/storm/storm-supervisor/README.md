@@ -15,7 +15,9 @@ Tested on:
 -----------
 
 * <strong>EC2</strong>
- *<strong>CentOs 5</strong> imageId "us-east-1/ami-76f0061f", hardwareId "m1.small", locationId "us-east-1"
+ *<strong>Amazon Linux</strong> imageId "us-east-1/ami-76f0061f", hardwareId "m1.small", locationId "us-east-1"
+* <strong>HPCS/Openstack</strong>
+ *<strong>Centos 5.6</strong> imageId "20111207", hardwareId "standard.medium", locationId "110"
 
 Synopsis:
 --------
