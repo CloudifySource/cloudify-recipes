@@ -14,6 +14,7 @@
        http://www.openspaces.org/schema/archive http://www.openspaces.org/schema/9.1/archive/openspaces-archive.xsd">
 
     <context:property-placeholder system-properties-mode="OVERRIDE" location="classpath:META-INF/spring/processor.properties"/>
+    <context:annotation-config />
 	<context:component-scan base-package="org.openspaces.bigdata.processor" />
 	
 	<!-- Enable support for @Polling annotation -->
@@ -45,14 +46,19 @@
 		<constructor-arg index="0" value="tweetRepo.txt"/>
 	</bean>-->
 
-	<!-- Archives to cassandra DB -->
-	<bean id="cassandraArchiveHandler" class="org.openspaces.bigdata.processor.CassandraNaiveArchiveOperationHandler" >
-		<!--
-			<property name="host">
-				<bean class="org.openspaces.bigdata.processor.CassandraHostProvider"/>
-		 	</property>
-		-->
-	</bean>
+    <!-- Inject the comma delimited list of cassandra host ip addresses to "${cassandra.hosts}" -->
+    <bean id="cassadra-discovery" class="org.openspaces.bigdata.processor.ServiceDiscoveryPropertyPlaceHolderConfigurer">
+    	<property name="service"        value="cassandra"/>
+	    <property name="outputProperty" value="cassandra.hosts"/>
+    </bean>
+
+	<os-archive:cassandra-archive-handler id="cassandraArchiveHandler" 
+             giga-space="gigaSpace"
+             hosts="${cassandra.hosts}"
+             port="${cassandra.port}"  
+             keyspace="${cassandra.keyspace}"
+             write-consistency="${cassandra.write-consistency}"
+  />
 		
 	<os-archive:archive-container 
 		id="archiveContainer" 

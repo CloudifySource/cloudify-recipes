@@ -6,11 +6,11 @@
 	<version>XAP-9.1</version>
 	<name>rt-analytics</name>
 	<packaging>pom</packaging>
-	
+
 	<properties>
 		<gsVersion>9.1.1-SNAPSHOT</gsVersion>
 	</properties>
-	
+
 	<modules>
 		<module>common</module>
 		<module>processor</module>
@@ -23,11 +23,6 @@
 			<version>${gsVersion}</version>
 			<scope>compile</scope>
 		</dependency>
-        <dependency>
-            <groupId>me.prettyprint</groupId>
-            <artifactId>hector-core</artifactId>
-            <version>1.0-5</version>
-        </dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -46,11 +41,11 @@
 			<version>1.4</version>
 			<scope>test</scope>
 		</dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>11.0</version>
-        </dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>11.0</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<defaultGoal>install</defaultGoal>

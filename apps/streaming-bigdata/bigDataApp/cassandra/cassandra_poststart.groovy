@@ -28,7 +28,7 @@ new AntBuilder().sequential {
 		arg value:"-port"
 		arg value:"9160"
 		arg value:"-f"
-		arg value:"cassandraSchema.txt"
+		arg value:"cassandraKeyspace.txt"
 	}
 	exec(executable:"${script}.bat", osfamily:"windows") {
 		arg value:"-host"
@@ -36,7 +36,7 @@ new AntBuilder().sequential {
 		arg value:"-port"
 		arg value:"9160"
 		arg value:"-f"
-		arg value:"cassandraSchema.txt"
+		arg value:"cassandraKeyspace.txt"
 	}
 	echo(message:"created cassandra schema")
 }
