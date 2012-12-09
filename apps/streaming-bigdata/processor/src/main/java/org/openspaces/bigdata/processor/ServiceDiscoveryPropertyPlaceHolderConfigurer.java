@@ -18,6 +18,13 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.util.StringUtils;
 
+/**
+  This class is a generic bean that discovers cloudify service instances running on the same application as this processing unit
+  And injects it into a property so it can be used in other bean configurations.
+  
+  For example if service="cassandra" and outputProperty="cassandra.ip-addresses", then in any other bean the string "${cassandra.ip-addresses}"
+  is replaced with a comma seperated list of cassandra instance ip addreses.
+ */
 public class ServiceDiscoveryPropertyPlaceHolderConfigurer extends PropertyPlaceholderConfigurer implements ClusterInfoAware , InitializingBean {
 	
 	private String service;
