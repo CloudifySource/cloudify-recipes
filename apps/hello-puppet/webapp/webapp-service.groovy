@@ -16,7 +16,7 @@
 
 service {
     extend "../../../services/puppet"
-    name "mysql"
+    name "webapp"
     type "APP_SERVER"
     
     elastic true

@@ -22,5 +22,6 @@ application {
     }
     service {
         name = "webapp"
+        dependsOn = ["mysql"]
     }
 }
