@@ -14,13 +14,17 @@
 * limitations under the License.
 *******************************************************************************/
 
-application {
-    name = "hello-puppet"
+service {
+    extend "../../../services/puppet"
+    name "mysql"
+    type "APP_SERVER"
     
-    service {
-        name = "mysql"
-    }
-    service {
-        name = "webapp"
+    elastic true
+    numInstances 1
+    minAllowedInstances 1
+    maxAllowedInstances 1
+
+    compute {
+        template "SMALL_UBUNTU"
     }
 }
