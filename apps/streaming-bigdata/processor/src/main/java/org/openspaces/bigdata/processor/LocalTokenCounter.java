@@ -47,7 +47,7 @@ import static com.google.common.collect.Maps.newHashMap;
 public class LocalTokenCounter {
     private static final Logger log = Logger.getLogger(LocalTokenCounter.class.getName());
     private static final int BATCH_SIZE = 5;
-    private static final int WRITE_TIMEOUT = 1000;
+    private static final int WRITE_TIMEOUT = 5000;
     private static final int LEASE_TTL = 5000;
 
     @Resource(name = "clusteredGigaSpace")
