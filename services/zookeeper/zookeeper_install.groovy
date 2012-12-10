@@ -32,25 +32,30 @@ def zkInstances = null;
 def rowCount=0;
 while(zkInstances==null)
 {
-   println "Locating zookeeper service instances. Expecting " + service.getNumberOfPlannedInstances();
    zkInstances = service.waitForInstances(service.getNumberOfPlannedInstances(), 120, TimeUnit.SECONDS )
 }
 def ips=[]
 
 zkInstances.eachWithIndex{ instance,i ->
-		ips.add(instance.hostAddress)
+	if (instance.hostAddress == "127.0.0.1"){
+		ips.add(InetAddress.localHost.hostAddress)
+	}
+	else{
+	  	ips.add(instance.hostAddress)
+	}
 }
 
 // The following sort is needed so every node has same id->host mapping
 ips.sort()
 def myid=0
 for(i in 1..ips.size()){
+println "INET ADDR=${InetAddress.localHost.hostAddress}";
 	if(ips.get(i-1)==InetAddress.localHost.hostAddress){
 		myid=i;break;
 	}
 }
 
-def binding=["hosts":ips]
+def binding=["hosts":ips,"clientPort":"${config.clientPort}"]
 def zoo = new File('templates/zoo.cfg')
 engine = new SimpleTemplateEngine()
 template = engine.createTemplate(zoo).make(binding)

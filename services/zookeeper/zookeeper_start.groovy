@@ -21,6 +21,5 @@ new AntBuilder().sequential {
 		arg(value:"start")
 	}
 	exec(executable:"${config.script}.cmd", osfamily:"windows"){
-		arg(value:"start")
 	}
 }
