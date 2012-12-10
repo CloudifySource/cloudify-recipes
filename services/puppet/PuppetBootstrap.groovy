@@ -151,13 +151,13 @@ class PuppetBootstrap {
     }
 
     def to_puppet(ArrayList expr) {
-        "[" + expr.collect() { i -> "\"${i}\"" }.join(",\n") + "]"
+        "[" + expr.collect() { i -> to_puppet(i) }.join(",\n") + "]"
     }
     def to_puppet(Map expr) {
         "{\n" + expr.collect() { k, v -> "${k} => ${to_puppet(v)}"}.join(",\n") + "}"
     }
     def to_puppet(expr) {
-        expr.toString()
+        "\"${expr}\""
     }
 
     def applyClasses(Map classes) {
