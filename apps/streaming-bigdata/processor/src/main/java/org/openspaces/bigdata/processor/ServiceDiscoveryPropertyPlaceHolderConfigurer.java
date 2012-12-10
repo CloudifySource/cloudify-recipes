@@ -30,6 +30,9 @@ public class ServiceDiscoveryPropertyPlaceHolderConfigurer extends PropertyPlace
 	private String service;
 	private String outputProperty;
 	private long timeoutSeconds = 60;
+	private String[] ipAddresses;
+	private ClusterInfo clusterInfo;
+	private int minimumNumberOfInstances=1;
 	
 	public ServiceDiscoveryPropertyPlaceHolderConfigurer() {
 		super.setIgnoreUnresolvablePlaceholders(true);
@@ -51,18 +54,14 @@ public class ServiceDiscoveryPropertyPlaceHolderConfigurer extends PropertyPlace
 		this.timeoutSeconds = timeoutSeconds;
 	}
 	
-	private String[] ipAddresses;
-	private ClusterInfo clusterInfo;
-	private int minimumNumberOfInstances=1;
-	
 	@Override
 	public void setClusterInfo(ClusterInfo clusterInfo) {
 		this.clusterInfo = clusterInfo;	
 	}
 	
 	@Required
-	public void setNumberOfInstances(int numberOfInstances) {
-		this.minimumNumberOfInstances = numberOfInstances;
+	public void setMinimumNumberOfInstances(int minimumNumberOfInstances) {
+		this.minimumNumberOfInstances = minimumNumberOfInstances;
 	}
 	
 	@Override
@@ -101,7 +100,7 @@ public class ServiceDiscoveryPropertyPlaceHolderConfigurer extends PropertyPlace
 	}
 
 	private static String[] extractIpAddresses(ProcessingUnitInstance[] instances) {
-		final List<String> ipAddresses = new ArrayList<String>();
+		final List<String> ipAddresses = new ArrayList<String>(instances.length);
 		for (final ProcessingUnitInstance instance : instances) {
 			ipAddresses.add(instance.getMachine().getHostAddress());
 		}
