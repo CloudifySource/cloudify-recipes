@@ -15,7 +15,6 @@
 *******************************************************************************/
 import groovy.text.SimpleTemplateEngine
 import groovy.util.ConfigSlurper;
-import java.net.InetAddress;
 import org.cloudifysource.dsl.utils.ServiceUtils
 import org.cloudifysource.dsl.context.ServiceContextFactory
 
@@ -25,9 +24,9 @@ config = new ConfigSlurper().parse(new File("xap-service.properties").toURL())
 
 new AntBuilder().sequential {
 	mkdir(dir:"${config.installDir}")
-	//get(src:config.downloadPath, dest:"${config.installDir}/${config.zipName}", skipexisting:true)
-	//unzip(src:"${config.installDir}/${config.zipName}", dest:config.installDir, overwrite:true)
-	unzip(src:"/home/ec2-user/lite.zip", dest:config.installDir, overwrite:true)
+	get(src:config.downloadPath, dest:"${config.installDir}/${config.zipName}", skipexisting:true)
+	unzip(src:"${config.installDir}/${config.zipName}", dest:config.installDir, overwrite:true)
+	//unzip(src:"/home/ec2-user/lite.zip", dest:config.installDir, overwrite:true)
 }
 
 
@@ -40,7 +39,8 @@ if(ServiceUtils.isWindows()){
 else{
   new AntBuilder().sequential {
 	copy(file:"overwrite/gs-webui.sh",todir:"${config.xapDir}/tools/gs-webui",overwrite:"true")
-	chmod(file:"${config.binDir}/gs-webui.sh",perm:"ugo+rwx")
+   chmod(dir:"${config.binDir}", perm:"+x", includes:"*.sh")
+   chmod(dir:"${config.xapDir}/tools/gs-webui", perm:"+x", includes:"*.sh")
   }
 }
 

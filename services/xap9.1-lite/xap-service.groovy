@@ -26,7 +26,7 @@ service {
 	maxAllowedInstances 1
 
     compute {
-        template "MEDIUM_UBUNTU"
+        template "MEDIUM_LINUX"
     }
 
 	lifecycle{
@@ -36,7 +36,8 @@ service {
 		start "xap_start.groovy"
 		stop "xap_stop.groovy"
 
-		details {
+/* good for cloudify 2.3 */
+/*		details {
 			def currPublicIP
 			
 			if (  context.isLocalCloud()  ) {
@@ -52,14 +53,14 @@ service {
 				return [
 					"Application URL":"<a href=\"${applicationURL}\" target=\"_blank\">${applicationURL}</a>"
 				]
-		}	
+		}	*/
 	}
 	plugins([
 		plugin {
 			name "portLiveness"
 			className "org.cloudifysource.usm.liveness.PortLivenessDetector"
 			config ([
-						"Port" : [4174],
+						"Port" : [8999],
 						"TimeoutInSeconds" : 60,
 						"Host" : "127.0.0.1"
 					])

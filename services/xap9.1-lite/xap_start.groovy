@@ -22,9 +22,12 @@ import org.cloudifysource.dsl.context.ServiceContextFactory
 
 context=ServiceContextFactory.serviceContext
 config = new ConfigSlurper().parse(new File("xap-service.properties").toURL())
+ip=InetAddress.getLocalHost().getHostAddress()
 
 new AntBuilder().sequential {
 	exec(executable:"runxap.bat", osfamily:"windows"){
+		env(key:"GSC_JAVA_OPTIONS",value:"${config.gscSize}")
+		env(key:"LOOKUPLOCATORS",value:"${ip}")
 		env(key:"WEBUI_PORT",value:"${config.uiPort}")
 	} 
 
@@ -33,6 +36,8 @@ new AntBuilder().sequential {
 	chmod(dir:"${config.xapDir}/tools/gs-webui",perm:"+x",includes:"*.sh")
 	
 	exec(executable:"./runxap.sh", osfamily:"unix"){
+		env(key:"GSC_JAVA_OPTIONS",value:"${config.gscSize}")
+		env(key:"LOOKUPLOCATORS",value:"${ip}")
 		env(key:"WEBUI_PORT",value:"${config.uiPort}")
 		arg(value:"${config.binDir}")
 	}
