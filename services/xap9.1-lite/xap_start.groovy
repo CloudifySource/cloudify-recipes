@@ -36,7 +36,7 @@ new AntBuilder().sequential {
 	chmod(dir:"${config.xapDir}/tools/gs-webui",perm:"+x",includes:"*.sh")
 	
 	exec(executable:"./runxap.sh", osfamily:"unix"){
-		env(key:"GSC_JAVA_OPTIONS",value:"${config.gscSize}")
+		env(key:"GSC_JAVA_OPTIONS",value:"-Xms${config.gscSize} -Xmx${config.gscSize}")
 		env(key:"LOOKUPLOCATORS",value:"${ip}")
 		env(key:"WEBUI_PORT",value:"${config.uiPort}")
 		arg(value:"${config.binDir}")
