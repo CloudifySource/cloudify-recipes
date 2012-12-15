@@ -35,6 +35,7 @@ service {
 		init "storm_install.groovy"
 		start "storm_start.groovy"
 		preStop "storm_stop.groovy"
+
 	}
 	plugins([
 		plugin {
@@ -61,7 +62,18 @@ service {
 	])
 
 	customCommands ([
-		"wordcount-start": "commands/wordcount-start.sh"
+
+		"wordcount-start": "commands/wordcount-start.sh",
+
+		"deploy":{ jar, Object[] args ->
+			line=""
+			for(int i=0;i<args.length;i++)line+=(args[i]+" ")
+			"${script} jar ${jar} ${line}".execute()
+		},
+
+		"kill":{ name ->
+			"${script} kill ${name}".execute()
+		}
 	])
 
 
