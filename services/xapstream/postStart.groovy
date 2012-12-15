@@ -23,6 +23,7 @@ import org.openspaces.admin.pu.config.ProcessingUnitConfig
 
 admin=new AdminFactory().addLocators("127.0.0.1").create()
 mgr=admin.getGridServiceManagers().waitForAtLeastOne()
+
 pu=new ProcessingUnitConfig()
 pu.setProcessingUnit("lib/streamspace-pu-1.0-SNAPSHOT.jar")
 
