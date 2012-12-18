@@ -14,14 +14,35 @@
 * limitations under the License.
 *******************************************************************************/
 
-application {
-    name = "hello-puppet"
-    
-    service {
-        name = "mysql"
+service {
+    extend "../../../services/puppet"
+    name "webapp"
+    type "APP_SERVER"
+    icon "redmine.png"
+
+    elastic true
+    numInstances 1
+    minAllowedInstances 1
+    maxAllowedInstances 1
+
+    compute {
+        template "SMALL_UBUNTU"
     }
-    service {
-        name = "webapp"
-        dependsOn = ["mysql"]
+
+    lifecycle {
+        preStart {
+            //To update the webapp, change these attributes (e.g. via rest) and run the apply_manifest custom command
+            context.attributes.thisService["webapp_repo"] = "https://github.com/redmine/redmine.git"
+            context.attributes.thisService["webapp_tag"]  = "1.4.5"
+        }
+
+        startDetectionTimeoutSecs 600
+        startDetection {
+            ServiceUtils.isPortOccupied(80)
+        }
+
+        stopDetection {
+            !(ServiceUtils.isPortOccupied(80))
+        }
     }
 }

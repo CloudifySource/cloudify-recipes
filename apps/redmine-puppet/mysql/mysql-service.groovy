@@ -16,15 +16,21 @@
 
 service {
     extend "../../../services/puppet"
-    name "webapp"
-    type "APP_SERVER"
-    
-    elastic true
-    numInstances 1
-    minAllowedInstances 1
-    maxAllowedInstances 1
+    name "mysql"
+    type "DATABASE"
 
     compute {
         template "SMALL_UBUNTU"
+    }
+
+    lifecycle {
+        startDetectionTimeoutSecs 600
+        startDetection {
+            ServiceUtils.isPortOccupied(3306)
+        }
+
+        stopDetection {
+            !(ServiceUtils.isPortOccupied(3306))
+        }
     }
 }

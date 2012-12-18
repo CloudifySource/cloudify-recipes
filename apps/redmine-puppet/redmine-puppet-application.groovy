@@ -13,10 +13,16 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 *******************************************************************************/
-puppetRepo = [ 
-  "repoType": "git",
-  "repoUrl": "https://github.com/Fewbytes/puppet-module-examples.git",
-  "classes": ['mysql::server': nil,
-              'webapp::db': ['db': 'webapp', 'user': 'webapp', 'password': 'webpass', 'host': '%']
-  ]
-]
+
+application {
+    name = "redmine-puppet"
+
+    service {
+        name = "mysql"
+    }
+
+    service {
+        name = "webapp"
+        dependsOn = ["mysql"]
+    }
+}
