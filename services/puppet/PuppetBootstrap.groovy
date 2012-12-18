@@ -30,6 +30,7 @@ class PuppetBootstrap {
     String local_custom_facts = "/opt/cloudify/puppet/facts"
     String cloudify_module_dir = "/opt/cloudify/puppet/modules/cloudify"
     String metadata_file = "/opt/cloudify/metadata.json"
+    String log_file = "/var/log/puppet/cloudify"
 
     // factory method for getting the appropriate bootstrap class
     def static getBootstrap(options=[:]) {
@@ -147,31 +148,36 @@ class PuppetBootstrap {
         default:
             throw new Exception("Unrecognized manifest source '${manifestSource}', please use either 'repo' or 'service'")
         }
-        sudo("puppet apply ${manifest}")
+        puppetApply(manifest)
     }
 
-    def to_puppet(ArrayList expr) {
-        "[" + expr.collect() { i -> "\"${i}\"" }.join(",\n") + "]"
+    def toPuppet(ArrayList expr) {
+        "[" + expr.collect() { i -> toPuppet(i) }.join(",\n") + "]"
     }
-    def to_puppet(Map expr) {
-        "{\n" + expr.collect() { k, v -> "${k} => ${to_puppet(v)}"}.join(",\n") + "}"
+    def toPuppet(Map expr) {
+        "{\n" + expr.collect() { k, v -> "${k} => ${toPuppet(v)}"}.join(",\n") + "}"
     }
-    def to_puppet(expr) {
-        expr.toString()
+    def toPuppet(expr) {
+        "\"${expr}\""
     }
 
     def applyClasses(Map classes) {
         puppetExecute(
             classes.collect() { kls, params ->
                 "class{'${kls}':\n" +
-                to_puppet(params)[1..-1]// slice off the first curly cause it isn't really a hash
+                toPuppet(params)[1..-1]// slice off the first curly cause it isn't really a hash
             }.join("\n")
         )
     }
+
     def puppetExecute(puppetCode) {
         File tmp_file = File.createTempFile("apply_manifest", ".pp")
         tmp_file.withWriter { it.write(puppetCode)}
-        sudo("puppet apply ${tmp_file}")
+        puppetApply(tmp_file)
+    }
+
+    def puppetApply(filepath) {
+        sudo("puppet apply ${filepath} 2>&1 | sudo tee -a ${log_file}")
     }
 
     def cleanup_local_repo() {
