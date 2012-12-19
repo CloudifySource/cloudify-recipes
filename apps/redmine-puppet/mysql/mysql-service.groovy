@@ -13,10 +13,24 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 *******************************************************************************/
-puppetRepo = [ 
-  "repoType": "git",
-  "repoUrl": "https://github.com/Fewbytes/puppet-module-examples.git",
-  "classes": ["mysql::ruby": nil, 
-              'mysql::server': ['config_hash': ['root_password': 'foo']]
-  ]
-]
+
+service {
+    extend "../../../services/puppet"
+    name "mysql"
+    type "DATABASE"
+
+    compute {
+        template "SMALL_UBUNTU"
+    }
+
+    lifecycle {
+        startDetectionTimeoutSecs 600
+        startDetection {
+            ServiceUtils.isPortOccupied(3306)
+        }
+
+        stopDetection {
+            !(ServiceUtils.isPortOccupied(3306))
+        }
+    }
+}

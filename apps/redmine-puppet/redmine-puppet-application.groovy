@@ -13,8 +13,16 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 *******************************************************************************/
-puppetRepo = [ 
-  "repoType": "tar",
-  "repoUrl": "http://fewbytes-development.s3.amazonaws.com/clients/gigaspaces/manifests.tgz",
-  "manifestPath": "manifests/site.pp"
-]
+
+application {
+    name = "redmine-puppet"
+
+    service {
+        name = "mysql"
+    }
+
+    service {
+        name = "webapp"
+        dependsOn = ["mysql"]
+    }
+}
