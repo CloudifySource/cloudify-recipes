@@ -1,7 +1,7 @@
 # Couchbase
 
 **Status**: Tested  
-**Description**: Couchbase
+**Description**: Couchbase  
 **Maintainer**:       Cloudify  
 **Maintainer email**: cloudifysource@gigaspaces.com  
 **Contributors**:    [tamirko](https://github.com/tamirko)  
@@ -11,7 +11,7 @@
 **Build**:   [Cloudify 2.3.0 RC](http://repository.cloudifysource.org/org/cloudifysource/2.3.0-RC/gigaspaces-cloudify-2.3.0-rc-b3483.zip)   
 **Linux* sudoer permissions**:	Mandatory  
 **Windows* Admin permissions**:  Not required    
-**Release Date**: December 17th 2012  
+**Release Date**: December 19th 2012  
 
 
 Tested on:
