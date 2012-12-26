@@ -31,7 +31,7 @@ println "jboss_postInstall.groovy: War folder is ${jbossConfig.applicationWarFol
 println "jboss_postInstall.groovy: War url is ${jbossConfig.applicationWarUrl}"
 
 new AntBuilder().sequential {	
- get(src:"${jbossConfig.applicationWarUrl}", dest:"${jbossConfig.applicationWarFolder}/${jbossConfig.petclinicMongoWar}", skipexisting:true)
+ get(src:"${jbossConfig.applicationWarUrl}", dest:"${jbossConfig.applicationWarFolder}/${jbossConfig.applicationWar}", skipexisting:true)
  chmod(dir:"${jbossConfig.home}/bin", perm:'+x', includes:"*.sh")
  copy(tofile: "${jbossConfig.standaloneXmlFile}", file:"${serviceContext.serviceDirectory}/standalone.xml", overwrite:true)  
 }
