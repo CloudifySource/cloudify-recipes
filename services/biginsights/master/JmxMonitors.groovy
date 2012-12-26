@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2012 GigaSpaces Technologies Ltd. All rights reserved
+* Copyright (c) 2011 GigaSpaces Technologies Ltd. All rights reserved
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
 *******************************************************************************/
 import javax.management.ObjectName
 import javax.management.remote.JMXConnectorFactory as JmxFactory
+import javax.management.remote.JMXConnector
 import javax.management.remote.JMXServiceURL as JmxUrl
 
 /**
@@ -26,9 +27,18 @@ class JmxMonitors {
 def static urlToConnection = [:]
 
 
-def static connectRMI(host, port) {
+def static connectRMI(host, port, credsPath) {
 if (urlToConnection["${host:port}"] == null)
-urlToConnection["${host:port}"] = JmxFactory.connect(new JmxUrl("service:jmx:rmi:///jndi/rmi://${host}:${port}/jmxrmi"))	
+{
+    Map env = [:];
+    def jmxPassFile = new FileReader(credsPath);
+    def line = jmxPassFile.readLine()
+    if(line!=null){
+    	def creds = line.split(" ")
+		env.put(JMXConnector.CREDENTIALS, creds);
+    }
+	urlToConnection["${host:port}"] = JmxFactory.connect(new JmxUrl("service:jmx:rmi:///jndi/rmi://${host}:${port}/jmxrmi"),env)	
+}
 return urlToConnection["${host:port}"]
 }
 
@@ -44,8 +54,8 @@ return 0;
 }
 
 /* Returns a map of metrics values */
-def static getJmxMetrics(host,jmxPort,metricNamesToMBeansNames) {
-def server = connectRMI(host, jmxPort)
+def static getJmxMetrics(host,jmxPort,credsPath,metricNamesToMBeansNames) {
+def server = connectRMI(host, jmxPort,credsPath)
 
 def metrics = [:]
 
