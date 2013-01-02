@@ -23,7 +23,7 @@ echo "#1 Killing old mysql process if exists..."
 killMySqlProcess
 
 echo "Removing previous mysql installation if exists..."
-sudo yum -y -q remove mysql mysql-server
+sudo yum -y -q remove mysql* mysql-server
 
 # The following two statements are used since in some cases, there are leftovers after uninstall
 echo "Removing old stuff if exists..."
