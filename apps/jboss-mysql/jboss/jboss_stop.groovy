@@ -30,9 +30,4 @@ new AntBuilder().sequential {
 		arg value:"--connect"
 		arg value:"command=:shutdown"
 	}
-	exec(executable:"${script}.bat", osfamily:"windows"){
-		arg value:"---controller=${currentIP}:${currJmxPort}"
-		arg value:"--connect"
-		arg value:"--command=:shutdown"
-	}
 }
