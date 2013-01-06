@@ -22,9 +22,9 @@ Tested on:
 Synopsis
 --------
 
-This folder contains a services recipes for the jboss 7 mysql work that was done for the P&G Demo on openstack hp local cloud.
+This folder contains a services recipes for the jboss 7 mysql.
 
-The application itself is a very basic one which was developed for the only purpose of showing how we can use mysql DB togther with jboss 7.
+The application itself is a basic one which was developed for the only purpose of showing how we can use mysql DB togther with jboss 7.
 
 This recipe is comprised of two services:
 * [mysql](../../services/mysql/README.md)  
