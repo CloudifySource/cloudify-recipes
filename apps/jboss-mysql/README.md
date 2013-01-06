@@ -7,7 +7,7 @@
 **Contributors**:    [aharonmoll](https://github.com/aharonmoll)  
 **Homepage**:   [http://www.cloudifysource.org](http://www.cloudifysource.org)  
 **License**:        
-**Build**: http://repository.cloudifysource.org/org/cloudifysource/2.3.0-RELEASE/gigaspaces-cloudify-2.3.0-ga-b3500.zip
+**Build**: http://repository.cloudifysource.org/org/cloudifysource/2.3.0-RELEASE/gigaspaces-cloudify-2.3.0-ga-b3500.zip 123
 **Linux* sudoer permissions**:	Mandatory  
 **Release Date**: December 6th 2012  
 
