@@ -1,43 +1,34 @@
-# Pet Clinic 
+# Base application on Jboss 7 using mysql DB
 
 **Status**: Tested  
-**Description**: Pet Clinic Application on JBoss  
+**Description**: Jboss 7 using mysql DB 
 **Maintainer**:       Cloudify  
 **Maintainer email**: cloudifysource@gigaspaces.com  
-**Contributors**:    [tamirko](https://github.com/tamirko)  
+**Contributors**:    [aharonmoll](https://github.com/aharonmoll)  
 **Homepage**:   [http://www.cloudifysource.org](http://www.cloudifysource.org)  
-**License**:      Apache 2.0   
-**Build**: http://repository.cloudifysource.org/org/cloudifysource/2.1.1/gigaspaces-cloudify-2.1.1-ga-b1400.zip  
+**License**:        
+**Build**: http://repository.cloudifysource.org/org/cloudifysource/2.3.0-RELEASE/gigaspaces-cloudify-2.3.0-ga-b3500.zip
 **Linux* sudoer permissions**:	Mandatory  
-**Windows* Admin permissions**:  Required on Windows 7    
-**Release Date**: July 12th 2012  
+**Release Date**: December 6th 2012  
 
 
 Tested on:
 --------
 
-* <strong>localCloud</strong>: Windows 7 and CentOs 
+* <strong>localCloud</strong>: CentOs on hp cloud
 * <strong>EC2</strong>: Ubuntu and CentOs 
 * <strong>OpenStack</strong>: CentOs 
-* <strong>Rackspace</strong>: CentOs 
-
-We disable the requiretty flag in /etc/sudoers on the installed VMs, so that Cloudify will be able to invoke remote ssh commands as a sudoer. This feature will be a part of Cloudify in the near future.
-Until then, please use the [Cloud Drivers Repository](https://github.com/CloudifySource/cloudify-cloud-drivers).
-
 
 Synopsis
 --------
 
-This folder contains a service recipe for the Pet Clinic application.
+This folder contains a services recipes for the jboss 7 mysql work that was done for the P&G Demo on openstack hp local cloud.
 
-The PetClinic application is a port of the Spring PetClinic application to Grails and MongoDB. It uses the Grails GORM bindings to MongoDB. 
-The users of the application are employees of the clinic who, in the course of their work, need to view and manage information regarding veterinarians, the clients, and their pets.
+The application itself is a very basic one which was developed for the only purpose of showing how we can use mysql DB togther with jboss 7.
 
-This recipe is comprised of five services:
-* [mongod](../../services/mongodb/mongod/README.md)  
-* [mongos](../../services/mongodb/mongos/README.md)  
-* [mongoConfig](../../services/mongodb/mongoConfig/README.md)  
+This recipe is comprised of two services:
+* [mysql](../../services/mysql/README.md)  
 * [jboss](../../services/jboss/README.md) 
-* [apacheLB](../../services/apacheLB/README.md) 
+
 
 

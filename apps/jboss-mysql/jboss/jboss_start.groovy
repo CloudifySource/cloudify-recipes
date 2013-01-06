@@ -25,7 +25,6 @@ instanceID = serviceContext.getInstanceId()
 println "jboss_start.groovy: This jboss instance ID is ${instanceID}"
 
 def dbServiceHost
-def driverConnectorString =  "</datasource><datasource jndi-name=\"java:jboss/exported/MySqlDS\" pool-name=\"MySqlDS\" enabled=\"true\"><connection-url>jdbc:mysql://127.0.0.1:3306/testDB</connection-url><driver>mysql-connector-java-5.1.22-bin.jar</driver><security><user-name>test</user-name><password>1234</password></security></datasource>"
 
 if ( "${jbossMySqlConfig.dbServiceName}"!="NO_DB_REQUIRED" ) {
 	println "jboss_start.groovy: waiting for ${jbossMySqlConfig.dbServiceName}..."
@@ -37,6 +36,8 @@ if ( "${jbossMySqlConfig.dbServiceName}"!="NO_DB_REQUIRED" ) {
 else {
 	dbServiceHost="DUMMY_HOST"
 }	
+
+def driverConnectorString =  "</datasource><datasource jndi-name=\"java:jboss/exported/MySqlDS\" pool-name=\"MySqlDS\" enabled=\"true\"><connection-url>jdbc:mysql://${dbServiceHost}:${jbossMySqlConfig.dbPortVarName}/${jbossMySqlConfig.dbName}</connection-url><driver>${jbossMySqlConfig.jdbcDriverName}</driver><security><user-name>${jbossMySqlConfig.dbUser}</user-name><password>${jbossMySqlConfig.dbPassW}</password></security></datasource>"
 
 portIncrement = 0
 if (serviceContext.isLocalCloud()) {
