@@ -148,3 +148,7 @@ def static download(target, url) {
         out << new URL(url).openStream()
     }
 }
+
+def static bash(command, shellify=true, Map opts=[:]) {
+    sh("bash -c \"${command}\"", shellify, opts)
+}

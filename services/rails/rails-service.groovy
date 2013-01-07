@@ -24,12 +24,30 @@ service {
 
     lifecycle {
       install {
+        if (binding.variables["preInstallHook"]) {
+            preInstallHook(context:context) //TODO: should we pass any additional arguments?
+        }
+
         bootstrap = RailsBootstrap.getBootstrap(context:context)
         if (binding.variables["webappRepo"]) {
             bootstrap.install(webappRepo)
         } else {
-            println "Rails application was not specified - installing default"
-            bootstrap.install()
+            throw new Exception("Rails application was not specified - add the webappRepo property")
+        }
+
+        if (binding.variables["postInstallHook"]) {
+            postInstallHook(context:context) //TODO: should we pass any additional arguments?
+        }
+      }
+
+      start {
+        bootstrap = RailsBootstrap.getBootstrap(context:context)
+
+        print "This would be where the server is started"
+        //bootstrap.start() 
+
+        if (binding.variables["postStartHook"]) {
+            postStartHook(context:context) //TODO: should we pass any additional arguments?
         }
       }
     }
