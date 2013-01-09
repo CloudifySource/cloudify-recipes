@@ -35,7 +35,7 @@ class ChefBootstrap {
             case ["Ubuntu", "Debian", "Mint"]: cls = new DebianBootstrap(options); break
             case ["Red Hat", "CentOS", "Fedora", "Amazon"]: cls = new RHELBootstrap(options); break
             case "SuSE":  cls = new SuSEBootstrap(options); break
-            case "Win32": cls = new WindowsBootstrap(options); break
+            case ["Win32", "Microsoft"]: cls = new WindowsBootstrap(options); break
             case "" /*returned by ec2linux*/:
                 if (test("grep 'Amazon Linux' /etc/issue")) {
                     cls = new RHELBootstrap(options); break
