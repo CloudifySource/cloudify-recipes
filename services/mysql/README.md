@@ -29,9 +29,6 @@ Tested on:
 * <strong>Rackspace</strong>: 
  * <strong>CentOs 6</strong>: imageId "118", hardwareId "4" (2GB server  = 2G RAM 80 GB HD). 
 
- We disable the requiretty flag in /etc/sudoers on the installed VMs, so that Cloudify will be able to invoke remote ssh commands as a sudoer. This feature will be a part of Cloudify in the near future.
-Until then, please use the [Cloud Drivers Repository](https://github.com/CloudifySource/cloudify-cloud-drivers).
-
 
 
 Synopsis
