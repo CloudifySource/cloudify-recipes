@@ -8,7 +8,7 @@
 **Homepage**:   [http://www.cloudifysource.org](http://www.cloudifysource.org)  
 **Demo**:   TBD     
 **License**:      Apache 2.0   
-**Build**:   [Cloudify 2.5.0 M5](http://repository.cloudifysource.org/org/cloudifysource/2.5.0-M4/gigaspaces-cloudify-2.5.0-m4-b3985.zip)   
+**Build**:   [Cloudify 2.5.0 M5](repository.cloudifysource.org/org/cloudifysource/2.5.0-SNAPSHOT/gigaspaces-cloudify-2.5.0-m5-b3985-104.zip)   
 **Linux* sudoer permissions**:	Mandatory  
 **Windows* Admin permissions**:  Not supported  
 **Release Date**: January 14th 2013  
