@@ -39,9 +39,6 @@ sudo rpm -qa | grep -i "couchbase" | sudo xargs rpm -e
 echo "Removing potential leftovers after uninstall..."
 sudo rm -rf /opt/couchbase || error_exit $? "Failed on: sudo rm -rf /opt/couchbase"
 
-# Uncommenct the following line for CB version 2.0.0
-#sudo yum -y -q install openssl098e
-
 currLocation=`pwd`
 
 
@@ -52,6 +49,20 @@ if [ "$ARCH" = "x86_64" ]; then
 else 
 	rpmFile=$rpm32FileUrl
 fi
+
+# If the following is not added in CB 2.0.0, you will get the following error : 
+#   Failed dependencies: 
+#    libcrypto.so.6 is needed by couchbase-server-2.0.0-1976.i386
+#    libssl.so.6 is needed by couchbase-server-2.0.0-1976.i386
+ver2="2.0.0"
+
+if [[ $rpmFile =~ .*$ver2.* ]]
+then
+   echo "Installing openssl098e (only in couchbase version 2.0.0)"
+   sudo yum -y -q install openssl098e
+fi
+
+
 
 rm -f *.rpm
 echo "wgetting ${rpmFile} ..."
