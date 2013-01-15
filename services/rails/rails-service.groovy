@@ -14,6 +14,7 @@
  * limitations under the License.
  ****************************************************************************** */
 
+import java.util.concurrent.TimeUnit
 import RailsBootstrap
 import static Shell.*
 
@@ -22,33 +23,64 @@ service {
     name "rails"
     icon "rails.png"
 
+    elastic true
+    numInstances 1
+    minAllowedInstances 1
+    maxAllowedInstances 2
+
     lifecycle {
-      install {
-        if (binding.variables["preInstallHook"]) {
-            preInstallHook(context:context) //TODO: should we pass any additional arguments?
+        install {
+            if (! binding.variables["webappOpts"])
+                throw new Exception("Rails application options were not specified - \
+                                     please add the webappOpts property")
+
+            bootstrap = RailsBootstrap.getBootstrap(context:context, webappOpts:webappOpts)
+            bootstrap.install()
+
+            bootstrap.runHook({
+                rubySh("bundle exec rake generate_session_store")
+                rubySh("bundle exec rake redmine:load_default_data REDMINE_LANG=en")
+            })
+
+            bootstrap.migrate()
+
+            bootstrap.runHook({
+              print "This could be a postMigrateHook"
+            })
         }
 
-        bootstrap = RailsBootstrap.getBootstrap(context:context)
-        if (binding.variables["webappRepo"]) {
-            bootstrap.install(webappRepo)
-        } else {
-            throw new Exception("Rails application was not specified - add the webappRepo property")
+        start {
+          bootstrap = RailsBootstrap.getBootstrap(context:context, webappOpts:webappOpts)
+          bootstrap.start() 
+
+          bootstrap.runHook({
+            print "This could be a postStartHook"
+          })
         }
 
-        if (binding.variables["postInstallHook"]) {
-            postInstallHook(context:context) //TODO: should we pass any additional arguments?
+        postStart {
+            def apacheService = context.waitForService("apacheLB", 180, TimeUnit.SECONDS)
+            def privateIP = System.getenv()["CLOUDIFY_AGENT_ENV_PRIVATE_IP"]
+            def instanceID = context.instanceId
+            def currURL="http://${privateIP}:8080"
+            apacheService.invoke("addNode", currURL as String, instanceID as String)
         }
-      }
 
-      start {
-        bootstrap = RailsBootstrap.getBootstrap(context:context)
-
-        print "This would be where the server is started"
-        //bootstrap.start() 
-
-        if (binding.variables["postStartHook"]) {
-            postStartHook(context:context) //TODO: should we pass any additional arguments?
+        postStop {
+            try {
+                def apacheService = context.waitForService("apacheLB", 180, TimeUnit.SECONDS)
+                if ( apacheService != null ) {
+                    def privateIP =System.getenv()["CLOUDIFY_AGENT_ENV_PRIVATE_IP"]
+                    def instanceID = context.instanceId
+                    def currURL="http://${privateIP}:8080"
+                    apacheService.invoke("removeNode", currURL as String, instanceID as String)
+                }
+            }
+            catch (all) {
+                println "app-service.groovy: Exception in Post-stop: ${all}"
+            }
         }
-      }
+
+      //TODO: add monitoring and autoscaling based on some rails metric taken from rack
     }
 }

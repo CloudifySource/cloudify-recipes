@@ -32,11 +32,11 @@ service {
     lifecycle {
         startDetectionTimeoutSecs 600
         startDetection {
-            ServiceUtils.isPortOccupied(80)
+            ServiceUtils.isPortOccupied(8080)
         }
 
         stopDetection {
-            !(ServiceUtils.isPortOccupied(80))
+            !(ServiceUtils.isPortOccupied(8080))
         }
     }
 }
