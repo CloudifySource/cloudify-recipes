@@ -30,7 +30,6 @@ class PuppetBootstrap {
     String local_custom_facts = "/opt/cloudify/puppet/facts"
     String cloudify_module_dir = "/opt/cloudify/puppet/modules/cloudify"
     String metadata_file = "/opt/cloudify/metadata.json"
-    String log_file = "/var/log/puppet/cloudify"
 
     // factory method for getting the appropriate bootstrap class
     def static getBootstrap(options=[:]) {
@@ -177,7 +176,7 @@ class PuppetBootstrap {
     }
 
     def puppetApply(filepath) {
-        sudo("puppet apply ${filepath} 2>&1 | sudo tee -a ${log_file}")
+        sudo("puppet apply ${filepath}")
     }
 
     def cleanup_local_repo() {

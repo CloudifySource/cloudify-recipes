@@ -91,13 +91,14 @@ def static shellify_cmd(org.codehaus.groovy.runtime.GStringImpl command) {
 }
 
 def static sudo(command, Map opts=[:]) {
-    if (System.getProperty("user.name") != "root") {
-        command = "sudo ${command}"
+    def newUser = opts['user'] ?: "root"
+    if (System.getProperty("user.name") != newUser) {
+        command = "sudo -u ${newUser} -E ${command}"
     }
     return sh(command, true, opts)
 }
 
-def static sudo(java.util.ArrayList command, Map opts=[:]) {
+def static sudo(java.util.ArrayList command, Map opts=[:], String user="root") {
     return sudo(command.join(" "), opts)
 }
 
@@ -147,4 +148,12 @@ def static download(target, url) {
     new File(target).withOutputStream() { out ->
         out << new URL(url).openStream()
     }
+}
+
+def static bash(command, Map opts=[:]) {
+    def bashCommand = "bash -c \"${command}\""
+    if ('user' in opts)
+        sudo(bashCommand, opts)
+    else
+        sh(bashCommand, true, opts)
 }
