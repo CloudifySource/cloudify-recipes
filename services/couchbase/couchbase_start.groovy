@@ -135,7 +135,7 @@ if ( postStartRequired == "true" ) {
 					println "couchbase_start.groovy: instanceID ${instanceID} after rebalance"
 				}
 				catch (allErrors) {		
-					println "couchbase_start.groovy: Exception thrown from rebalance: " + allErrors
+					//println "couchbase_start.groovy: Exception thrown from rebalance: " + allErrors
 				} 	
 			}
 			else {

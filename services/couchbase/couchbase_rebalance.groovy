@@ -39,6 +39,11 @@ def firstInstancePort = context.attributes.thisInstance["currentPort"]
 
 def clusterAdmin = context.attributes.thisInstance["couchbaseUser"]
 def clusterPassword = context.attributes.thisInstance["couchbasePassword"]
+def clusterBucketName = context.attributes.thisInstance["clusterBucketName"] 
+def needToLoadData = context.attributes.thisService["needToLoadData"]
+context.attributes.thisService["needToLoadData"] = false
+def dataPath = context.attributes.thisService["dataPath"]
+
 
 
 builder = new AntBuilder()
@@ -49,6 +54,9 @@ builder.sequential {
 		arg(value:firstInstancePort)	
 		arg(value:"${clusterAdmin}")	
 		arg(value:"${clusterPassword}")
+		arg(value:"${clusterBucketName}")
+		arg(value:"${needToLoadData}")
+		arg(value:"${dataPath}")
 	}
 }	
 
