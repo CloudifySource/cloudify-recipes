@@ -29,9 +29,7 @@ if ( instanceID == 1 ) {
 }
 
 context.attributes.thisInstance["myHostAddress"]=context.getPrivateAddress()
-
 context.attributes.thisInstance["readyForRebalance"]=false
-
 
 def portIncrement =  context.isLocalCloud() ? instanceID-1 : 0			
 def currentPort = config.couchbasePort + portIncrement
@@ -39,6 +37,7 @@ def currentPort = config.couchbasePort + portIncrement
 osConfig = ServiceUtils.isWindows() ? config.win32 : config.linux
 
 println "couchbase_install.groovy: currentPort is ${currentPort}"
+context.attributes.thisInstance["port"] = currentPort
 context.attributes.thisInstance["currentPort"] = currentPort
 context.attributes.thisInstance["couchbaseStatsPort"] = config.couchbaseStatsPort
 context.attributes.thisInstance["couchbaseUser"] = config.couchbaseUser
@@ -48,18 +47,16 @@ context.attributes.thisInstance["clusterRamSize"] = config.clusterRamSize
 context.attributes.thisInstance["clusterBucketName"] = config.clusterBucketName
 context.attributes.thisInstance["clusterBucketType"] = config.clusterBucketType
 context.attributes.thisInstance["clusterReplicatCount"] = config.clusterReplicatCount
-context.attributes.thisInstance["scriptsFolder"] = "${context.serviceDirectory}/scripts"
+userHome = System.properties["user.home"]
+context.attributes.thisInstance["scriptsFolder"] = "${userHome}/scripts"
 context.attributes.thisInstance["postStartRequired"] = "true"
-
-
 
 def installLinuxCouchbase(context,builder,currVendor,installScript,scriptsFolder,install32,install64) {
 	builder.sequential {
 		echo(message: "couchbase_install.groovy: Chmodding +x ${scriptsFolder} ...")
 		chmod(dir: "${scriptsFolder}", perm:"+x", includes:"*.sh")
-
 		echo(message: "couchbase_install.groovy: Running ${scriptsFolder}/${installScript} os is ${currVendor}...")
-		exec(executable: "${scriptsFolder}/${installScript}",failonerror: "true") {
+		exec(executable: "${scriptsFolder}/${installScript}",failonerror: "false") {
 			arg(value:"${install32}")			
 			arg(value:"${install64}")
 		}

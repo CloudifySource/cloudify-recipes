@@ -19,7 +19,7 @@ service {
 	icon "couchbase.jpg"
 	type "NOSQL_DB"
 	elastic true
-	numInstances 3
+	numInstances 2
 	minAllowedInstances 1
 	maxAllowedInstances 4
 
@@ -54,7 +54,7 @@ service {
 			def currInstanceID = context.instanceId						
 			def scriptsFolder = context.attributes.thisInstance["scriptsFolder"]
 			def cbstats="${scriptsFolder}/cbstats.sh"			
-			def clusterBucketName = "CloudifyCouchbase${currInstanceID}"			
+			def clusterBucketName = context.attributes.thisInstance["clusterBucketName"]			
 
 			try { 						
 				def metrics=[:]
@@ -75,7 +75,8 @@ service {
 				]
 			}					
 		}
-				
+
+		preInstall "couchbase_preinstall.groovy"
 		install "couchbase_install.groovy"
 						
 		start "couchbase_start.groovy"		
@@ -113,6 +114,14 @@ service {
 	
 		"rebalance" : "couchbase_rebalance.groovy" , 		
 		
+		/* 
+			This custom command enables users to enable XDCR with another cluster instance
+			Usage :  invoke couchbase xdcr localBucketName remoteClusterRefName remoteClusterNode1 remoteClusterPort remoteClusterUser remoteClusterPassword remoteBucketName replicationType
+			
+			Example: invoke couchbase xdcr appBucket apac-cluster 10.10.10.10 8091 admin mypassword appBucket continuous
+		*/
+	
+		"xdcr" : "couchbase_xdcr.groovy" , 		
 	])		
 	
 	network {

@@ -1,0 +1,189 @@
+#! /bin/sh
+#
+# Copyright (c) 2010-2011, Couchbase, Inc.
+# All rights reserved
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+PATH="/opt/couchbase/bin":$PATH
+export PATH
+
+ERL_LIBS="/opt/couchbase/lib/ns_server/erlang/lib:/opt/couchbase/lib/couchdb/erlang/lib:/opt/couchbase/lib/couchdb/plugins"
+export ERL_LIBS
+
+DEFAULT_CONFIG_DIR="/opt/couchbase/etc/couchdb/default.d"
+DEFAULT_CONFIG_FILE="/opt/couchbase/etc/couchdb/default.ini"
+LOCAL_CONFIG_DIR="/opt/couchbase/etc/couchdb/local.d"
+LOCAL_CONFIG_FILE="/opt/couchbase/etc/couchdb/local.ini"
+
+PIDFILE="/opt/couchbase/var/lib/couchbase/couchbase-server.pid"
+NODEFILE="/opt/couchbase/var/lib/couchbase/couchbase-server.node"
+COOKIEFILE="/opt/couchbase/var/lib/couchbase/couchbase-server.cookie"
+
+couch_start_arguments=""
+
+LD_LIBRARY_PATH="/opt/couchbase/lib":"/opt/couchbase/lib/memcached":$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH
+
+ERL_CRASH_DUMP=erl_crash.dump.$(date +%m-%d-%Y-%H:%M:%S).$$
+export ERL_CRASH_DUMP
+
+ERL_FULLSWEEP_AFTER=512
+export ERL_FULLSWEEP_AFTER
+
+# For some obscure reason erl requires HOME environment variable to be set.
+if [ -z "$HOME" ]
+then
+    export HOME=/tmp
+fi
+
+_check_nofile () {
+    if [ `ulimit -n` -lt 10240 ]
+    then
+        cat <<EOF
+
+The maximum number of open files for the couchbase user is set too low.
+It must be at least 10240. Normally this can be increased by adding
+the following lines to /etc/security/limits.conf:
+
+couchbase              soft    nofile                  <value>
+couchbase              hard    nofile                  <value>
+
+Where <value> is greater than 10240.
+
+EOF
+    fi
+}
+
+_prepare_datadir () {
+    datadir="/opt/couchbase/var/lib/couchbase"
+
+    test -d "$datadir" || mkdir -p "$datadir"
+    cd "$datadir"
+}
+
+_maybe_start_epmd () {
+    # Initialize distributed erlang on the system (i.e. epmd)
+    erl -noshell -setcookie nocookie -sname init -run init stop 2>&1 > /dev/null
+    if [ $? -ne 0 ]
+    then
+        exit 1
+    fi
+}
+
+_add_config_file () {
+    couch_start_arguments="$couch_start_arguments $1"
+}
+
+_add_config_dir () {
+    for file in "$1"/*.ini; do
+        if [ -r "$file" ]; then
+          _add_config_file "$file"
+        fi
+    done
+}
+
+_load_config () {
+    _add_config_file "$DEFAULT_CONFIG_FILE"
+    _add_config_dir "$DEFAULT_CONFIG_DIR"
+    _add_config_file "$LOCAL_CONFIG_FILE"
+    _add_config_dir "$LOCAL_CONFIG_DIR"
+    if [ "$COUCHDB_ADDITIONAL_CONFIG_FILE" != '' ]
+    then
+        _add_config_file "$COUCHDB_ADDITIONAL_CONFIG_FILE"
+    fi
+}
+
+_start() {
+    _check_nofile
+    _prepare_datadir
+    _maybe_start_epmd
+    _load_config
+
+    # Set an ENV variable to force C++ STL and string classes to not use its
+    # default memory pooling allocator.
+    # For GCC 3.2.2 and later
+    GLIBCPP_FORCE_NEW=1
+    export GLIBCPP_FORCE_NEW
+    # For GCC 3.4 and later
+    GLIBCXX_FORCE_NEW=1
+    export GLIBCXX_FORCE_NEW
+
+    exec erl \
+        +S 16:16 \
+        -smp enable \
+        +sbt u \
+        +P 327680 \
+        +K true \
+        -setcookie nocookie \
+        -kernel inet_dist_listen_min 21100 inet_dist_listen_max 21299 \
+                error_logger false \
+        -sasl sasl_error_logger false \
+        $* \
+        -run ns_bootstrap -- \
+        -couch_ini $couch_start_arguments \
+        -ns_server config_path "\"/opt/couchbase/etc/couchbase/static_config\"" \
+        -ns_server pidfile "\"$PIDFILE\"" \
+        -ns_server nodefile "\"$NODEFILE\"" \
+        -ns_server cookiefile "\"$COOKIEFILE\"" \
+        -name ns_1@_PUBLIC_HOSTNAME_
+}
+
+_stop() {
+    [ -f $PIDFILE ] && [ -f $NODEFILE ] && [ -f $COOKIEFILE ] || return 1
+
+    cookie=`cat "$COOKIEFILE"`
+    nodename=`cat "$NODEFILE"`
+
+    erl \
+        -name executioner@executioner \
+        -noshell \
+        -hidden \
+        -setcookie "$cookie" \
+        -eval "ns_bootstrap:remote_stop('$nodename')"
+
+    errcode=$?
+
+    if [ $errcode -eq 0 ]; then
+        rm "$PIDFILE"
+        rm "$COOKIEFILE"
+        rm "$NODEFILE"
+
+        epmd -kill >/dev/null || true
+    fi
+
+    return $errcode
+}
+
+_parse_options () {
+    # set +e
+    options=`getopt k $*`
+    if [ ! $? -eq 0 ]; then
+        return 1
+    fi
+    # set -e
+    eval set -- $options
+    if [ "-k" = "$1" ]; then
+        KILL=true;
+    fi
+
+    shift
+
+    if [ x"$KILL" = "xtrue" ]; then
+        _stop
+    else
+        _start $*
+    fi
+}
+
+_parse_options $*

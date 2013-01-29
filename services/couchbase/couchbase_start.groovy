@@ -60,6 +60,7 @@ builder.sequential {
 		arg(value:"${postStartRequired}")	
 		arg(value:instanceID)
 		arg(value:"${clusterBucketType}")
+		arg(value:"${clusterBucketName}")
 		arg(value:clusterReplicatCount)
 	}	
 }
