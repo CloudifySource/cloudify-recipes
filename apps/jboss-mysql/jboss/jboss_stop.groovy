@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2012 GigaSpaces Technologies Ltd. All rights reserved
+* Copyright (c) 2011 GigaSpaces Technologies Ltd. All rights reserved
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -13,26 +13,21 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 *******************************************************************************/
-serviceName = "tomcat"
-version = "7.0.23" 
+import org.cloudifysource.dsl.context.ServiceContextFactory
 
-name = "apache-tomcat-${version}"
-zipName = "${name}.zip"
-downloadPath = "${zipName}"
-port = 8082
-ajpPort = 8019
-shutdownPort = 8015
-jmxPort = 11199
-dbServiceName="NO_DB_REQUIRED"
-ctxPath="helloworld"
-warName = "${ctxPath}.war"
-applicationWarUrl="${warName}"
+jbossConfig = new ConfigSlurper().parse(new File("jboss-service.properties").toURL())
+context = ServiceContextFactory.getServiceContext()
+
+def currentIP = context.attributes.thisInstance["currentIP"]
+def portIncrement =  context.isLocalCloud() ? context.getInstanceId()-1 : 0		
+def currJmxPort = jbossConfig.jmxPort + portIncrement
 
 
 
-dbHostVarName="DB_SERVICE_IP"
-dbPortVarName="DB_SERVICE_PORT"
-
-useLoadBalancer=false
-
-
+script = "${jbossConfig.home}/bin/jboss-cli"
+new AntBuilder().sequential {
+	exec(executable:"${script}.sh", osfamily:"unix"){
+		arg value:"--connect"
+		arg value:"command=:shutdown"
+	}
+}
