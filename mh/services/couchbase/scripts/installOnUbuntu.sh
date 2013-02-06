@@ -1,0 +1,82 @@
+#!/bin/bash -x
+
+# args:
+# $1 deb32FileUrl ( for example : http://packages.couchbase.com/releases/1.8.1/couchbase-server-community_x86_1.8.1.deb )
+# $2 deb64FileUrl ( for example : http://packages.couchbase.com/releases/1.8.1/couchbase-server-community_x86_64_1.8.1.deb )
+
+deb32FileUrl="$1"
+deb64FileUrl="$2"
+
+
+# args:
+# $1 the error code of the last command (should be explicitly passed)
+# $2 the message to print in case of an error
+# 
+# an error message is printed and the script exists with the provided error code
+function error_exit {
+	echo "$2 : error code: $1"
+	exit ${1}
+}
+
+function stopCouchbaseProcess {
+	sudo /etc/init.d/couchbase-server stop 2>&1 > /dev/null
+	status=$?
+	echo "Couchbase service stopped with status $status"
+}
+
+function killCouchbaseProcess {
+	ps -ef | grep -i "couchbase" | grep -viE "grep|gsc|gsa|gigaspaces"
+	if [ $? -eq 0 ] ; then 
+		ps -ef | grep -i "couchbase" | grep -viE "grep|gsc|gsa|gigaspaces|${0}" | awk '{print $2}' | xargs sudo kill -9
+	fi  
+}
+
+export PATH=$PATH:/usr/sbin:/sbin:/opt/couchbase/bin || error_exit $? "Failed on: export PATH=$PATH:/usr/sbin:/sbin:/opt/couchbase/bin"
+
+echo "Installing Couchbase on one of the following : Ubuntu, Debian, Mint ..."
+
+echo "Killing previous couchbase installation if exists ..."
+killCouchbaseProcess
+ 
+echo "Removing previous couchbase installation if exists..."
+#sudo deb uninstall bla bla || error_exit $? "Failed on: sudo deb uninstall ..."
+
+echo "Removing potential leftovers after uninstall..."
+sudo rm -rf /opt/couchbase || error_exit $? "Failed on: sudo rm -rf /opt/couchbase"
+
+currLocation=`pwd`
+
+
+ARCH=`uname -m`
+echo "Machine Architecture -- ${ARCH}"
+if [ "$ARCH" = "x86_64" ]; then
+	debFile=$deb64FileUrl
+else 
+	debFile=$deb32FileUrl
+fi
+
+rm -f *.deb
+echo "wgetting ${debFile} ..."
+wget $debFile
+echo "sudo dpkg -i ${debFile} ..."
+ls $currLocation/*.deb | xargs sudo dpkg -i
+
+echo "Stopping couchbase in order to configure the service..."
+stopCouchbaseProcess
+killCouchbaseProcess
+
+export publicHostName="`wget -q -O - http://169.254.169.254/latest/meta-data/public-hostname`"
+echo "Updating the /opt/couchbase/bin/couchbase-server file with public ip address of ${publicHostName}"
+
+#Delete the files with old IP Addresses
+sudo rm -rf /opt/couchbase/var/lib/couchbase/data/*
+sudo rm -rf /opt/couchbase/var/lib/couchbase/mnesia/*
+sudo rm -rf /opt/couchbase/var/lib/couchbase/config/config.dat
+
+currLocation=`pwd`
+
+sed -i "s/_PUBLIC_HOSTNAME_/${publicHostName}/g" ${currLocation}/config/couchbase-server
+
+sudo cp ${currLocation}/config/couchbase-server /opt/couchbase/bin/couchbase-server
+ 
+echo "End of $0" 
