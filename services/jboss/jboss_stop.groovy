@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2012 GigaSpaces Technologies Ltd. All rights reserved
+* Copyright (c) 2011 GigaSpaces Technologies Ltd. All rights reserved
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -24,12 +24,11 @@ def currJmxPort = jbossConfig.jmxPort + portIncrement
 
 
 
-script = "${jbossConfig.home}/bin/jboss-admin"
+script = "${jbossConfig.home}/bin/jboss-cli"
 new AntBuilder().sequential {
 	exec(executable:"${script}.sh", osfamily:"unix"){
-		arg value:"---controller=${currentIP}:${currJmxPort}"
 		arg value:"--connect"
-		arg value:"--command=:shutdown"
+		arg value:"command=:shutdown"
 	}
 	exec(executable:"${script}.bat", osfamily:"windows"){
 		arg value:"---controller=${currentIP}:${currJmxPort}"
