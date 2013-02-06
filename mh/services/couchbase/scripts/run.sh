@@ -13,10 +13,6 @@
 # ${10} cluster replica count
 
 clusterHost="$1"
-
-#export clusterHost="`wget -q -O - http://169.254.169.254/latest/meta-data/public-hostname`"
-#echo "Using public ip address - ${clusterHost}"
-
 clusterPort="$2"
 clusterAdmin="$3"
 clusterPassword="$4"
@@ -27,13 +23,12 @@ clusterBucketType="$8"
 clusterBucketName="$9"
 clusterReplicatCount=${10}
 
-#clusterBucketName="CloudifyCouchbase${instanceID}"
 
 # args:
 # $1 the error code of the last command (should be explicitly passed)
 # $2 the message to print in case of an error
 # 
-# an error message is printed and the script exists with the provided error code
+# an error message is printed and the script exits with the provided error code
 function error_exit {
 	echo "$2 : error code: $1"
 	exit ${1}
@@ -42,12 +37,18 @@ function error_exit {
 function performPostStart {
 
 	echo "In performPostStart ... "
-	while ! $1 server-info -c $clusterHost:8091 -u Administrator -p password
+	counter=`ps -ef |grep -i "couchbase" | grep -viE "grep|gsc|gsa|gigaspaces" | wc -l`
+
+	requiredProcesses=6
+	while [ $counter -lt $requiredProcesses ]
 	do
-	  echo "Cannot connect to couchbase on port 8091, sleeping ..."
+	  echo "Available Couchbase processes $counter / $requiredProcesses ..."
 	  sleep 5s
+	  counter=`ps -ef |grep -i "couchbase" | grep -viE "grep|gsc|gsa|gigaspaces" | wc -l`
 	done
 
+	# When using public ip. Seems to have to wait a little longer
+	sleep 20s
 	echo "Couchbase is now ready for action"
 
 	$1 cluster-init -c $clusterHost:8091 --cluster-init-username=$clusterAdmin --cluster-init-password=$clusterPassword --cluster-init-port=8091 --cluster-init-ramsize=$clusterRamSize -d	

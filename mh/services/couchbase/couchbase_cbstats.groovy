@@ -16,14 +16,13 @@
 import org.cloudifysource.dsl.context.ServiceContextFactory
 
 
-/* 
-	This file retrieves metrics via the cbstats command line tool.
-*/
+		/* 
+			This file retrieves metrics via the cbstats command line tool.
+		*/
 
 println "couchbase_cbstats.groovy: Starting ..."
 
 context = ServiceContextFactory.getServiceContext()
-config = new ConfigSlurper().parse(new File("couchbase-service.properties").toURL())
 
 def instanceID = context.instanceId
 if ( instanceID != 1 ) {
@@ -34,8 +33,8 @@ def scriptsFolder = context.attributes.thisInstance["scriptsFolder"]
 
 def addServerScript="${scriptsFolder}/cbstats.sh"
 def firstInstancePort = context.attributes.thisInstance["currentPort"]
-//def clusterBucketName = "CloudifyCouchbase"
-def clusterBucketName = config.clusterBucketName
+def clusterBucketName = "CloudifyCouchbase${instanceID}"
+
 
 builder = new AntBuilder()
 builder.sequential {	

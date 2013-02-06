@@ -6,9 +6,6 @@
 # $3 bucket Name 
 
 clusterHost="$1"
-#export clusterHost="`wget -q -O - http://169.254.169.254/latest/meta-data/public-hostname`"
-#echo "Using public ip address - ${clusterHost}"
-
 clusterPort="$2"
 bucketName="$3"
 
@@ -16,7 +13,7 @@ bucketName="$3"
 # $1 the error code of the last command (should be explicitly passed)
 # $2 the message to print in case of an error
 # 
-# an error message is printed and the script exists with the provided error code
+# an error message is printed and the script exits with the provided error code
 function error_exit {
 	echo "$2 : error code: $1"
 	exit ${1}

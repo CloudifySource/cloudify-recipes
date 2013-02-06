@@ -19,7 +19,7 @@ service {
 	icon "couchbase.jpg"
 	type "NOSQL_DB"
 	elastic true
-	numInstances 1
+	numInstances 2
 	minAllowedInstances 1
 	maxAllowedInstances 4
 
@@ -54,7 +54,7 @@ service {
 			def currInstanceID = context.instanceId						
 			def scriptsFolder = context.attributes.thisInstance["scriptsFolder"]
 			def cbstats="${scriptsFolder}/cbstats.sh"			
-			def clusterBucketName = context.attributes.thisInstance["clusterBucketName"]			
+			def clusterBucketName = "CloudifyCouchbase${currInstanceID}"			
 
 			try { 						
 				def metrics=[:]
@@ -75,8 +75,7 @@ service {
 				]
 			}					
 		}
-
-		preInstall "couchbase_preinstall.groovy"
+				
 		install "couchbase_install.groovy"
 						
 		start "couchbase_start.groovy"		
@@ -108,20 +107,23 @@ service {
 		
 		
 		/* 
-			This custom command enables users rebalance the Couchbase cluster
+			This custom command enables users to rebalance the Couchbase cluster
 			Usage :  invoke couchbase rebalance 
 		*/
 	
-		"rebalance" : "couchbase_rebalance.groovy" , 		
-		
+		"rebalance" : "couchbase_rebalance.groovy" , 
+
 		/* 
-			This custom command enables users to enable XDCR with another cluster instance
-			Usage :  invoke couchbase xdcr localBucketName remoteClusterRefName remoteClusterNode1 remoteClusterPort remoteClusterUser remoteClusterPassword remoteBucketName replicationType
-			
-			Example: invoke couchbase xdcr appBucket apac-cluster 10.10.10.10 8091 admin mypassword appBucket continuous
-		*/
-	
-		"xdcr" : "couchbase_xdcr.groovy" , 		
+			This custom command enables users to load data into the Couchbase cluster
+			Usage :  invoke couchbase loadData path_to_zipFile 
+			Examples 
+		      1. If file1.zip is located in http://www.myZips.com/file1.zip , use the following command :
+					invoke couchbase loadData http://www.myZips.com/file1.zip 
+			  2. If file1.zip is located in /tmp/file1.zip (on the remote machine), use the following command :			  
+			        invoke couchbase loadData /tmp/file1.zip
+		*/	
+		"loadData" : "couchbase_loadData.groovy"
+		
 	])		
 	
 	network {
