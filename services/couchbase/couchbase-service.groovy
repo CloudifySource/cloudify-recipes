@@ -19,7 +19,7 @@ service {
 	icon "couchbase.jpg"
 	type "NOSQL_DB"
 	elastic true
-	numInstances 2
+	numInstances 1
 	minAllowedInstances 1
 	maxAllowedInstances 4
 

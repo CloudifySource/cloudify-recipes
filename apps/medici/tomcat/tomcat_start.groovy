@@ -26,10 +26,29 @@ else {
     dbServiceHost = dbInstances[0].hostAddress
 	println "tomcat_start.groovy: ${config.dbServiceName} host is ${dbServiceHost}"
 	def dbServiceInstances = serviceContext.attributes[config.dbServiceName].instances
+	
 	dbServicePort = dbServiceInstances[1].port
 	println "tomcat_start.groovy: ${config.dbServiceName} port is ${dbServicePort}"
 }
 
+if ( !(config.esServiceName) ||  "${config.esServiceName}"=="NO_ES_REQUIRED") {
+	println "Using dummy es host(DUMMY_HOST) and port(0)"
+	dbServiceHost="DUMMY_HOST"
+	dbServicePort="0"
+} 
+else {
+	println "tomcat_start.groovy: waiting for ${config.esServiceName}..."
+	def esService = serviceContext.waitForService(config.esServiceName, 20, TimeUnit.SECONDS) 
+	def esInstances = esService.waitForInstances(esService.numberOfPlannedInstances, 60, TimeUnit.SECONDS) 
+
+	esServiceHost = esInstances[0].hostAddress
+	println "tomcat_start.groovy: ${config.esServiceName} host is ${esServiceHost}"
+
+	def esServiceInstances = serviceContext.attributes[config.esServiceName].instances
+	
+	esServicePort = esServiceInstances[1].node2NodePort
+	println "tomcat_start.groovy: ${config.esServiceName} port is ${esServicePort}"
+}
 
 println "tomcat_start.groovy executing ${script}"
 
@@ -48,7 +67,11 @@ new AntBuilder().sequential {
         env(key:"CATALINA_TMPDIR", value: "${home}/temp")
 		env(key:"CATALINA_OPTS", value:"-Dcom.sun.management.jmxremote.port=${currJmxPort} -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false")
         env(key:"${config.dbHostVarName}", value: "${dbServiceHost}")
-        env(key:"${config.dbPortVarName}", value: "${dbServicePort}")		
+        env(key:"${config.dbPortVarName}", value: "${dbServicePort}")
+        env(key:"${config.dbBucketVarName}", value: "${config.dbBucketName}")
+        env(key:"${config.esHostVarName}", value: "${esServiceHost}")
+        env(key:"${config.esPortVarName}", value: "${esServicePort}")
+        env(key:"${config.esClusterVarName}", value: "${config.esClusterName}")
 		arg(value:"run")
 	}
 	exec(executable:"${script}.bat", osfamily:"windows") { 
@@ -57,7 +80,11 @@ new AntBuilder().sequential {
         env(key:"CATALINA_TMPDIR", value: "${home}/temp")
 		env(key:"CATALINA_OPTS", value:"-Dcom.sun.management.jmxremote.port=${currJmxPort} -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false")
         env(key:"${config.dbHostVarName}", value: "${dbServiceHost}")
-        env(key:"${config.dbPortVarName}", value: "${dbServicePort}")	
+        env(key:"${config.dbPortVarName}", value: "${dbServicePort}")
+        env(key:"${config.dbBucketVarName}", value: "${config.dbBucketName}")
+        env(key:"${config.esHostVarName}", value: "${esServiceHost}")
+        env(key:"${config.esPortVarName}", value: "${esServicePort}")
+        env(key:"${config.esClusterVarName}", value: "${config.esClusterName}")
 		arg(value:"run")
 	}
 }

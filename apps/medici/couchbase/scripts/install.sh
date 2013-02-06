@@ -22,6 +22,7 @@ function stopCouchbaseProcess {
 	status=$?
 	echo "Couchbase service stopped with status $status"
 }
+
 function killCouchbaseProcess {
 	ps -ef | grep -i "couchbase" | grep -viE "grep|gsc|gsa|gigaspaces|${0}"
 	if [ $? -eq 0 ] ; then 
@@ -63,5 +64,19 @@ ls $currLocation/*.rpm | xargs sudo rpm --install
 echo "Stopping couchbase in order to configure the service..."
 stopCouchbaseProcess
 killCouchbaseProcess
+
+export publicHostName="`wget -q -O - http://169.254.169.254/latest/meta-data/public-hostname`"
+echo "Updating the /opt/couchbase/bin/couchbase-server file with public ip address of ${publicHostName}"
+
+#Delete the files with old IP Addresses
+sudo rm -rf /opt/couchbase/var/lib/couchbase/data/*
+sudo rm -rf /opt/couchbase/var/lib/couchbase/mnesia/*
+sudo rm -rf /opt/couchbase/var/lib/couchbase/config/config.dat
+
+currLocation=`pwd`
+
+sed -i "s/_PUBLIC_HOSTNAME_/${publicHostName}/g" ${currLocation}/config/couchbase-server
+
+sudo cp ${currLocation}/config/couchbase-server /opt/couchbase/bin/couchbase-server
 
 echo "End of $0" 
