@@ -1,6 +1,6 @@
 service {
 	extend "../../services/elasticsearch"
-	numInstances 2
+	numInstances 1
 
 	compute {
 		template "SMALL_LINUX"

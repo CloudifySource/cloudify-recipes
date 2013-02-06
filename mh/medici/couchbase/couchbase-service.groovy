@@ -1,6 +1,6 @@
 service {
 	extend "../../services/couchbase"
-	numInstances 3
+	numInstances 1
 
 	compute {
 		template "SMALL_LINUX"
