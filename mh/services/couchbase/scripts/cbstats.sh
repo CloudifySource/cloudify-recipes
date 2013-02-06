@@ -6,8 +6,8 @@
 # $3 bucket Name 
 
 clusterHost="$1"
-export clusterHost="`wget -q -O - http://169.254.169.254/latest/meta-data/public-hostname`"
-echo "Using public ip address - ${clusterHost}"
+#export clusterHost="`wget -q -O - http://169.254.169.254/latest/meta-data/public-hostname`"
+#echo "Using public ip address - ${clusterHost}"
 
 clusterPort="$2"
 bucketName="$3"

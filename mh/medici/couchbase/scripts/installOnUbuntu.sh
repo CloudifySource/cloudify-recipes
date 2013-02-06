@@ -12,7 +12,7 @@ deb64FileUrl="$2"
 # $1 the error code of the last command (should be explicitly passed)
 # $2 the message to print in case of an error
 # 
-# an error message is printed and the script exists with the provided error code
+# an error message is printed and the script exits with the provided error code
 function error_exit {
 	echo "$2 : error code: $1"
 	exit ${1}
@@ -29,10 +29,10 @@ export PATH=$PATH:/usr/sbin:/sbin:/opt/couchbase/bin || error_exit $? "Failed on
 
 echo "Installing Couchbase on one of the following : Ubuntu, Debian, Mint ..."
 
-echo "Killing previous couchbase installation if exists ..."
+echo "Killing previous couchbase installation if exits ..."
 killCouchbaseProcess
  
-echo "Removing previous couchbase installation if exists..."
+echo "Removing previous couchbase installation if exits..."
 #sudo deb uninstall bla bla || error_exit $? "Failed on: sudo deb uninstall ..."
 
 echo "Removing potential leftovers after uninstall..."
@@ -58,13 +58,5 @@ ls $currLocation/*.deb | xargs sudo dpkg -i
 echo "Stopping couchbase in order to configure the service..."
 killCouchbaseProcess
 
-echo "Updating the /opt/couchbase/bin/couchbase-server file with public ip address"
-export publicHostName="`wget -q -O - http://169.254.169.254/latest/meta-data/public-hostname`"
-
-currLocation=`pwd`
-
-sed -i "s/_PUBLIC_HOSTNAME_/${publicHostName}/g" ${currLocation}/config/couchbase-server
-
-sudo cp ${currLocation}/config/couchbase-server /opt/couchbase/bin/couchbase-server
  
 echo "End of $0" 
