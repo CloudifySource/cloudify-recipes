@@ -35,7 +35,7 @@ This folder contains a sample application recipe for MySQL master-slave.
 
 This recipe contains (inherits) the **[mysql](../../services/mysql/README.md)** recipe.
 
-The first the service instance becomes the master (automatically) and the other instances (two instances in our case), are the slaves.
+The first service instance becomes the master (automatically) and the other instances (two instances in our case), are the slaves.
 
 Usage example : 
  Invoke the following custom commands:
