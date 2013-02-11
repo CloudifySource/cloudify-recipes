@@ -19,7 +19,7 @@ service {
 	numInstances 1
 	
 	compute {
-		template "DATA"
+		template "SMALL_LINUX"
 	}
 		
 	lifecycle {

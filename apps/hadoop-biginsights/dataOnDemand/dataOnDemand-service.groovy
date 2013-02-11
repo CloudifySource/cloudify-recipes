@@ -31,7 +31,7 @@ service {
 
 	compute {
 
-		template "DATA"
+		template "SMALL_LINUX"
 
 	}
 
