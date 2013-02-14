@@ -21,7 +21,9 @@ service {
 			return myPids
         }					
 	}
-		
+	customCommands ([                                                         
+              "installationDone" : "data_installationDone.groovy"                
+         ])    
     network {
         port = dataNodePort
         protocolDescription ="DataNode"

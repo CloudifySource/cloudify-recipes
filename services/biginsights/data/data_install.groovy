@@ -10,6 +10,7 @@ new AntBuilder().sequential {
 		arg("value":config.userPassword)	
 		arg("value":config.BI_DIRECTORY_PREFIX)	
 	}
+       	touch (file:serviceContext.serviceDirectory + "/installationRunning") 
 }
 println "data_install.groovy: Ready for data node installation..."
 

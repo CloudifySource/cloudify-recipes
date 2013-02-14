@@ -3,14 +3,14 @@ application {
 	
 	service {
 		name = "master"		
-		dependsOn = ["data","secondaryNameNode"]
+		dependsOn = ["data"/*,"secondaryNameNode"*/]
 	}		
 	service {
 		name = "data"
 	}
-	service {
+	/*service {
 		name = "secondaryNameNode"
-	}
+	}*/
 	service {
 		name = "dataOnDemand"
 		dependsOn = ["master"]

@@ -2,9 +2,10 @@
 
 if [[ $EUID -ne 0 ]]; then
 	echo "Not root, need sudo"		
-	if [ ! -d ~/.ssh ]; then
-		sudo mkdir "~/.ssh"
+	if [ ! -d ~root/.ssh ]; then
+		sudo mkdir ~root/.ssh
 	fi		
+	sudo sed -i 's/^PermitRootLogin.*no/PermitRootLogin yes/g' /etc/ssh/sshd_config
 	sudo cp ./id_rsa ~root/.ssh/id_rsa
 	sudo sudo chmod 600 ~root/.ssh/id_rsa
 	echo "StrictHostKeyChecking no" | sudo tee ~root/.ssh/config
@@ -20,6 +21,7 @@ else
 	if [ ! -d ~/.ssh ]; then
 		mkdir ~/.ssh
 	fi	
+	sed -i 's/^PermitRootLogin.*no/PermitRootLogin yes/g' /etc/ssh/sshd_config
 	cp ./id_rsa ~root/.ssh/id_rsa
 	chmod 600 ~root/.ssh/id_rsa
 	echo "StrictHostKeyChecking no" > ~root/.ssh/config

@@ -15,7 +15,7 @@ service {
 
 		install "master_install.groovy"
 		preStart "master_start.groovy" 		
-		postStart ******Use this to add additional BigInsights services to the master node****
+/*		postStart ******Use this to add additional BigInsights services to the master node****
 		{
 			println "dataOnDemand-service.groovy: master Post-start ..."
 			def instanceID = context.instanceId	
@@ -24,7 +24,7 @@ service {
 	        masterService.invoke("addNode", privateIP as String, "hadoop", instanceID as String)
 			masterService.invoke("addNode", privateIP as String, "hbase", instanceID as String)			
 			println "master-service.groovy: master Post-start ended"						
-		}
+		}*/
 		preStop "master_stop.groovy"
 		startDetectionTimeoutSecs 2400	
 		startDetection {
@@ -70,12 +70,11 @@ service {
 		}
 		details {
             def fulladdress2= context.getPublicAddress()
-        	def privateIP = fulladdress2.split("/")[0]
-			def currPublicIP
-			def bigInsightsURL	= "http://${currPublicIP}:8080"///BigInsights/console/NodeAdministration.jsp"
+        	def privateIP2 = fulladdress2.split("/")[0]
+			def bigInsightsURL	= "http://${privateIP2}:8080"///BigInsights/console/NodeAdministration.jsp"
 
 				return [
-					"BigInsights URL":"<a href=\"${bigInsightsURL}\" target=\"_blank\"><img height=70 width=70 src='https://www.ibm.com/developerworks/mydeveloperworks/wikis/form/anonymous/api/library/77eb08fb-0fa9-4195-bad9-a905a1b2d461/document/8051ab37-10c0-41ca-92ae-888ad7cda61e/attachment/8142cf29-67d2-4035-8f28-6c8d5cfd6745/media/biginsights logo.png'></a>"
+					"HADOOP_HOME":"${HADOOP_HOME}","BigInsights URL":"<a href=\"${bigInsightsURL}\" target=\"_blank\"><img height=70 width=70 src='https://www.ibm.com/developerworks/mydeveloperworks/wikis/form/anonymous/api/library/77eb08fb-0fa9-4195-bad9-a905a1b2d461/document/8051ab37-10c0-41ca-92ae-888ad7cda61e/attachment/8142cf29-67d2-4035-8f28-6c8d5cfd6745/media/biginsights logo.png'></a>"
 				]
 		}	        		
 	}

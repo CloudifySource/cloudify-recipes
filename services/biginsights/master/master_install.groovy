@@ -5,7 +5,6 @@ import java.util.concurrent.TimeUnit
 def config = new ConfigSlurper().parse(new File("master-service.properties").toURL())
 def serviceContext = ServiceContextFactory.getServiceContext()
 def instanceID = serviceContext.getInstanceId()
-def env = System.getenv()
 
 new AntBuilder().sequential {
 	chmod(file:"${serviceContext.serviceDirectory}/download_bi.sh", perm:"ugo+rx")
