@@ -28,6 +28,7 @@ import javax.annotation.Resource;
 import org.openspaces.core.GigaSpace;
 import org.openspaces.core.SpaceInterruptedException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import com.gigaspaces.document.DocumentProperties;
 import com.gigaspaces.document.SpaceDocument;
