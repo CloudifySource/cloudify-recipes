@@ -21,13 +21,13 @@ service {
 	type "APP_SERVER"
 	icon "storm.png"
 	elastic true
-	numInstances 4 
+	numInstances 2 
 	minAllowedInstances 1
 	maxAllowedInstances 100
 
 
     compute {
-        template "SMALL_LINUX"
+        template "MEDIUM_LINUX"
     }
 
 	lifecycle{
