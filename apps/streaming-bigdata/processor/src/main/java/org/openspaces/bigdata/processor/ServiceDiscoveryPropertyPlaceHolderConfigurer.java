@@ -66,8 +66,10 @@ public class ServiceDiscoveryPropertyPlaceHolderConfigurer extends PropertyPlace
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		final FullServiceName fullName = ServiceUtils
-				.getFullServiceName(clusterInfo.getName());
+		FullServiceName fullName = new FullServiceName("twitter-wordcount","twitter-wordcount");
+		if (clusterInfo!=null)
+			fullName = ServiceUtils.getFullServiceName(clusterInfo.getName());
+		
 		final String application = fullName.getApplicationName();
 		
 		final ProcessingUnitInstance[] instances = waitForInstances(new FullServiceName(application, service), minimumNumberOfInstances, timeoutSeconds, TimeUnit.SECONDS);

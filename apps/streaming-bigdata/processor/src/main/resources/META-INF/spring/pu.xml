@@ -41,14 +41,14 @@
     <os-core:giga-space id="clusteredGigaSpace" space="space" tx-manager="transactionManager" clustered="true"/>
 
 
-	<!-- fileExternalPersistence is meant for testing purposes, and archives to a file in the local file system -->
+	<!-- fileExternalPersistence is meant for testing purposes, and archives to a file in the local file system 	-->
+	
 	<bean id="fileArchiveHandler" class="org.openspaces.bigdata.processor.FileArchiveOperationHandler">
 		<constructor-arg index="0" value="tweetRepo.txt"/>
 	</bean>
-
-    <!-- Inject the comma delimited list of cassandra host ip addresses to "${cassandra.hosts}" -->
+	
+    <!-- Inject the comma delimited list of cassandra host ip addresses to "${cassandra.hosts}" 
     
-<!--     
     <bean id="cassadra-discovery" class="org.openspaces.bigdata.processor.ServiceDiscoveryPropertyPlaceHolderConfigurer">
     	<property name="service"        value="cassandra"/>
 	    <property name="outputProperty" value="cassandra.hosts"/>
@@ -56,24 +56,23 @@
 
 	<os-archive:cassandra-archive-handler id="cassandraArchiveHandler" 
              giga-space="gigaSpace"
-             hosts="${cassandra.hosts}"
-             port="${cassandra.port}"  
-             keyspace="${cassandra.keyspace}"
-             write-consistency="${cassandra.write-consistency}"
-  />
--->		
+             hosts="localhost"
+             port="9160"  
+             keyspace="TWITTER"
+             write-consistency="QUORUM"/>
+
+	-->
+
 	<os-archive:archive-container 
 		id="archiveContainer" 
 		giga-space="gigaSpace" 
 		archive-handler="fileArchiveHandler"
 		concurrent-consumers="${archiver.threads}" 
 		max-concurrent-consumers="${archiver.threads}"
-		batch-size="${archiver.batch.size}" >
-		
+		batch-size="100" >
     	<os-archive:tx-support tx-manager="transactionManager"/>
     	<os-core:template ref="archiverFilter" />
-    	<os-archive:exception-handler ref="archiverFilter"/>
-    	
+    	<os-archive:exception-handler ref="archiverFilter"/>    	
     </os-archive:archive-container>
     
 	<bean id="archiverFilter" class="org.openspaces.bigdata.processor.TweetArchiveFilter" />

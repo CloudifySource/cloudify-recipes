@@ -67,7 +67,6 @@ public class TwitterHomeTimelineFeederTask implements Runnable {
     		log.info("Getting latest tweets from public timeline and feeding them into processing grid");
     		// Return all the tweets from the Twitter API
     		//userTimeline = twitterTemplate.timelineOperations().getUserTimeline("BriefingcomSMU");    		
-    		//userTimeline = twitterTemplate.timelineOperations().getUserTimeline("cnn");    		
     		
     		 SearchResults result = twitterTemplate.searchOperations().search("USA");
     		 userTimeline = result.getTweets();
