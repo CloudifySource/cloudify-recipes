@@ -61,6 +61,21 @@ println "mysql_startDetection.groovy: jdbcPort is ${config.jdbcPort} ..."
 if ( ServiceUtils.isPortOccupied(config.jdbcPort) ) { 				
 	println "mysql_startDetection: port ${config.jdbcPort} is now occupied ..."	
 	if ( config.startDetectionQuery.length() == 0  ) {
+		if ( config.masterSlaveMode ) {		
+			def iAmMaster = context.attributes.thisInstance["isMaster"]
+			println "mysql_startDetection: iAmMaster is ${iAmMaster}..."
+			if ( iAmMaster ) {											
+				if (checkMasterStatus(context,config)) {
+					println "mysql_startDetection: Master is ready"
+					context.attributes.thisService["masterIsReady"]=true
+					System.exit(0)
+				}
+				else {
+					println "mysql_startDetection: Master is NOT ready yet..."
+					System.exit(-1)							
+				}				
+			}
+		}
 		println "mysql_startDetection: startDetectionQuery is empty - service is up "
 		System.exit(0)
 	}
