@@ -250,7 +250,8 @@ class RHELBootstrap extends ChefBootstrap {
         sudo("yum install -y ${pkgs.join(" ")}")
     }
     def gemInstall() {
-        sudo("gem update --system")
+	// workaround - at least on CentOS6.3 gem updates to v2.0.0 here, breaking rubygems dependencies
+        sudo("gem update --system 1.8.25")
         super.gemInstall()
     }
 }
