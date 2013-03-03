@@ -250,7 +250,9 @@ class RHELBootstrap extends ChefBootstrap {
         sudo("yum install -y ${pkgs.join(" ")}")
     }
     def gemInstall() {
-        sudo("gem update --system")
+        //on RHEL based systems, we want to force a specific RubyGems version
+        //to avoid breaking rubygems dependencies
+        sudo("gem update --system ${chefConfig.rubyGemsVersion}")
         super.gemInstall()
     }
 }
