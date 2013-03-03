@@ -14,49 +14,60 @@
 * limitations under the License.
 *******************************************************************************/
 
+
 service {
 
-	name "zookeeper"
-	type "DATABASE"
-	icon "zookeeper-small.jpg"
-	numInstances 1 
-	maxAllowedInstances 3       //currently only 1 instance supported
+	name "xap9.1-lite"
+	type "APP_SERVER"
+	icon "xap.png"
+	elastic false
+	numInstances 1
 	minAllowedInstances 1
+	maxAllowedInstances 1
+
+    compute {
+        template "MEDIUM_LINUX"
+    }
 
 	lifecycle{
-		install "zookeeper_install.groovy"
-		start "zookeeper_start.groovy"
-		stop "zookeeper_stop.groovy"
-		locator {
-			ServiceUtils.ProcessUtils.getPidsWithMainClass("org.apache.zookeeper.server.quorum.QuorumPeerMain")
-		}
-		monitors{
-			def dir=context.serviceDirectory
-			def metrics=[]
-			if(ServiceUtils.isLinuxOrUnix()){
-				def process="${context.serviceDirectory}/stat.sh ${clientPort}".execute()
-				process.in.eachLine{line-> 
-					metrics.add line
-				}
-				[       "Packets Received":metrics[0],
-					"Packets Sent":metrics[1],
-					"Outstanding Requests":metrics[2]
-				]
-			}
-		}
 
+
+		init "xap_install.groovy"
+		start "xap_start.groovy"
+		stop "xap_stop.groovy"
+
+/* good for cloudify 2.3 */
+/*		details {
+			def currPublicIP
+			
+			if (  context.isLocalCloud()  ) {
+				currPublicIP = InetAddress.localHost.hostAddress
+			}
+			else {
+				currPublicIP =context.getPublicAddress()
+			}
+	
+			def ctxPath=("default" == context.applicationName)?"":"${context.applicationName}"			
+			def applicationURL = "http://${currPublicIP}:${currHttpPort}/${ctxPath}"
+		
+				return [
+					"Application URL":"<a href=\"${applicationURL}\" target=\"_blank\">${applicationURL}</a>"
+				]
+		}	*/
 	}
 	plugins([
 		plugin {
 			name "portLiveness"
 			className "org.cloudifysource.usm.liveness.PortLivenessDetector"
 			config ([
-						"Port" : [clientPort],
+						"Port" : [8999],
 						"TimeoutInSeconds" : 60,
 						"Host" : "127.0.0.1"
 					])
 		}
+
 	])
+
 
 	userInterface {
 		metricGroups = ([
@@ -65,9 +76,11 @@ service {
 				name "server"
 
 				metrics([
-					"Outstanding Requests",
-					"Packets Received",
-					"Packets Sent",
+				"Cluster Uptime Secs",
+				"Topology Count",
+				"Executor Count",
+				"Task Count",
+				"Worker Count"
 				])
 			},
 		]
@@ -75,28 +88,46 @@ service {
 
 		widgetGroups = ([
 			widgetGroup {
-				name "Outstanding Requests"
+				name "Cluster Uptime Secs"
 				widgets ([
 					barLineChart{
-						metric "OutStanding Requests"
+						metric "Cluster Uptime Secs"
 						axisYUnit Unit.REGULAR
 					}
 				])
 			},
 			widgetGroup {
-				name "Packets Received"
+				name "Topology Count"
 				widgets ([
 					barLineChart{
-						metric "Packets Received"
+						metric "Topology Count"
 						axisYUnit Unit.REGULAR
 					}
 				])
 			},
 			widgetGroup {
-				name "Packets Sent"
+				name "Executor Count"
 				widgets ([
 					barLineChart{
-						metric "Packets Sent"
+						metric "Executor Count"
+						axisYUnit Unit.REGULAR
+					}
+				])
+			},
+			widgetGroup {
+				name "Task Count"
+				widgets ([
+					barLineChart{
+						metric "Task Count"
+						axisYUnit Unit.REGULAR
+					}
+				])
+			},
+			widgetGroup {
+				name "Worker Count"
+				widgets ([
+					barLineChart{
+						metric "Worker Count"
 						axisYUnit Unit.REGULAR
 					}
 				])

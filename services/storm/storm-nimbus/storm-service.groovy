@@ -13,6 +13,7 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 *******************************************************************************/
+import java.util.concurrent.TimeUnit;
 
 
 service {
@@ -35,6 +36,7 @@ service {
 		init "storm_install.groovy"
 		start "storm_start.groovy"
 		preStop "storm_stop.groovy"
+
 	}
 	plugins([
 		plugin {
@@ -45,7 +47,7 @@ service {
 						"TimeoutInSeconds" : 60,
 						"Host" : "127.0.0.1"
 					])
-		}/*,
+		}, 
 		plugin {
 			name "storm-nimbus"
 			className "org.cloudifysource.storm.plugins.StormNimbusPlugin"
@@ -56,12 +58,55 @@ service {
 				"Task Count":"task_count",
 				"Worker Count":"worker_count"
 			])
-		}*/
+		} 
 
 	])
 
 	customCommands ([
-		"wordcount-start": "commands/wordcount-start.sh"
+
+		"wordcount-start": "commands/wordcount-start.sh",
+
+		/*
+			Deploys a topology that utilizes XAP for streaming and/or
+ 			persistence.  Assumes a xapstream instance is part of the application */ 
+
+		"deploy-xapstream" : {topoUrl, className, topoName, Object[] args -> 
+			context.attributes.thisService["topoUrl"] = "${topoUrl}"
+			context.attributes.thisService["topoName"] = "${topoName}"
+			context.attributes.thisService["className"] = "${className}"
+			argline=""
+			for(arg in args){
+				argline+=arg.toString()+" "
+			}
+				
+			context.attributes.thisService["args"] = "${argline}"
+
+			println "storm-service.groovy(deploy custom command): topoUrl is ${topoUrl}..."
+			println "storm-service.groovy(deploy customCommand): invoking deploy custom command ..."
+			nimbusService = context.waitForService("storm-nimbus", 60, TimeUnit.SECONDS)
+			nimbusInstances = nimbusService.waitForInstances(1,60, TimeUnit.SECONDS)				
+			xapService = context.waitForService("xapstream", 60, TimeUnit.SECONDS)
+			xapInstances = xapService.waitForInstances(1,60,TimeUnit.SECONDS)
+			context.attributes.thisService["xapHost"]=xapInstances[0].getHostAddress()
+
+			instanceID = context.getInstanceId()			                       
+			if ( instanceID == nimbusInstances[0].instanceID ) {
+				println "storm-service.groovy(deploy customCommand):  instanceID is ${instanceID} now invoking deploy-xapstream-file..."
+				nimbusInstances[0].invoke("deploy-xapstream-file")
+			}
+						
+			println "storm-service.groovy(deploy-xapstream customCommand): End"
+			return true
+		} ,
+		 
+
+		"deploy-xapstream-file":"commands/deploy-xapstream.groovy",
+
+
+		"kill":{ name ->
+			"${context.serviceDirectory}/${script} kill ${name}".execute()
+			return true
+		}
 	])
 
 

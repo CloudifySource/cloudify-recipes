@@ -17,7 +17,9 @@ Tested on:
 * <strong>EC2</strong>
  *<strong>Amazon Linux</strong> imageId "us-east-1/ami-76f0061f", hardwareId "m1.small", locationId "us-east-1"
 * <strong>HPCS/Openstack</strong>
- *<strong>Centos 5.6</strong> imageId "20111207", hardwareId "standard.medium", locationId "110"
+ *<strong>Centos 5.6</strong> imageId "20111207", hardwareId "standard.medium", locationId "110"</strong>
+* <strong>Windows 7 64</strong>
+ *<strong>localcloud</strong>
 
 Synopsis:
 --------
@@ -34,4 +36,4 @@ Known limitations:
 * Uses default log directory. No attempt to autoclean it.
 * No details monitor/plugin.
 * Data and transaction logs not compacted.  See: http://zookeeper.apache.org/doc/r3.3.3/zookeeperAdmin.html#Ongoing+Data+Directory+Cleanup
-* No Windows support
+
