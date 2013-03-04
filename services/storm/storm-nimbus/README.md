@@ -28,7 +28,7 @@ The Storm Nimbus is by its nature a single instance (not elastic).
 
 It requires a running Zookeeper cluster to manage state.  Zookeeper is used to store state and communicate with Storm Supervisor nodes.
 
-Storm depends on ZeroMQ 2.1.7 and JZMQ (a java language binding to ZeroMQ).  These are platform specific libraries and are built during the install phase.  Because of this, the recipe uses Yum to install gcc and autoconf, and builds the libraries.  Obviously this creates a dependency on Yum.
+Storm depends on ZeroMQ 2.1.7 and JZMQ (a java language binding to ZeroMQ).  These are platform specific libraries and are built during the install phase.  Because of this, the recipe uses Yum to install gcc and autoconf, and builds the libraries.  Obviously this creates a dependency on Yum. NOTE: It is recommended that a production version of this recipe would simply have prebuilt binary versions of these libraries in a blob store.
 
 Monitored by a custom plugin that uses a Thrift interface for getting cluster info.
 
