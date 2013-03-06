@@ -26,5 +26,7 @@ This folder contains a service recipe for Memcached.
 
 Its default port is 11211, but it can be modified in the memcached-service.properties.
 
- 
+## Known Issues
+
+ * It is only tested on CentOs. It does not support other operating systems like Windows, Ubuntu, and etc.  
  
