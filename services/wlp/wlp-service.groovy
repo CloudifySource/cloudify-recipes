@@ -41,7 +41,7 @@ lifecycle{
 			ServiceUtils.isPortOccupied(wlpPort)							
 		}   
   locator {
-           def myPids = ServiceUtils.ProcessUtils.getPidsWithQuery("State.Name.eq=java,Args.*.eq=EMRestServer")
+           def myPids = ServiceUtils.ProcessUtils.getPidsWithQuery("State.Name.eq=java,Args.*.eq=${serverName}")
            println ":current PIDs: ${myPids}"
            return myPids
         }	
