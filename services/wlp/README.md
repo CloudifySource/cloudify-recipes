@@ -7,7 +7,7 @@
 **Contributors**:    [aharonmoll](https://github.com/aharonmoll)  
 **Homepage**:   [http://www.cloudifysource.org](http://www.cloudifysource.org)  
 **License**:      free  
-**Build**: http://repository.cloudifysource.org/org/cloudifysource/2.3.1-RELEASE/gigaspaces-cloudify-2.3.1-ga-b3720.zip
+**Build**: http://repository.cloudifysource.org/org/cloudifysource/2.3.1-RELEASE/gigaspaces-cloudify-2.3.1-ga-b3720.zip	
 **Linux sudoer permissions**:	Not required  
 **Release Date**: March 11 2013  
 
@@ -28,6 +28,7 @@ The full path from which your application war file should be downloaded, needs t
 
 For example:
 applicationWarUrl = "http://s3.amazonaws.com/aharon_wlp85/ingensg-wa-rest-application-1.0.0-SNAPSHOT.war"
+
 The application uses: Java 7 u9 and connects to a mock running as a pu on XAP 9.1
 
 To add another WAS Liberty service instance please increase by 1 the "numInstances" in wlp-service.groovy file.
