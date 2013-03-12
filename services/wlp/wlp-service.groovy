@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 service {
 	name "wlp"
-	icon "wlp.gif"
+	icon "wlp.png"
 	type "APP_SERVER"
 	
     elastic true
