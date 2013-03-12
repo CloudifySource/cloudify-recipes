@@ -15,7 +15,7 @@
 Tested on:
 --------
 
-* <strong>BAYON</strong>: CentOS 6.2
+* <strong>BYON</strong>: CentOS 6.2
 
 Synopsis
 --------
