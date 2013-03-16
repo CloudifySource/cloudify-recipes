@@ -53,7 +53,7 @@ service {
 		install "play_install.groovy"
 		preStart "play_preStart.groovy" 
 		start "play_start.groovy"
-		startDetectionTimeoutSecs 240
+		startDetectionTimeoutSecs 400
 		startDetection {
 			!ServiceUtils.isPortFree(httpPort)
 		}
