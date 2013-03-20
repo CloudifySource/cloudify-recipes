@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cluster-configuration>
-    <operation>install</operation>
+    <xml-version>2.0</xml-version>
     <vendor>ibm</vendor>
+    <operation>install</operation>
+    <current-version>2.0.0.0</current-version>
     <general>
 		<biginsights-install-directory>opt/ibm/biginsights</biginsights-install-directory>
 		<biginsights-data-log-directory>var/ibm/biginsights</biginsights-data-log-directory>
@@ -53,17 +55,20 @@
             <namenode-port>9000</namenode-port>
             <namenode-http-port>${nameNodePort}</namenode-http-port>
             <name-directory>hadoop/hdfs/name</name-directory>
+		    <jmx-port>${nameNodeJmxPort}</jmx-port>
         </namenode>
         <jobtracker>
             <node>${masterIP}</node>
             <jobtracker-port>9001</jobtracker-port>
             <jobtracker-http-port>50030</jobtracker-http-port>
+            <jmx-port>8006</jmx-port>            
         </jobtracker>
         <secondarynamenode>
-            <node>${masterIP}</node>
+        	<node>${secondaryNameNodeIP}</node>
             <secondarynamenode-http-port>50090</secondarynamenode-http-port>
             <data-directory-2nn>hadoop/hdfs/namesecondary</data-directory-2nn>
         </secondarynamenode>
+
         <datanode>
             <selection-type>All</selection-type>
             <nodes/>
@@ -72,6 +77,7 @@
             <datanode-http-port>50075</datanode-http-port>
             <tasktracker-http-port>50060</tasktracker-http-port>
             <data-directory>hadoop/hdfs/data</data-directory>
+            <datanode-jmx-port>${dataNodeJmxPort}</datanode-jmx-port>
         </datanode>
     </hadoop>
     <Avro>
@@ -106,19 +112,23 @@
         <time-interval>2000</time-interval>
         <init-limit>5</init-limit>
         <sync-limit>2</sync-limit>
+        <jmx-port>2182</jmx-port>
     </Zookeeper>
     <HBase>
         <configure>true</configure>
         <zookeeper-mode>shared</zookeeper-mode>
         <master-nodes>${masterIP}</master-nodes>
         <install-mode>fully</install-mode>
-        <region-nodes>${masterIP}</region-nodes>
+        <region-nodes-install-option>All</region-nodes-install-option>
+        <region-nodes/>
         <root-directory>/hbase</root-directory>
         <log-directory>/var/ibm/biginsights/hbase/logs</log-directory>
         <master-port>60000</master-port>
         <master-ui-port>60010</master-ui-port>
         <regionserver-port>60020</regionserver-port>
         <regionserver-ui-port>60030</regionserver-ui-port>
+        <master-jmx-port>10201</master-jmx-port>
+        <regional-jmx-port>10202</regional-jmx-port>        
     </HBase>
     <Flume>
         <configure>true</configure>
@@ -129,6 +139,16 @@
         <log-directory>/var/ibm/biginsights/flume/logs</log-directory>
     </Flume>
     <node-list>
+    	<%if(secondaryNameNodeIP != masterIP) {%>
+        <node>
+    		<name-or-ip>${secondaryNameNodeIP}</name-or-ip>
+			<password>{xor}</password>
+            <rack/>
+            <hdfs-data-directory>hadoop/hdfs/data</hdfs-data-directory>
+            <gpfs-node-designation/>
+            <gpfs-admin-node/>
+            <gpfs-rawdisk-list/>
+        </node> <%}%>
         <node>
             <name-or-ip>${masterIP}</name-or-ip>
 			<password>{xor}</password>
@@ -149,38 +169,54 @@
 			</node>
         <%}%></node-list>
 <GPFS>
-<install>false</install>
-<cluster>
-<cluster-name>bigpfs</cluster-name>
-<primary-configuration-server/>
-<secondary-configuration-server/>
-</cluster>
-<file-system>
-<default-metadata-replication>1</default-metadata-replication>
-<max-metadata-replication>3</max-metadata-replication>
-<default-data-replication>1</default-data-replication>
-<max-data-replication>3</max-data-replication>
-<block-allocation>hcluster</block-allocation>
-<block-group-factor>128</block-group-factor>
-<write-affinity-depth>1</write-affinity-depth>
-<striping-method>failureGroupRoundRobin</striping-method>
-<failuregroup-maskbits>8</failuregroup-maskbits>
-<estimated-cluster-size>32</estimated-cluster-size>
-<mount-point/>
-<tmp-fileset>tmp</tmp-fileset>
-<log-fileset>log</log-fileset>
-</file-system>
+	<install>false</install>
+	<cluster>
+		<cluster-name>bigpfs</cluster-name>
+		<primary-configuration-server/>
+		<secondary-configuration-server/>
+        <use-privileged-port>false</use-privileged-port>
+        <tsc-tcp-port>null</tsc-tcp-port>
+	</cluster>
+	<file-system>
+	<default-metadata-replication>1</default-metadata-replication>
+	<max-metadata-replication>3</max-metadata-replication>
+	<default-data-replication>1</default-data-replication>
+	<max-data-replication>3</max-data-replication>
+	<block-allocation>hcluster</block-allocation>
+	<block-group-factor>128</block-group-factor>
+	<write-affinity-depth>1</write-affinity-depth>
+	<striping-method>failureGroupRoundRobin</striping-method>
+	<failuregroup-maskbits>8</failuregroup-maskbits>
+	<estimated-cluster-size>32</estimated-cluster-size>
+	<mount-point/>
+	<tmp-fileset>tmp</tmp-fileset>
+	<log-fileset>log</log-fileset>
+	</file-system>
 </GPFS>
 <enterprise>
-<Orchestrator>
-<configure>true</configure>
-<node>${masterIP}</node>
-<port>8888</port>
-</Orchestrator>
+	<Orchestrator>
+		<configure>true</configure>
+		<node>${masterIP}</node>
+		<port>8888</port>
+	</Orchestrator>
+	<GuardiumProxy>
+	<!-- configure specifies whether config GuardiumProxy. -->
+		<configure>false</configure>
+		<proxy-node/>
+		<proxy-port>16015</proxy-port>
+		<collector-host/>
+		<collector-port>16016</collector-port>
+	</GuardiumProxy>
+	<BigSQL>
+		<configure>true</configure>
+		<node>${masterIP}</node>
+		<NIC>0.0.0.0</NIC>
+		<port>7052</port>
+	</BigSQL>	
 </enterprise>
 <TaskController>
-<directory>/var/bi-task-controller-conf</directory>
-<groups>*</groups>
-<hosts>*</hosts>
+	<directory>/var/bi-task-controller-conf</directory>
+	<groups>*</groups>
+	<hosts>*</hosts>
 </TaskController>
 </cluster-configuration>

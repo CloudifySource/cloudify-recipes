@@ -1,18 +1,3 @@
-/*******************************************************************************
-* Copyright (c) 2012 GigaSpaces Technologies Ltd. All rights reserved
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*       http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*******************************************************************************/
 import java.util.concurrent.TimeUnit;
 
 service {
@@ -25,17 +10,13 @@ service {
     elastic true
 	numInstances 1
 	minAllowedInstances 1
-	maxAllowedInstances 3
-
-	
+	maxAllowedInstances 5	
 
 	compute {
 
 		template "SMALL_LINUX"
 
 	}
-
-		
 
 	lifecycle {
 
@@ -47,10 +28,11 @@ service {
 			println "dataOnDemand-service.groovy: dataOnDemand Post-start ..."
 			def masterService = context.waitForService("master", 180, TimeUnit.SECONDS)			
 			sleep(30000)
-			def privateIP
-			privateIP =System.getenv()["CLOUDIFY_AGENT_ENV_PRIVATE_IP"]
+			def fulladdress= context.getPrivateAddress()
+			def privateIP = fulladdress.split("/")[0]	
 			println "dataOnDemand-service.groovy: privateIP is ${privateIP} ..."
 			masterService.invoke("addNode", privateIP as String, "hadoop", instanceID as String)
+			masterService.invoke("addNode", privateIP as String, "hbase", instanceID as String)
 			println "dataOnDemand-service.groovy: dataOnDemand Post-start ended"						
 		}		
 

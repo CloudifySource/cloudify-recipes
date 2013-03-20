@@ -1,8 +1,4 @@
 echo removenode.sh adding node $1 role $2
-#BIGINSIGHTS_HOME=/opt/ibm/biginsights
-#BIGINSIGHTS_LIB=/opt/ibm/biginsights/lib
-#BIGINSIGHTS_VAR=/var/ibm/biginsights
-#JAVA_HOME=/opt/ibm/biginsights/jdk
 
 while [ -f `dirname $0`/installationRunning ] ;
 do

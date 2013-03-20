@@ -1,6 +1,7 @@
 #! /bin/bash
 
 bucket="yoram-biginsights"
+HTTP_REPO=http://s3.amazonaws.com/BigInsights/
 BIGINSIGHTS_VERSION=$3
 #BIGINSIGHTS_VERSION="BASIC14"
 echo "BIGINSIGHTS edition " $BIGINSIGHTS_VERSION
@@ -11,8 +12,8 @@ then
 else
 	if [ $BIGINSIGHTS_VERSION = 'ENTERPRISE' ]
 	then
-		wget -nv http://repository.cloudifysource.org/com/ibm/biginsights/1.4.0.1/1.4.0.1-IM-IIBI.EE.tar.gz
-		tar --index-file /tmp/biginsights.tar.log -xvvf 1.4.0.1-IM-IIBI.EE.tar.gz -C /tmp/
+		wget -nv ${HTTP_REPO}BIGINSIGHT_ENTPR_ED_V2.0_LNX.tar.gz
+		tar --index-file /tmp/biginsights.tar.log -xvvf BIGINSIGHT_ENTPR_ED_V2.0_LNX.tar.gz -C /tmp/
 		bidir=/tmp/biginsights-enterprise-linux64_*/
 	else
 		wget -nv https://s3.amazonaws.com/yoram-biginsights/iib14_linux_64.tar.gz
@@ -72,7 +73,6 @@ fi
 
 if [[ $EUID -ne 0 ]]; then		
 	echo "Not root, need sudo"		
-#	sudo mount /dev/xvdj /mnt
 	sudo mkdir $2
 	sudo mkdir /mnt/hadoop && sudo ln -s /mnt/hadoop $2/hadoop
 	sudo mkdir /mnt/ibm && sudo mkdir $2/var && sudo ln -s /mnt/ibm $2/var/ibm
@@ -80,25 +80,26 @@ if [[ $EUID -ne 0 ]]; then
 	sudo ulimit -n 16384
 	echo "root hard nofile 16384" | sudo tee -a /etc/security/limits.conf
 	echo "root soft nofile 16384" | sudo tee -a /etc/security/limits.conf
-#	sudo resize2fs `df / | awk 'NR == 2 {print $1}'`
 	sudo sed -i 's/^Defaults.*requiretty/#&/g' /etc/sudoers
+	sudo sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
+	sudo setenforce 0
 	sudo groupadd biadmin
 	sudo useradd -g biadmin -d /home/biadmin biadmin
 	sudo echo biadmin:$1 | sudo chpasswd
 	echo 'biadmin ALL=(ALL) NOPASSWD:ALL' | sudo tee -a /etc/sudoers
-	
-	if ! type "yum" > /dev/null; then
- 		sudo apt-get -q -y install expect
- 	else
-		sudo yum -y -q install expect
-	fi	
+	sudo chown -R biadmin.biadmin $2
+        sudo rpm -ihv ${BIDIR}/artifacts/expect-5.42.1-1.x86_64.rpm	
+#	if ! type "yum" > /dev/null; then
+# 		sudo apt-get -q -y install expect
+# 	else
+#		sudo yum -y -q install expect
+#	fi	
 	sudo groupadd bi-sysadmin
 	sudo groupadd bi-dataadmin
 	sudo groupadd bi-appadmin
 	sudo groupadd bi-user
 	
 else
-	mount /dev/xvdj /mnt
 	mkdir $2
 	mkdir /mnt/hadoop && ln -s /mnt/hadoop $2/hadoop
 	mkdir /mnt/ibm && mkdir $2/var && ln -s /mnt/ibm $2/var/ibm
@@ -106,13 +107,20 @@ else
 	ulimit -n 16384
 	echo "root hard nofile 16384" >> /etc/security/limits.conf
 	echo "root soft nofile 16384" >> /etc/security/limits.conf	groupadd biadmin
-	resize2fs `df / | awk 'NR == 2 {print $1}'`
 	sed -i 's/^Defaults.*requiretty/#&/g' /etc/sudoers
+	sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
+	setenforce 0
 	groupadd biadmin
 	useradd -g biadmin -d /home/biadmin biadmin
-	sudo echo biadmin:$1 | chpasswd
+	echo biadmin:$1 | chpasswd
 	echo 'biadmin ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
-	yum -y -q install expect
+	chown -R biadmin.biadmin $2
+        rpm -ihv ${BIDIR}/artifacts/expect-5.42.1-1.x86_64.rpm
+#	if ! type "yum" > /dev/null; then
+#		apt-get -y -q install expect
+#	else
+#		yum -y -q install expect
+#	fi	
 	groupadd bi-sysadmin
 	groupadd bi-dataadmin
 	groupadd bi-appadmin
