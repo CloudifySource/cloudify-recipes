@@ -26,6 +26,14 @@ def instanceID = context.instanceId
 
 if ( instanceID == 1 ) {
 	context.attributes.thisService["firstInstanceID"] = null
+	
+	if ("dataPath" in config) {
+		context.attributes.thisService["needToLoadData"] = true
+		context.attributes.thisService["dataPath"] = config.dataPath
+	}
+	else {
+		context.attributes.thisService["needToLoadData"] = false
+	}
 }
 
 context.attributes.thisInstance["myHostAddress"]=context.getPrivateAddress()

@@ -19,7 +19,7 @@ service {
 	name "zookeeper"
 	type "DATABASE"
 	icon "zookeeper-small.jpg"
-	numInstances 3 
+	numInstances 1 
 	maxAllowedInstances 3       //currently only 1 instance supported
 	minAllowedInstances 1
 
@@ -33,14 +33,16 @@ service {
 		monitors{
 			def dir=context.serviceDirectory
 			def metrics=[]
-			def process="${context.serviceDirectory}/stat.sh 2181".execute()
-			process.in.eachLine{line-> 
-				metrics.add line
+			if(ServiceUtils.isLinuxOrUnix()){
+				def process="${context.serviceDirectory}/stat.sh ${clientPort}".execute()
+				process.in.eachLine{line-> 
+					metrics.add line
+				}
+				[       "Packets Received":metrics[0],
+					"Packets Sent":metrics[1],
+					"Outstanding Requests":metrics[2]
+				]
 			}
-			[       "Packets Received":metrics[0],
-				"Packets Sent":metrics[1],
-				"Outstanding Requests":metrics[2]
-			]
 		}
 
 	}
@@ -49,7 +51,7 @@ service {
 			name "portLiveness"
 			className "org.cloudifysource.usm.liveness.PortLivenessDetector"
 			config ([
-						"Port" : [2181],
+						"Port" : [clientPort],
 						"TimeoutInSeconds" : 60,
 						"Host" : "127.0.0.1"
 					])

@@ -19,7 +19,7 @@ service {
 	icon "couchbase.jpg"
 	type "NOSQL_DB"
 	elastic true
-	numInstances 3
+	numInstances 2
 	minAllowedInstances 1
 	maxAllowedInstances 4
 
@@ -107,11 +107,22 @@ service {
 		
 		
 		/* 
-			This custom command enables users rebalance the Couchbase cluster
+			This custom command enables users to rebalance the Couchbase cluster
 			Usage :  invoke couchbase rebalance 
 		*/
 	
-		"rebalance" : "couchbase_rebalance.groovy" , 		
+		"rebalance" : "couchbase_rebalance.groovy" , 
+
+		/* 
+			This custom command enables users to load data into the Couchbase cluster
+			Usage :  invoke couchbase loadData path_to_zipFile 
+			Examples 
+		      1. If file1.zip is located in http://www.myZips.com/file1.zip , use the following command :
+					invoke couchbase loadData http://www.myZips.com/file1.zip 
+			  2. If file1.zip is located in /tmp/file1.zip (on the remote machine), use the following command :			  
+			        invoke couchbase loadData /tmp/file1.zip
+		*/	
+		"loadData" : "couchbase_loadData.groovy"
 		
 	])		
 	

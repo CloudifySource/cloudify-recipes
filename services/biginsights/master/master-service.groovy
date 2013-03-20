@@ -6,7 +6,7 @@ service {
 	numInstances 1
 	
 	compute {
-		template "MASTER"
+		template "SMALL_LINUX"
 	}
 		
 	lifecycle {

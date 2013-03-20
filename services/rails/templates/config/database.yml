@@ -1,0 +1,2 @@
+${options['rails_env']}:
+<% options['db'].each {k,v -> println("  ${k}: ${v}")} %>

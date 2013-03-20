@@ -302,7 +302,7 @@ service {
         protocolDescription = "HTTP"
     }
 	
-	scaleCooldownInSeconds 25
+	scaleCooldownInSeconds 30
 	samplingPeriodInSeconds 1
 
 	// Defines an automatic scaling rule based on "counter" metric value

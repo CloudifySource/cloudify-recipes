@@ -35,7 +35,7 @@ class ChefBootstrap {
             case ["Ubuntu", "Debian", "Mint"]: cls = new DebianBootstrap(options); break
             case ["Red Hat", "CentOS", "Fedora", "Amazon"]: cls = new RHELBootstrap(options); break
             case "SuSE":  cls = new SuSEBootstrap(options); break
-            case "Win32": cls = new WindowsBootstrap(options); break
+            case ["Win32", "Microsoft"]: cls = new WindowsBootstrap(options); break
             case "" /*returned by ec2linux*/:
                 if (test("grep 'Amazon Linux' /etc/issue")) {
                     cls = new RHELBootstrap(options); break
@@ -250,7 +250,9 @@ class RHELBootstrap extends ChefBootstrap {
         sudo("yum install -y ${pkgs.join(" ")}")
     }
     def gemInstall() {
-        sudo("gem update --system")
+        //on RHEL based systems, we want to force a specific RubyGems version
+        //to avoid breaking rubygems dependencies
+        sudo("gem update --system ${chefConfig.rubyGemsVersion}")
         super.gemInstall()
     }
 }
