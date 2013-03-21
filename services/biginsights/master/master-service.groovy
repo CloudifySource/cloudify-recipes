@@ -1,18 +1,5 @@
-/*******************************************************************************
-* Copyright (c) 2012 GigaSpaces Technologies Ltd. All rights reserved
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*       http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*******************************************************************************/
+import java.util.concurrent.TimeUnit;
+
 service {
 	name "master"
 	icon "biginsights.png"
@@ -23,8 +10,21 @@ service {
 	}
 		
 	lifecycle {
+                def fulladdress= context.getPrivateAddress()
+                def privateIP = fulladdress.split("/")[0]
+
 		install "master_install.groovy"
 		preStart "master_start.groovy" 		
+/*		postStart ******Use this to add additional BigInsights services to the master node****
+		{
+			println "dataOnDemand-service.groovy: master Post-start ..."
+			def instanceID = context.instanceId	
+			println "master-service.groovy: privateIP is ${privateIP} ..."
+			def masterService = context.waitForService("master", 180, TimeUnit.SECONDS)			
+	        masterService.invoke("addNode", privateIP as String, "hadoop", instanceID as String)
+			masterService.invoke("addNode", privateIP as String, "hbase", instanceID as String)			
+			println "master-service.groovy: master Post-start ended"						
+		}*/
 		preStop "master_stop.groovy"
 		startDetectionTimeoutSecs 2400	
 		startDetection {
@@ -32,11 +32,11 @@ service {
 			{
 				return false;
 			}
-			println ":master-service.groovy: start detection: start detection checking port";						
-			ServiceUtils.isPortOccupied(nameNodePort)
+			println ":master-service.groovy: start detection: start detection checking port " + nameNodePort;						
+			ServiceUtils.isPortOccupied(privateIP, nameNodePort)
 		}
 		locator {			
-			def myPids = ServiceUtils.ProcessUtils.getPidsWithQuery("State.Name.eq=java,Args.*.eq=org.apache.hadoop.hdfs.server.namenode.NameNode")
+			def myPids = ServiceUtils.ProcessUtils.getPidsWithQuery("State.Name.eq=java,Args.*.ew=${nameNodeJmxPort}")
 			println ":master-service.groovy: current PIDs: ${myPids}"
 			return myPids
         }		
@@ -58,23 +58,23 @@ service {
 			"Dropped updates by all sinks": ["Hadoop:name=MetricsSystem,service=NameNode,sub=Stats", "dropped_pub_all"],
 			]
 	
-			return JmxMonitors.getJmxMetrics("127.0.0.1",nameNodeJmxPort,nameNodeJmxBeans)
+			return JmxMonitors.getJmxMetrics("127.0.0.1",nameNodeJmxPort,jmxCredsPath,nameNodeJmxBeans)
 		}        
 		stopDetection {
-		   	if(!(ServiceUtils.isPortOccupied(nameNodePort)))
+		   	if(!(ServiceUtils.isPortOccupied(privateIP, nameNodePort)))
 		   	{
-				if(!((context.serviceDirectory + "/installationRunning").exists()))
+				if(!((new File(context.serviceDirectory + "/installationRunning")).exists()))
 					return true;
 		   	}
 			return false;
 		}
 		details {
-			def currPublicIP
-			currPublicIP =System.getenv()["CLOUDIFY_AGENT_ENV_PUBLIC_IP"]
-			def bigInsightsURL	= "http://${currPublicIP}:8080"///BigInsights/console/NodeAdministration.jsp"
+            def fulladdress2= context.getPublicAddress()
+        	def privateIP2 = fulladdress2.split("/")[0]
+			def bigInsightsURL	= "http://${privateIP2}:8080"///BigInsights/console/NodeAdministration.jsp"
 
 				return [
-					"BigInsights URL":"<a href=\"${bigInsightsURL}\" target=\"_blank\"><img height=70 width=70 src='https://www.ibm.com/developerworks/mydeveloperworks/wikis/form/anonymous/api/library/77eb08fb-0fa9-4195-bad9-a905a1b2d461/document/8051ab37-10c0-41ca-92ae-888ad7cda61e/attachment/8142cf29-67d2-4035-8f28-6c8d5cfd6745/media/biginsights logo.png'></a>"
+					"HADOOP_HOME":"${HADOOP_HOME}","BigInsights URL":"<a href=\"${bigInsightsURL}\" target=\"_blank\"><img height=70 width=70 src='https://www.ibm.com/developerworks/mydeveloperworks/wikis/form/anonymous/api/library/77eb08fb-0fa9-4195-bad9-a905a1b2d461/document/8051ab37-10c0-41ca-92ae-888ad7cda61e/attachment/8142cf29-67d2-4035-8f28-6c8d5cfd6745/media/biginsights logo.png'></a>"
 				]
 		}	        		
 	}

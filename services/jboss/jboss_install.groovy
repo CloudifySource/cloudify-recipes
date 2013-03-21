@@ -13,17 +13,18 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 *******************************************************************************/
-jbossMongoConfig = new ConfigSlurper().parse(new File("jboss-service.properties").toURL())
+jbossConfig = new ConfigSlurper().parse(new File("jboss-service.properties").toURL())
 
-println "jbossMongo_install.groovy: installation folder is ${jbossMongoConfig.installDir}"
+println "jboss_install.groovy: installation folder is ${jbossConfig.installDir}"
 
 
 new AntBuilder().sequential {
-	mkdir(dir:jbossMongoConfig.installDir)
-	get(src:"${jbossMongoConfig.downloadPath}", dest:"${jbossMongoConfig.installDir}/${jbossMongoConfig.zipName}", skipexisting:true)	
-	unzip(src:"${jbossMongoConfig.installDir}/${jbossMongoConfig.zipName}", dest:"${jbossMongoConfig.installDir}", overwrite:true)
-	chmod(dir:"${jbossMongoConfig.installDir}/${jbossMongoConfig.name}/bin", perm:'+x', includes:"*.sh")
+	mkdir(dir:jbossConfig.installDir)
+	get(src:"${jbossConfig.downloadPath}", dest:"${jbossConfig.installDir}/${jbossConfig.zipName}", skipexisting:true)	
+	unzip(src:"${jbossConfig.installDir}/${jbossConfig.zipName}", dest:"${jbossConfig.installDir}", overwrite:true)
+	chmod(dir:"${jbossConfig.installDir}/${jbossConfig.name}/bin", perm:'+x', includes:"*.sh")
+
 }
 
-println "jbossMongo_install.groovy: installation ended successfully"
+println "jboss_install.groovy: installation ended successfully"
 
