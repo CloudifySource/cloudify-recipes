@@ -26,6 +26,7 @@ import javax.annotation.Resource;
 import org.openspaces.core.GigaSpace;
 import org.springframework.dao.DataAccessException;
 import org.springframework.social.ApiException;
+import org.springframework.social.twitter.api.SearchResults;
 import org.springframework.social.twitter.api.Tweet;
 import org.springframework.social.twitter.api.impl.TwitterTemplate;
 import org.springframework.stereotype.Component;
@@ -65,7 +66,10 @@ public class TwitterHomeTimelineFeederTask implements Runnable {
     	try {
     		log.info("Getting latest tweets from public timeline and feeding them into processing grid");
     		// Return all the tweets from the Twitter API
-    		userTimeline = twitterTemplate.timelineOperations().getUserTimeline("BriefingcomSMU");
+    		//userTimeline = twitterTemplate.timelineOperations().getUserTimeline("BriefingcomSMU");    		
+    		
+    		 SearchResults result = twitterTemplate.searchOperations().search("USA");
+    		 userTimeline = result.getTweets();
     	}
         catch(ApiException e){
         	log.log(Level.SEVERE, "Error getting tweets from public timeline from twitter", e);
@@ -80,6 +84,12 @@ public class TwitterHomeTimelineFeederTask implements Runnable {
     			}
     			logTweet(publicTweet);
     			gigaSpace.write(buildTweet(publicTweet));
+    			try {
+					Thread.sleep(3000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
     		}
     	} catch (DataAccessException e) {
     		log.log(Level.SEVERE, "error feeding tweets",e);

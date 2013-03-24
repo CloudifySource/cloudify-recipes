@@ -64,7 +64,7 @@ public class GlobalTokenCounter {
     public void eventListener(TokenCounter counter,GigaSpace gigaSpace) {
     	log.info("Increment  local token " +counter.getToken() + " by " + counter.getCount());
     	IdQuery<GlobalCounter> counterIdQuery = new IdQuery<GlobalCounter>(GlobalCounter.class, counter.getToken());
-    	ChangeResult<GlobalCounter> changeResult = gigaSpace.change(counterIdQuery, new ChangeSet().increment("count", counter.getCount()));
+    	ChangeResult<GlobalCounter> changeResult = gigaSpace.change(counterIdQuery, new ChangeSet().increment("counter", counter.getCount()));
     	//No counter for this token already exists
     	if (changeResult.getNumberOfChangedEntries() == 0)
     		gigaSpace.write(new GlobalCounter(counter.getToken(),counter.getCount()));
