@@ -36,7 +36,7 @@ context.attributes.thisInstance["ipAddress"] = ipAddress
 context.attributes.thisInstance["nodeName"] = "n${instanceID}"
 
 new AntBuilder().sequential {
-	exec(executable:"/usr/bin/memcached", osfamily:"unix") {
+	exec(executable:"memcached", osfamily:"unix") {
 		arg(value:"-p")
 		arg(value:"${currPort}")
 		arg(value:"-u")

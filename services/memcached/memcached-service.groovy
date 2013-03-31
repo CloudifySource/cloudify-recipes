@@ -9,8 +9,11 @@ service {
 	minAllowedInstances 2
 	maxAllowedInstances 8
 	
+	def portIncrement =  context.isLocalCloud() ? context.getInstanceId()-1 : 0
+	def currPort = port + portIncrement
+	
 	compute {
-		template "MEDIUM_LINUX"
+		template "SMALL_LINUX"
 	}
 	
 	lifecycle{
@@ -25,15 +28,11 @@ service {
 				currPublicIP = context.getPublicAddress()
 			}
 			
-			def portIncrement =  context.isLocalCloud() ? context.getInstanceId()-1 : 0
-			def config = new ConfigSlurper().parse(new File("${context.serviceDirectory}/memcached-service.properties").toURL())
-			def port = config.port + portIncrement
-			
-			println "memcached-service.groovy: IP Address is ${currPublicIP}; Port is ${port}."
+			println "memcached-service.groovy:details: IP Address is ${currPublicIP}; currPort is ${currPort}."
 			
 			return [
 				"IP Address": "${currPublicIP}",
-				"Port": "${port}"
+				"Port": "${currPort}"
 				]
 			
 		}
@@ -48,24 +47,15 @@ service {
 		
 		startDetectionTimeoutSecs 9000
 		startDetection {
-			if(context.attributes.thisInstance["port"] != null){
-				return ServiceUtils.isPortOccupied(context.attributes.thisInstance["port"])
-			} else {
-				println "memcached-service.groovy: Port is not assigned yet (i.e., null)."
-				return false
-			}
+			return ServiceUtils.isPortOccupied(currPort)
 		}
 		
 		stopDetection {
-			boolean hasStoped = !ServiceUtils.isPortOccupied(context.attributes.thisInstance["port"])
-			return hasStoped
+			return !ServiceUtils.isPortOccupied(currPort)
 		}
 		
-		locator {
-			
-			def port = context.attributes.thisInstance["port"];
-			
-			def memcachedPids = ServiceUtils.ProcessUtils.getPidsWithQuery("State.Name.eq=memcached,Args.*.eq=${port}")
+		locator {	
+			def memcachedPids =  ServiceUtils.ProcessUtils.getPidsWithQuery("State.Name.eq=memcached,Args.*.eq=${currPort}")
 			println "memcached-service.groovy: Current PIDs: ${memcachedPids}"
 			return memcachedPids
 			
