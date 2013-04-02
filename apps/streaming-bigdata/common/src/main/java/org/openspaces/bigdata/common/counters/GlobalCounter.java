@@ -25,13 +25,13 @@ import com.gigaspaces.annotation.pojo.SpaceRouting;
 public class GlobalCounter {
 
 	private String token;
-	private Integer count;
+	private Integer counter;
 
 	public GlobalCounter(){}
 
 	public GlobalCounter(String token, Integer counter) {
 		this.token = token;
-		this.count = counter;
+		this.counter = counter;
 	}
 
 	@SpaceId(autoGenerate = false)
@@ -44,15 +44,15 @@ public class GlobalCounter {
 		this.token = token;
 	}
 
-	public Integer getCount() {
-		return count;
+	public Integer getCounter() {
+		return counter;
 	}
 
-	public void setCount(Integer count) {
-		this.count = count;
+	public void setCounter(Integer count) {
+		this.counter = count;
 	}
 
 	public void incrementCountBy(int incrementBy) {
-		this.count += incrementBy;
+		this.counter += incrementBy;
 	}
 }
