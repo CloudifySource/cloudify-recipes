@@ -59,7 +59,7 @@ public class ListBasedFeederTask implements Runnable {
         try {
             SpaceDocument tweet = buildRandomTweet();
             gigaSpace.write(tweet);
-            log.fine("--- FEEDER WROTE " + tweet);
+            log.info("--- FEEDER WROTE " + tweet);
         } catch (SpaceInterruptedException e) {
             log.fine("We are being shutdown " + e.getMessage());
         } catch (Exception e) {
