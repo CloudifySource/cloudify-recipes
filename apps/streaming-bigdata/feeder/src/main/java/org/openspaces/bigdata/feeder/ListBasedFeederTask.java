@@ -42,7 +42,7 @@ public class ListBasedFeederTask implements Runnable {
 	
     private static final Logger log = Logger.getLogger(ListBasedFeederTask.class.getSimpleName());
 
-    @Value("${tweet.numberOfUsers:10}")
+    @Value("${mock.numberOfUsers:10}")
     private int numberOfUsers = 10;
 
     @Resource

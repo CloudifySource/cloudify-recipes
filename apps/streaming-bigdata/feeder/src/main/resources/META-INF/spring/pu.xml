@@ -26,15 +26,17 @@
     -->
     <os-core:giga-space id="gigaSpace" space="space"/>
 
-    <bean name="taskScheduler" class="org.openspaces.bigdata.feeder.TaskScheduler">
-        <property name="delayInMs" value="${tweet.delayInMs}"/>
-    </bean>
-
 	<beans profile="default">
+	    <bean name="taskScheduler" class="org.openspaces.bigdata.feeder.TaskScheduler">
+	        <property name="delayInMs" value="${twitter.delayInMs}"/>
+	    </bean>
 		<bean class="org.openspaces.bigdata.feeder.TwitterHomeTimelineFeederTask" />
 	</beans>
 	
 	<beans profile="dev">
+	    <bean name="taskScheduler" class="org.openspaces.bigdata.feeder.TaskScheduler">
+	        <property name="delayInMs" value="${mock.delayInMs}"/>
+	    </bean>	
 		<bean class="org.openspaces.bigdata.feeder.ListBasedFeederTask" />
 		<bean id="tweetTextList" class="java.util.LinkedList">
 			<constructor-arg>

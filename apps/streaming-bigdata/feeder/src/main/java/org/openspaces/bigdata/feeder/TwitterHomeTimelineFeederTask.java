@@ -24,6 +24,7 @@ import java.util.logging.Logger;
 import javax.annotation.Resource;
 
 import org.openspaces.core.GigaSpace;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.social.ApiException;
 import org.springframework.social.twitter.api.Tweet;
@@ -47,6 +48,9 @@ public class TwitterHomeTimelineFeederTask implements Runnable {
 	private final Set<Long> previousTimeLineTweets = new HashSet<Long>();	
 	private final TwitterTemplate twitterTemplate;
 	
+	@Value("${twitter.screenName}")
+	private String screenName;
+	
     public TwitterHomeTimelineFeederTask() throws Exception {
 		try{
 			log.info("Creating twitter template");
@@ -63,7 +67,7 @@ public class TwitterHomeTimelineFeederTask implements Runnable {
     	try {
     		log.info("Getting latest tweets from public timeline and feeding them into processing grid");
     		// Return all the tweets from the Twitter API
-    		userTimeline = twitterTemplate.timelineOperations().getUserTimeline("BriefingcomSMU");
+    		userTimeline = twitterTemplate.timelineOperations().getUserTimeline(screenName);
     	}
         catch(ApiException e){
         	log.log(Level.SEVERE, "Error getting tweets from public timeline from twitter", e);
