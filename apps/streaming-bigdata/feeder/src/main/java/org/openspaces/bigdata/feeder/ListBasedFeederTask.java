@@ -38,7 +38,6 @@ import com.gigaspaces.document.SpaceDocument;
  * The feeder uses tweetTextList, a predefined Spring-injected list of tweet texts, and numberOfUsers for generating user ids.
  *
  */
-//@Component
 public class ListBasedFeederTask implements Runnable {
 	
     private static final Logger log = Logger.getLogger(ListBasedFeederTask.class.getSimpleName());

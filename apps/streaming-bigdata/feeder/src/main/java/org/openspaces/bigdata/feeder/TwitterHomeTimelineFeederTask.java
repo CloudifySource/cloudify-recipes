@@ -28,7 +28,6 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.social.ApiException;
 import org.springframework.social.twitter.api.Tweet;
 import org.springframework.social.twitter.api.impl.TwitterTemplate;
-import org.springframework.stereotype.Component;
 
 import com.gigaspaces.document.DocumentProperties;
 import com.gigaspaces.document.SpaceDocument;
@@ -39,7 +38,6 @@ import com.gigaspaces.document.SpaceDocument;
  * SpaceDocument format, and writes them to a remote space.
  *
  */
-@Component
 public class TwitterHomeTimelineFeederTask implements Runnable {
 
 	private static final Logger log = Logger.getLogger(TwitterHomeTimelineFeederTask.class.getSimpleName());

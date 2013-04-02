@@ -56,7 +56,7 @@
     
 	<bean id="archiverFilter" class="org.openspaces.bigdata.processor.TweetArchiveFilter" />
 	    
-    <beans profile="test">
+    <beans profile="dev">
         <!-- fileExternalPersistence is meant for testing purposes, and archives to a file in the local file system--> 
 	    <bean id="archiveHandler" class="org.openspaces.bigdata.processor.FileArchiveOperationHandler">
 		    <constructor-arg index="0" value="tweetRepo.txt"/>
