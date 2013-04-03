@@ -56,19 +56,22 @@
     
 	<bean id="archiverFilter" class="org.openspaces.bigdata.processor.TweetArchiveFilter" />
 	    
-    <beans profile="default">
+    <beans profile="file-archiver">
         <!-- fileExternalPersistence is meant for testing purposes, and archives to a file in the local file system--> 
 	    <bean id="archiveHandler" class="org.openspaces.bigdata.processor.FileArchiveOperationHandler">
 		    <constructor-arg index="0" value="tweetRepo.txt"/>
 	    </bean>
     </beans>
-    
-    <beans profile="cassandra">
-	    <!-- Inject the comma delimited list of cassandra host ip addresses to "${cassandra.hosts}" -->
+
+	<beans profile="cassandra-discovery">
+		<!-- Inject the comma delimited list of cassandra host ip addresses to "${cassandra.hosts}" -->
 	    <bean id="cassadra-discovery" class="org.openspaces.bigdata.processor.ServiceDiscoveryPropertyPlaceHolderConfigurer">
 	    	<property name="service"        value="cassandra"/>
 		    <property name="outputProperty" value="cassandra.hosts"/>
 	    </bean>
+	</beans>
+	    
+    <beans profile="cassandra-archiver">
 	    <os-archive:cassandra-archive-handler id="archiveHandler" 
              giga-space="gigaSpace"
              hosts="${cassandra.hosts}"

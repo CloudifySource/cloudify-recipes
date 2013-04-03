@@ -26,14 +26,14 @@
     -->
     <os-core:giga-space id="gigaSpace" space="space"/>
 
-	<beans profile="twitter">
+	<beans profile="twitter-feeder">
 	    <bean name="taskScheduler" class="org.openspaces.bigdata.feeder.TaskScheduler">
 	        <property name="delayInMs" value="${twitter.delayInMs}"/>
 	    </bean>
 		<bean class="org.openspaces.bigdata.feeder.TwitterHomeTimelineFeederTask" />
 	</beans>
 	
-	<beans profile="default">
+	<beans profile="list-feeder">
 	    <bean name="taskScheduler" class="org.openspaces.bigdata.feeder.TaskScheduler">
 	        <property name="delayInMs" value="${mock.delayInMs}"/>
 	    </bean>	
