@@ -1,8 +1,6 @@
 # Common Chef service files
 This folder contains common files and a base service recipe for Chef based services. The idea is using `extend` to include this recipe and supporting files.
 
-> *Important*: Currently the chef recipes have only been tested on an Ubuntu environment on Amazon EC2. Please make sure to use the [EC2 ubuntu cloud driver](https://github.com/CloudifySource/cloudify-cloud-drivers/tree/master/ec2-ubuntu) when installing services or applications that are based on this recipe
-
 
 ## The ChefBootstrap class
 The ChefBootstrap class is used to bootstrap chef. Use the `getBootsrap` factory method to obtain a class instance.
