@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2011 GigaSpaces Technologies Ltd. All rights reserved
+* Copyright (c) 2012 GigaSpaces Technologies Ltd. All rights reserved
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -15,24 +15,15 @@
 *******************************************************************************/
 import org.cloudifysource.dsl.context.ServiceContextFactory
 
-jbossConfig = new ConfigSlurper().parse(new File("jboss-service.properties").toURL())
-context = ServiceContextFactory.getServiceContext()
+def config = new ConfigSlurper().parse(new File("wlp-service.properties").toURL())
+def context = ServiceContextFactory.getServiceContext()
+def instanceID = context.getInstanceId()
 
-def currentIP = context.attributes.thisInstance["currentIP"]
-def portIncrement =  context.isLocalCloud() ? context.getInstanceId()-1 : 0		
-def currJmxPort = jbossConfig.jmxPort + portIncrement
+println "wlp_shutdown.groovy: Uninstalling websphere liberty server..."
 
-
-
-script = "${jbossConfig.home}/bin/jboss-cli"
+serviceDir = System.properties["user.home"]+ "/.cloudify/${config.serviceName}"+instanceID
+println "service dir is ${serviceDir} Uninstalling WAS 8.5 liberty"
 new AntBuilder().sequential {
-	exec(executable:"${script}.sh", osfamily:"unix"){
-		arg value:"--connect"
-		arg value:"command=:shutdown"
-	}
-	exec(executable:"${script}.bat", osfamily:"windows"){
-		arg value:"---controller=${currentIP}:${currJmxPort}"
-		arg value:"--connect"
-		arg value:"--command=:shutdown"
-	}
+	delete(dir:"${serviceDir}")
 }
+println "wlp_shutdown.groovy: wlp ${config.serverName} Uninstalled "
