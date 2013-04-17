@@ -90,9 +90,9 @@ public class LocalTokenCounter {
             log.fine("--processing " + tokenizedTweet);
             for (Entry<String, Integer> entry : tokenizedTweet.getTokenMap().entrySet()) {
                 String token = entry.getKey();
-                Integer count = entry.getValue();
-                int newCount = tokenMap.containsKey(token) ? tokenMap.get(token) + count : count;
-                log.finest("put token " + token + " with count " + newCount);
+                Integer counter = entry.getValue();
+                int newCount = tokenMap.containsKey(token) ? tokenMap.get(token) + counter : counter;
+                log.finest("put token " + token + " with counter " + newCount);
                 tokenMap.put(token, newCount);
             }
         }
@@ -100,9 +100,9 @@ public class LocalTokenCounter {
         log.info("writing " + tokenMap.size() + " TokenCounters across the cluster");
         for (Entry<String, Integer> entry : tokenMap.entrySet()) {
             String token = entry.getKey();
-            Integer count = entry.getValue();
-            log.fine("writing new TokenCounter: token=" + token + ", count=" + count);
-            clusteredGigaSpace.write(new TokenCounter(token, count), LEASE_TTL, WRITE_TIMEOUT, WriteModifiers.UPDATE_OR_WRITE);
+            Integer counter = entry.getValue();
+            log.fine("writing new TokenCounter: token=" + token + ", counter=" + counter);
+            clusteredGigaSpace.write(new TokenCounter(token, counter), LEASE_TTL, WRITE_TIMEOUT, WriteModifiers.UPDATE_OR_WRITE);
         }
     }
 }

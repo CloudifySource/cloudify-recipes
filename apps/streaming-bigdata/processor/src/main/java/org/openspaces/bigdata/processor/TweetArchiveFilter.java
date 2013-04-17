@@ -38,7 +38,7 @@ import com.j_spaces.core.client.SQLQuery;
  * @author Dotan Horovits
  * @author Itai Frenkel
  */
-public class TweetArchiveFilter implements EventExceptionHandler<SpaceDocument[]>, EventTemplateProvider {
+public class TweetArchiveFilter implements EventExceptionHandler<Object>, EventTemplateProvider {
 
 	private static final Logger log = Logger.getLogger(TweetArchiveFilter.class.getName());
 
@@ -51,22 +51,22 @@ public class TweetArchiveFilter implements EventExceptionHandler<SpaceDocument[]
 	}
 
 	@Override
-	public void onSuccess(SpaceDocument[] tweets, GigaSpace gigaSpace,
+	public void onSuccess(Object tweets, GigaSpace gigaSpace,
 			TransactionStatus txStatus, Object source) throws RuntimeException {
 
-		for (SpaceDocument tweet: tweets) {
+		for (SpaceDocument tweet: toSpaceDocuments(tweets)) {
 			log.log(Level.INFO, "Archived tweet " + tweet.getProperty("Id"));
 		}
 	}
 
 	@Override
 	public void onException(ListenerExecutionFailedException exception,
-			SpaceDocument[] tweets, GigaSpace gigaSpace, TransactionStatus txStatus,
+			Object tweets, GigaSpace gigaSpace, TransactionStatus txStatus,
 			Object source) throws RuntimeException {
 		
 		List<SpaceDocument> retryTweets = new ArrayList<SpaceDocument>();
 		
-		for (SpaceDocument tweet : tweets) {
+		for (SpaceDocument tweet : toSpaceDocuments(tweets)) {
 			Integer tries = tweet.getProperty("Archived"); 
 			if (tries == null) { 
 				tries = 0; 
@@ -85,5 +85,15 @@ public class TweetArchiveFilter implements EventExceptionHandler<SpaceDocument[]
 			SpaceDocument[] spaceDocuments = retryTweets.toArray(new SpaceDocument[retryTweets.size()]);
 			gigaSpace.writeMultiple(spaceDocuments);
 		}
+	}
+
+	private SpaceDocument[] toSpaceDocuments(Object tweets) {
+		if (tweets instanceof SpaceDocument[]) {
+			return (SpaceDocument[])tweets;
+		}
+		if (tweets instanceof SpaceDocument) {
+			return new SpaceDocument[] { (SpaceDocument) tweets };
+		}
+		throw new IllegalArgumentException(tweets + " is not a SpaceDocument");
 	}
 }

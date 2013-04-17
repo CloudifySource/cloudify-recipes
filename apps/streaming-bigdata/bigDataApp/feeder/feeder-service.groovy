@@ -18,7 +18,9 @@ service {
   numInstances 1
   maxAllowedInstances 1
   statelessProcessingUnit {	
-    binaries "rt-analytics-feeder.jar"    
+    binaries "rt-analytics-feeder.jar"
+    //possible values "list-feeder" or "twitter-feeder"
+    springProfilesActive "twitter-feeder"
     sla {
       highlyAvailable false
       memoryCapacityPerContainer 64 

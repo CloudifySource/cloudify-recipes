@@ -21,6 +21,8 @@ service {
     maxAllowedInstances 4
     statefulProcessingUnit {
         binaries "rt-analytics-processor.jar"
+        //possible values "cassandra-archiver,cassandra-discovery" or "file-archiver"
+        springProfilesActive "cassandra-archiver,cassandra-discovery"
         sla {
             memoryCapacity 512
             maxMemoryCapacity 512
