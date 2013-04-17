@@ -62,15 +62,15 @@ public class GlobalTokenCounter {
 
     @SpaceDataEvent
     public void eventListener(TokenCounter counter,GigaSpace gigaSpace) {
-    	log.info("Increment  local token " +counter.getToken() + " by " + counter.getCount());
+    	log.info("Increment  local token " +counter.getToken() + " by " + counter.getCounter());
     	IdQuery<GlobalCounter> counterIdQuery = new IdQuery<GlobalCounter>(GlobalCounter.class, counter.getToken());
-    	ChangeResult<GlobalCounter> changeResult = gigaSpace.change(counterIdQuery, new ChangeSet().increment("count", counter.getCount()));
+    	ChangeResult<GlobalCounter> changeResult = gigaSpace.change(counterIdQuery, new ChangeSet().increment("counter", counter.getCounter()));
     	//No counter for this token already exists
     	if (changeResult.getNumberOfChangedEntries() == 0)
-    		gigaSpace.write(new GlobalCounter(counter.getToken(),counter.getCount()));
+    		gigaSpace.write(new GlobalCounter(counter.getToken(),counter.getCounter()));
     	
         if (log.isLoggable(Level.FINE)) {
-            log.fine("+++ token=" + counter.getToken() + " count=" + counter.getCount());
+            log.fine("+++ token=" + counter.getToken() + " counter=" + counter.getCounter());
         }
     }
 

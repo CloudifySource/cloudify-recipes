@@ -6,8 +6,8 @@
        xmlns:os-events="http://www.openspaces.org/schema/events"
        xmlns:os-remoting="http://www.openspaces.org/schema/remoting"
        xmlns:os-sla="http://www.openspaces.org/schema/sla"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
        http://www.openspaces.org/schema/core http://www.openspaces.org/schema/8.0/core/openspaces-core.xsd
        http://www.openspaces.org/schema/events http://www.openspaces.org/schema/8.0/events/openspaces-events.xsd
        http://www.openspaces.org/schema/remoting http://www.openspaces.org/schema/8.0/remoting/openspaces-remoting.xsd
@@ -26,25 +26,34 @@
     -->
     <os-core:giga-space id="gigaSpace" space="space"/>
 
-    <bean name="taskScheduler" class="org.openspaces.bigdata.feeder.TaskScheduler">
-        <property name="delayInMs" value="${tweet.delayInMs}"/>
-    </bean>
-
-	<bean id="tweetTextList" class="java.util.LinkedList">
-		<constructor-arg>
-			<list>
-				<value>I wonder who I'll be racist against when I'm elderly. I hope it's robots!!</value>
-				<value>If I didn't have to pee, I'd probably never get out of bed.</value>
-				<value>Maths joke: if you have a pizza with radius z and thickness a, it's volume is pizza (or pi*z*z*a)</value>
-				<value>Terrifying to think that one puff of marijuana can transform your life into a carnival of lies and ultimately, murder.</value>
-				<value>I found out when my birthday was and now I can never have a surprise party.</value>
-				<value>Some guy had a concrete bench as his memorial. Seems odd but it's genius; he's dead and still getting ass.</value>
-				<value>69% of people find something dirty in every sentence.</value>
-				<value>"Report Spam" is the elevator close door button of Twitter.</value>
-				<value>I think it's cool that our galaxy is named after a chocolate bar.</value>
-				<value>Candy cigarettes are a gateway drug to rock candy.</value>
-			</list>
-		</constructor-arg>
-	</bean>
+	<beans profile="twitter-feeder">
+	    <bean name="taskScheduler" class="org.openspaces.bigdata.feeder.TaskScheduler">
+	        <property name="delayInMs" value="${twitter.delayInMs}"/>
+	    </bean>
+		<bean class="org.openspaces.bigdata.feeder.TwitterHomeTimelineFeederTask" />
+	</beans>
+	
+	<beans profile="list-feeder">
+	    <bean name="taskScheduler" class="org.openspaces.bigdata.feeder.TaskScheduler">
+	        <property name="delayInMs" value="${mock.delayInMs}"/>
+	    </bean>	
+		<bean class="org.openspaces.bigdata.feeder.ListBasedFeederTask" />
+		<bean id="tweetTextList" class="java.util.LinkedList">
+			<constructor-arg>
+				<list>
+					<value>I wonder who I'll be racist against when I'm elderly. I hope it's robots!!</value>
+					<value>If I didn't have to pee, I'd probably never get out of bed.</value>
+					<value>Maths joke: if you have a pizza with radius z and thickness a, it's volume is pizza (or pi*z*z*a)</value>
+					<value>Terrifying to think that one puff of marijuana can transform your life into a carnival of lies and ultimately, murder.</value>
+					<value>I found out when my birthday was and now I can never have a surprise party.</value>
+					<value>Some guy had a concrete bench as his memorial. Seems odd but it's genius; he's dead and still getting ass.</value>
+					<value>69% of people find something dirty in every sentence.</value>
+					<value>"Report Spam" is the elevator close door button of Twitter.</value>
+					<value>I think it's cool that our galaxy is named after a chocolate bar.</value>
+					<value>Candy cigarettes are a gateway drug to rock candy.</value>
+				</list>
+			</constructor-arg>
+		</bean>
+	</beans>
     
 </beans>

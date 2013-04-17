@@ -38,12 +38,11 @@ import com.gigaspaces.document.SpaceDocument;
  * The feeder uses tweetTextList, a predefined Spring-injected list of tweet texts, and numberOfUsers for generating user ids.
  *
  */
-//@Component
 public class ListBasedFeederTask implements Runnable {
 	
     private static final Logger log = Logger.getLogger(ListBasedFeederTask.class.getSimpleName());
 
-    @Value("${tweet.numberOfUsers:10}")
+    @Value("${mock.numberOfUsers:10}")
     private int numberOfUsers = 10;
 
     @Resource
@@ -60,7 +59,7 @@ public class ListBasedFeederTask implements Runnable {
         try {
             SpaceDocument tweet = buildRandomTweet();
             gigaSpace.write(tweet);
-            log.fine("--- FEEDER WROTE " + tweet);
+            log.info("--- FEEDER WROTE " + tweet);
         } catch (SpaceInterruptedException e) {
             log.fine("We are being shutdown " + e.getMessage());
         } catch (Exception e) {

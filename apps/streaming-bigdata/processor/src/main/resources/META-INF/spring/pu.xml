@@ -6,9 +6,9 @@
        xmlns:os-core="http://www.openspaces.org/schema/core"
        xmlns:os-events="http://www.openspaces.org/schema/events"
        xmlns:os-archive="http://www.openspaces.org/schema/archive"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
-       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
        http://www.openspaces.org/schema/core http://www.openspaces.org/schema/8.0/core/openspaces-core.xsd
        http://www.openspaces.org/schema/events http://www.openspaces.org/schema/8.0/events/openspaces-events.xsd 
        http://www.openspaces.org/schema/archive http://www.openspaces.org/schema/9.1/archive/openspaces-archive.xsd">
@@ -39,31 +39,11 @@
 
     <os-core:giga-space id="gigaSpace" space="space" tx-manager="transactionManager"/>
     <os-core:giga-space id="clusteredGigaSpace" space="space" tx-manager="transactionManager" clustered="true"/>
-
-
-	<!-- fileExternalPersistence is meant for testing purposes, and archives to a file in the local file system 
-	<bean id="fileArchiveHandler" class="org.openspaces.bigdata.processor.FileArchiveOperationHandler">
-		<constructor-arg index="0" value="tweetRepo.txt"/>
-	</bean>-->
-
-    <!-- Inject the comma delimited list of cassandra host ip addresses to "${cassandra.hosts}" -->
-    <bean id="cassadra-discovery" class="org.openspaces.bigdata.processor.ServiceDiscoveryPropertyPlaceHolderConfigurer">
-    	<property name="service"        value="cassandra"/>
-	    <property name="outputProperty" value="cassandra.hosts"/>
-    </bean>
-
-	<os-archive:cassandra-archive-handler id="cassandraArchiveHandler" 
-             giga-space="gigaSpace"
-             hosts="${cassandra.hosts}"
-             port="${cassandra.port}"  
-             keyspace="${cassandra.keyspace}"
-             write-consistency="${cassandra.write-consistency}"
-  />
-		
+ 
 	<os-archive:archive-container 
 		id="archiveContainer" 
 		giga-space="gigaSpace" 
-		archive-handler="cassandraArchiveHandler"
+		archive-handler="archiveHandler"
 		concurrent-consumers="${archiver.threads}" 
 		max-concurrent-consumers="${archiver.threads}"
 		batch-size="${archiver.batch.size}" >
@@ -75,5 +55,30 @@
     </os-archive:archive-container>
     
 	<bean id="archiverFilter" class="org.openspaces.bigdata.processor.TweetArchiveFilter" />
+	    
+    <beans profile="file-archiver">
+        <!-- fileExternalPersistence is meant for testing purposes, and archives to a file in the local file system--> 
+	    <bean id="archiveHandler" class="org.openspaces.bigdata.processor.FileArchiveOperationHandler">
+		    <constructor-arg index="0" value="tweetRepo.txt"/>
+	    </bean>
+    </beans>
+
+	<beans profile="cassandra-discovery">
+		<!-- Inject the comma delimited list of cassandra host ip addresses to "${cassandra.hosts}" -->
+	    <bean id="cassadra-discovery" class="org.openspaces.bigdata.processor.ServiceDiscoveryPropertyPlaceHolderConfigurer">
+	    	<property name="service"        value="cassandra"/>
+		    <property name="outputProperty" value="cassandra.hosts"/>
+	    </bean>
+	</beans>
+	    
+    <beans profile="cassandra-archiver">
+	    <os-archive:cassandra-archive-handler id="archiveHandler" 
+             giga-space="gigaSpace"
+             hosts="${cassandra.hosts}"
+             port="${cassandra.port}"  
+             keyspace="${cassandra.keyspace}"
+             write-consistency="${cassandra.write-consistency}"
+  		/>
+    </beans>
 
 </beans>

@@ -24,11 +24,11 @@ import java.util.logging.Logger;
 import javax.annotation.Resource;
 
 import org.openspaces.core.GigaSpace;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.social.ApiException;
 import org.springframework.social.twitter.api.Tweet;
 import org.springframework.social.twitter.api.impl.TwitterTemplate;
-import org.springframework.stereotype.Component;
 
 import com.gigaspaces.document.DocumentProperties;
 import com.gigaspaces.document.SpaceDocument;
@@ -39,7 +39,6 @@ import com.gigaspaces.document.SpaceDocument;
  * SpaceDocument format, and writes them to a remote space.
  *
  */
-@Component
 public class TwitterHomeTimelineFeederTask implements Runnable {
 
 	private static final Logger log = Logger.getLogger(TwitterHomeTimelineFeederTask.class.getSimpleName());
@@ -48,6 +47,9 @@ public class TwitterHomeTimelineFeederTask implements Runnable {
 	private GigaSpace gigaSpace;
 	private final Set<Long> previousTimeLineTweets = new HashSet<Long>();	
 	private final TwitterTemplate twitterTemplate;
+	
+	@Value("${twitter.screenName}")
+	private String screenName;
 	
     public TwitterHomeTimelineFeederTask() throws Exception {
 		try{
@@ -65,7 +67,7 @@ public class TwitterHomeTimelineFeederTask implements Runnable {
     	try {
     		log.info("Getting latest tweets from public timeline and feeding them into processing grid");
     		// Return all the tweets from the Twitter API
-    		userTimeline = twitterTemplate.timelineOperations().getUserTimeline("BriefingcomSMU");
+    		userTimeline = twitterTemplate.timelineOperations().getUserTimeline(screenName);
     	}
         catch(ApiException e){
         	log.log(Level.SEVERE, "Error getting tweets from public timeline from twitter", e);

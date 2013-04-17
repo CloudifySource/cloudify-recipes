@@ -76,7 +76,10 @@ public class ServiceDiscoveryPropertyPlaceHolderConfigurer extends PropertyPlace
     // Duplication from cloudify ServiceUtils.
     // to not include a dependency on the dsl jar.
     private String getApplicationName() {
-        final int index = clusterInfo.getName().lastIndexOf('.');
+        if (clusterInfo == null) {
+        	throw new IllegalArgumentException("Could not parse PU name. Integrated Processing Units are not supported");
+        }
+    	final int index = clusterInfo.getName().lastIndexOf('.');
         if (index < 0) {
             throw new IllegalArgumentException("Could not parse PU name: " + clusterInfo.getName()
                     + " to read service and application names.");

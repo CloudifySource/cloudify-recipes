@@ -30,7 +30,7 @@ import com.google.common.base.Objects;
 public class TokenCounter {
 
 	private String token;
-	private Integer count;
+	private Integer counter;
 
 	public TokenCounter() {
 	}
@@ -39,9 +39,9 @@ public class TokenCounter {
 		this.token = token;
 	}
 
-	public TokenCounter(String token, Integer count) {
+	public TokenCounter(String token, Integer counter) {
 		this.token = token;
-		this.count = count;
+		this.counter = counter;
 	}
 
 	@SpaceId(autoGenerate = false)
@@ -54,12 +54,12 @@ public class TokenCounter {
 		this.token = token;
 	}
 
-	public Integer getCount() {
-		return count;
+	public Integer getCounter() {
+		return counter;
 	}
 
-	public void setCount(Integer count) {
-		this.count = count;
+	public void setCounter(Integer count) {
+		this.counter = count;
 	}
 
 	@Override

@@ -51,7 +51,7 @@ public class TaskScheduler {
     
     @PostConstruct
     public void execute() {
-    	log.info("schedualing twitter feeder fetch public tweets interval:" + delayInMs + " milliseconds");
+    	log.info("Scheduling twitter feeder fetch public tweets interval:" + delayInMs + " milliseconds");
         executorService.scheduleWithFixedDelay(task, 0, delayInMs, TimeUnit.MILLISECONDS);
     }
 
