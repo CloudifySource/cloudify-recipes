@@ -58,12 +58,12 @@ sudo rm -rf /var/log/mysql* || error_exit $? "Failed on: sudo rm -rf /var/log/my
 groupExists=`grep -c mysql /etc/group`
 
 if [ $groupExists -eq 0 ] ; then
-	groupadd mysql
+	sudo groupadd mysql
 fi 
 
 userExists=`grep -c "mysql" /etc/passwd`
 if [ $userExists -eq 0 ] ; then
-	useradd mysql -g mysql	
+	sudo useradd mysql -g mysql	
 fi 
 
 echo "Using yum. Installing mysql on one of the following : Red Hat, CentOS, Fedora, Amazon"

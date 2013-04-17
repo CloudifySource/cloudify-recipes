@@ -18,7 +18,7 @@ import org.cloudifysource.dsl.utils.ServiceUtils;
 import org.hyperic.sigar.OperatingSystem
 
 
-def installLinuxMysql(context,builder,currVendor,installScript,myCnfObject) {
+def installLinuxMysql(config,context,builder,currVendor,installScript,myCnfObject) {
 
 	if ( context.isLocalCloud() ) {
 		if ( context.attributes.thisApplication["installing"] == null || context.attributes.thisApplication["installing"] == false ) {
@@ -49,9 +49,59 @@ def installLinuxMysql(context,builder,currVendor,installScript,myCnfObject) {
 		}
 	}
 	
+	installBack(config,context,builder)
+	
 	if ( context.isLocalCloud() ) {
 		context.attributes.thisApplication["installing"] = false
 		println "mysql_install.groovy: Finished using apt-get/yum on localCloud"
+	}
+}
+
+def installBack(config,context,builder){
+	def enableBackup
+	def backupType
+	if ("enableBackup" in config) {
+		enableBackup = "${config.enableBackup}"
+		println "mysql_install.groovy: enableBackup is ${enableBackup}"
+		if ( !enableBackup ) {
+			println "mysql_install.groovy: Not inovking backup"
+			return
+		}
+
+		if ("backupType" in config) {
+			backupType = "${config.backupType}"
+			println "mysql_install.groovy: backupType is ${backupType}"	
+		
+			if ( backupType == "s3" ) {
+				println "mysql_install.groovy: Installing s3Cmd ..."
+				def baseFolder = System.properties["user.home"]
+				def s3Folder = "${config.s3Folder}"
+				def apiKey= context.attributes.global["apiKey"]
+				def secretKey= context.attributes.global["secretKey"]
+				def decryptTxt= context.attributes.global["decryptTxt"]
+				def sc3Gzip= "${config.sc3Gzip}"
+				
+				builder.sequential {			
+					exec(executable: "${context.serviceDirectory}/s3CmdInstall.sh",failonerror: "true") {
+						arg(value:"${baseFolder}")		
+						arg(value:"${s3Folder}")		
+						arg(value:"${apiKey}")		
+						arg(value:"${secretKey}")		
+						arg(value:"${decryptTxt}")		
+						arg(value:"${sc3Gzip}")		
+					}
+				}
+			}
+			else {
+				println "mysql_install.groovy: The only supported backup is s3. ${backupType} is not supported"
+			}
+		}
+		else {
+			println "mysql_install.groovy: ${backupType} is not set in the properties file."
+		}		
+	}
+	else {
+		println "mysql_install.groovy: The backup is disabled. Set enableBackup to true in the properties file"
 	}
 }
 
@@ -190,6 +240,8 @@ println "mysql_install.groovy: dbPassW is ${config.dbPassW}"
 context.attributes.thisInstance["dbPort"] = "${config.jdbcPort}"
 println "mysql_install.groovy: dbPort is ${config.jdbcPort}"
 
+	
+
 context.attributes.thisInstance["postStartRequired"] = true
 
 def myCnfObject = getCnfObject(config,context,isMaster,isSlave)
@@ -201,11 +253,11 @@ def currVendor=os.getVendor()
 switch (currVendor) {
 		case ["Ubuntu", "Debian", "Mint"]:		
 			context.attributes.thisInstance["binFolder"]="/usr/bin"
-			installLinuxMysql(context,builder,currVendor,"installOnUbuntu.sh",myCnfObject)
+			installLinuxMysql(config,context,builder,currVendor,"installOnUbuntu.sh",myCnfObject)
 			break		
 		case ["Red Hat", "CentOS", "Fedora", "Amazon",""]:	
 			context.attributes.thisInstance["binFolder"]="/usr/bin"		
-			installLinuxMysql(context,builder,currVendor,"install.sh",myCnfObject)
+			installLinuxMysql(config,context,builder,currVendor,"install.sh",myCnfObject)
 			break					
 		case ~/.*(?i)(Microsoft|Windows).*/:
 			context.attributes.thisInstance["binFolder"]="${osConfig.mysqlHome}/bin"

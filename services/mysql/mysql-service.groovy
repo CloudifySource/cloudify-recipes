@@ -64,11 +64,12 @@ service {
 	}
 	
 	customCommands ([
-		/* 
-			This custom command enables users to create a database snapshot (mysqldump).
-			Usage :  invoke mysql mysqldump actionUser dumpPrefix [dbName]
-			Example: invoke mysql mysqldump root myPrefix_ myDbName
-		*/
+	/* 
+	This custom command enables users to create a database snapshot (mysqldump) 
+	 and to upload the backup to an external storage (Amazon S3 for example).
+	Usage :  invoke mysql mysqldump actionUser dumpPrefix dbName backupType bucketName
+	Example: invoke mysql mysqldump root myPrefix_ myDbName s3 myBucketName
+	*/
 	
 		"mysqldump" : "mysql_dump.groovy" , 
 			

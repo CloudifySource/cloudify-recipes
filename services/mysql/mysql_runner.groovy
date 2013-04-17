@@ -114,7 +114,7 @@ def static runMysqlAdmin(binFolder,execFile,osName,actionName,dbName,dbUser,debu
   return outputPropertyStr
 }	
 
-def static runMysqlDump(binFolder,execFile,osName,actionArgs,dbName,dbUser,debugMsg,dumpFolder,dumpPrefix) {		
+def static runMysqlDump(binFolder,execFile,osName,actionArgs,dbName,dbUser,debugMsg,dumpFolder,dumpPrefix,requiredBackupType,bucketName,backupFile,s3Folder) {		
 
   try {		
       
@@ -143,8 +143,23 @@ def static runMysqlDump(binFolder,execFile,osName,actionArgs,dbName,dbUser,debug
       exec(executable:"${binFolder}/${execFile}", osfamily:"${osName}", output:"${dumpSqlFullPath}") {
 		arg(line:"${argsLine}")
 	  }	  
-	  zip(destFile:"${dumpZipFullPath}", basedir: "${dumpFolder}" ,includes:"${sqlFileName}", update:true )	    			
+	  zip(destFile:"${dumpZipFullPath}", basedir: "${dumpFolder}" ,includes:"${sqlFileName}", update:true )	 
+
+	  if ( requiredBackupType == "s3" ) {
+		if ( bucketName != "" ) {
+			def baseFolder = System.properties["user.home"]
+			exec(executable:"${backupFile}", osfamily:"${osName}") {
+				arg(value:"${baseFolder}")
+				arg(value:"${s3Folder}")
+				arg(value:"${bucketName}")
+				arg(value:"${dumpZipFullPath}")
+				arg(value:"${baseDumpName}.zip")
+			}	
+		}
+	  }
+	  
 	  delete(file:"${dumpSqlFullPath}")
+	  delete(file:"${dumpZipFullPath}")
    }		
   } 
   catch (Exception ioe) {

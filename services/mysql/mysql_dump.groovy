@@ -20,13 +20,16 @@ import static mysql_runner.*
 
 
 /* 
-   This file enables users to create a database snapshot (mysqldump).
-   Usage :  invoke mysql mysqldump actionUser dumpPrefix [dbName]
-   Example: invoke mysql mysqldump root myPrefix_ myDbName
+   This file enables users to create a database snapshot (mysqldump) 
+    and to upload the backup to an external storage (Amazon S3 for example).
+   Usage :  invoke mysql mysqldump actionUser dumpPrefix dbName backupType bucketName
+   Example: invoke mysql mysqldump root myPrefix_ myDbName s3 myBucketName
    actionUser ( usually root ) = args[0]
    dumpPrefix = args[1]
    dbName = args[2]
-
+   backupType = args[3]
+   bucketName = args[4]
+   
 */
 
 config=new ConfigSlurper().parse(new File('mysql-service.properties').toURL())
@@ -55,8 +58,8 @@ switch (currVendor) {
 }
 
 
-if (args.length < 2) {
-	println "mysql_dump.groovy: mysqldump error: Missing parameters\nUsage: invoke mysql mysqldump actionUser dumpPrefix [dbName]"
+if (args.length < 3) {
+	println "mysql_dump.groovy: mysqldump error: Missing parameters\nUsage: invoke mysql mysqldump actionUser dumpPrefix dbName [backupType] [bucketName or folderName]"
 	System.exit(-1)
 }
 
@@ -66,21 +69,39 @@ def currDumpPrefix = args[1]
 def currActionDbName
 def currDebugMsg
 
-if (args.length < 3) {
-	currActionDbName = ""
-	currDebugMsg = "Invoking mysqldump on all the databases in ${mysqlHost} ..."
-}
-else {
-	currActionDbName = args[2]
-	currDebugMsg = "Invoking mysqldump on db ${currActionDbName} in ${mysqlHost} ..."	
-} 
+currActionDbName = args[2]
+currDebugMsg = "Invoking mysqldump on db ${currActionDbName} in ${mysqlHost} ..."	
 
- 
-		
+def requiredBackupType = ""
+def bucketName = ""
+def backupFile = ""
+if (args.length > 4) {
+	def tmpRequiredBackupType = args[3]
+	def tmpBucketName = args[4]
+	
+	if ("enableBackup" in config) {
+		enableBackup = "${config.enableBackup}"
+		if ( enableBackup ) {
+			if ("backupType" in config) {
+				def backupType = "${config.backupType}"
+				println "mysql_dump.groovy: backupType is ${backupType}"	
+	
+				if ( backupType == "s3" && tmpRequiredBackupType == backupType) {
+					requiredBackupType = tmpRequiredBackupType
+					bucketName = tmpBucketName
+					backupFile = "${context.serviceDirectory}/s3Put.sh"
+				}
+			}
+		}
+	}
+}
+
+
 def currActionArgs = "--add-drop-database -c --lock-all-tables -F"
 
 def dumpFolder = System.properties["user.home"]
-runMysqlDump(binFolder,osConfig.mysqldump,currOsName,currActionArgs,currActionDbName,currActionUser,currDebugMsg,dumpFolder,currDumpPrefix)							
+def s3Folder = "${config.s3Folder}"
+runMysqlDump(binFolder,osConfig.mysqldump,currOsName,currActionArgs,currActionDbName,currActionUser,currDebugMsg,dumpFolder,currDumpPrefix,requiredBackupType,bucketName,backupFile,s3Folder)							
 println "mysql_dump.groovy: End"
 	
 
