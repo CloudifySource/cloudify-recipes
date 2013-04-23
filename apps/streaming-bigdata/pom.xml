@@ -8,13 +8,6 @@
 	<packaging>pom</packaging>
 
 	<properties>
-<<<<<<< HEAD
-<<<<<<< HEAD
-		<gsVersion>9.6.0-SNAPSHOT</gsVersion>
-=======
-<<<<<<< HEAD
-=======
->>>>>>> 787049e4b39176dc40bd0fe56d06bfe9ee1e3c26
 		<gsVersion>9.6.0-SNAPSHOT</gsVersion>
 	</properties>
 
