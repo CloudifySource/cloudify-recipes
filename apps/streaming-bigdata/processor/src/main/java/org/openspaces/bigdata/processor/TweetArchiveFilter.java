@@ -64,6 +64,9 @@ public class TweetArchiveFilter implements EventExceptionHandler<Object>, EventT
 			Object tweets, GigaSpace gigaSpace, TransactionStatus txStatus,
 			Object source) throws RuntimeException {
 		
+		if (log.isLoggable(Level.FINE)) {
+			log.log(Level.FINE, "Handling exception: ",exception);
+		}
 		List<SpaceDocument> retryTweets = new ArrayList<SpaceDocument>();
 		
 		for (SpaceDocument tweet : toSpaceDocuments(tweets)) {
