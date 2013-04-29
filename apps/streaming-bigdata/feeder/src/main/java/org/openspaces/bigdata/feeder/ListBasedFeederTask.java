@@ -52,7 +52,9 @@ public class ListBasedFeederTask implements Runnable {
     private GigaSpace gigaSpace;
 
     private long counter = 1;
-    private Random randomGenerator = new Random();
+    
+    //use random seed for consistent test behavior
+    private Random randomGenerator = new Random(0);
 
     @Override
 	public void run() {
