@@ -24,8 +24,8 @@ class ChefBootstrap {
     Map chefConfig
     def osConfig
     def os
-    def chefBinPath
-    ServiceContext context = null
+    protected String chefBinPath
+    protected ServiceContext context = null
     def opscode_gpg_key_url = "http://apt.opscode.com/packages@opscode.com.gpg.key"
 
     def static getBootstrap(options=[:]) {
@@ -135,11 +135,24 @@ Chef::Log::Formatter.show_time = true
         jsonFile.withWriter() { it.write(JsonOutput.toJson(initJson)) }
         sudo("chef-client -j ${jsonFile.getPath()}")
     }
+    def runApply(String inlineRecipe) {
+        if (chefConfig.version.tokenize('.')[0].toInteger() < 11 ) {
+            throw new Exception("chef-apply is only available on Chef 11")
+        }
+        // It's safer to save the string to file instead of meddling with quoting issues
+        def tempRecipeFile = File.createTempFile("inlineChefRecipe-${context.getServiceName()}", ".rb")
+        tempRecipeFile.write(inlineRecipe)
+        def chef_apply = which("chef-apply")
+        print "which(chef-apply)=${chef_apply}"
+        assert !chef_apply.isEmpty()
+        sudo("${chef_apply} ${tempRecipeFile.getAbsolutePath()}")
+        tempRecipeFile.delete()
+    }
     def runSolo(ArrayList runList) {
         runSolo(runListToInitialJson(runList))
     }
-    def runSolo(HashMap initJson=[:], cookbooksUrl=null) {
-        def chefSoloDir = pathJoin(getTmpDir(), "chef-solo")
+    def runSolo(HashMap initJson=[:], String cookbooksUrl=null) {
+        def chefSoloDir = getChefSoloDir()
         def soloConf = new File([context.getServiceDirectory(), "solo.rb"].join(File.separator)).text =
         """
 file_cache_path "${chefSoloDir}"
@@ -149,10 +162,18 @@ cookbook_path "${pathJoin(chefSoloDir, "cookbooks")}"
         assert ! chef_solo.isEmpty()
         def jsonFile = new File(pathJoin(context.getServiceDirectory(), "bootstrap_server.json"))
         jsonFile.text = JsonOutput.toJson(initJson)
-        cookbooksUrl = cookbooksUrl ?: chefConfig.bootstrapCookbooksUrl
-        sudo("""${chef_solo} -c ${context.getServiceDirectory()}/solo.rb -j ${jsonFile} -r ${cookbooksUrl}""")
+        if (isURL(cookbooksUrl)) {
+            sudo("""${chef_solo} -c ${context.getServiceDirectory()}/solo.rb -j ${jsonFile} -r ${cookbooksUrl}""")
+        } else if ("bootstrapCookbooksUrl" in chefConfig && isURL(chefConfig.bootstrapCookbooksUrl)) {
+            sudo("""${chef_solo} -c ${context.getServiceDirectory()}/solo.rb -j ${jsonFile} -r ${chefConfig.bootstrapCookbooksUrl}""")
+        } else if (berksfileExists()) {
+            getCookbooksWithBerkshelf()
+            sudo("""${chef_solo} -c ${context.getServiceDirectory()}/solo.rb -j ${jsonFile}""")
+        } else {
+            throw new Exception("No berksfile present and cookbooksUrl is not set")
+        }
     }
-    def runListToInitialJson(ArrayList runList) {
+    protected runListToInitialJson(ArrayList runList) {
         def initJson = [:]
         if (!runList.isEmpty()) {
             initJson["run_list"] = runList
@@ -160,7 +181,7 @@ cookbook_path "${pathJoin(chefSoloDir, "cookbooks")}"
         return initJson
     }
     def fatBinaryInstall() {
-        chefBinPath = "/opt/opscode/bin"
+        chefBinPath = "/opt/chef/bin"
         new AntBuilder().sequential {
             mkdir(dir:osConfig.installDir)
             get(src:osConfig.scriptUrl, dest:"${osConfig.installDir}/${osConfig.installer}", skipexisting:true)
@@ -168,9 +189,17 @@ cookbook_path "${pathJoin(chefSoloDir, "cookbooks")}"
             exec(osfamily:"windows", executable:"msiexec") {
                 ["/i", "/q", "${osConfig.installDir}/${osConfig.installer}"].each { arg(value:it) }
             }
-
         }
-        sudo("""${osConfig.installDir}/${osConfig.installer}""")
+        if (os.getVendor() != "Win32") {
+            if (chefConfig.version)
+                sudo("""${osConfig.installDir}/${osConfig.installer} -v ${chefConfig.version}""")
+            else {
+                sudo("""${osConfig.installDir}/${osConfig.installer}""")
+            }
+        }
+    }
+    protected berksfileExists() {
+        return new File(context.getServiceDirectory(), "Berksfile").exists()
     }
     def rvm() {
         // not implemented yet
@@ -190,16 +219,19 @@ cookbook_path "${pathJoin(chefSoloDir, "cookbooks")}"
             return shellOut("which $binary")
         }
     }
+    def getGemsBinPath() {
+        return shellOut("gem env").split("\n").find { it =~ "EXECUTABLE DIRECTORY" }.split(":")[1].stripIndent()
+    }
     def getChefBinPath() {
         def path
         switch (chefConfig.installFlavor) {
             case "gem":
                 if (! which("gem").isEmpty()) {
-                    path = shellOut("gem env").split("\n").find { it =~ "EXECUTABLE DIRECTORY" }.split(":")[1].stripIndent()
+                    path = getGemsBinPath()
                 } else { path = "" }
                 break
             case "fatBinary":
-                path = "/opt/opscode/bin"
+                path = "/opt/chef/bin"
                 break
             default:
                 path = binPath
@@ -208,6 +240,26 @@ cookbook_path "${pathJoin(chefSoloDir, "cookbooks")}"
     }
     def getConfig() {
         return chefConfig
+    }
+    def getCookbooksWithBerkshelf() {
+        runApply("chef_gem \"berkshelf\"")
+        def gemBinPath
+        def chefSoloDir = getChefSoloDir()
+        if (chefConfig.installFlavor == "fatBinary") {
+            gemBinPath = "/opt/chef/embedded/bin"
+        } else {
+            gemBinPath = getGemsBinPath()
+        }
+        new AntBuilder().exec(executable:"${gemBinPath}/berks", dir:context.getServiceDirectory()) {
+            ["install", "--path", "${pathJoin(chefSoloDir, "cookbooks")}"].each{arg(value:it)}
+        }
+    }
+    protected gemInstallGem(gem) {
+        // TODO: adapt for rvm
+        sudo("gem install ${gem} --no-ri --no-rdoc")
+    }
+    private getChefSoloDir() {
+        pathJoin(getTmpDir(), "chef-solo")
     }
 }
 
@@ -252,6 +304,16 @@ class RHELBootstrap extends ChefBootstrap {
     def gemInstall() {
         sudo("gem update --system")
         super.gemInstall()
+    }
+    private isURL(String urlString) {
+        try { 
+            urlString.toURL()   
+            return true
+        } catch (java.net.MalformedURLException e) {
+            return false   
+        } catch (java.lang.NullPointerException e) { 
+            return false
+        }
     }
 }
 
