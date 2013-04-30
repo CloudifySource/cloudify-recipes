@@ -14,6 +14,7 @@
 * limitations under the License.
 *******************************************************************************/
 import org.cloudifysource.dsl.context.ServiceContextFactory
+import org.cloudifysource.dsl.utils.ServiceUtils
 
 def context = ServiceContextFactory.getServiceContext()
 def config = new ConfigSlurper().parse(new File("${context.serviceDirectory}/tomcat-service.properties").toURL())
@@ -36,8 +37,8 @@ new AntBuilder().sequential {
 	
 	if ( config.downloadPath.toLowerCase().startsWith("http") || config.downloadPath.toLowerCase().startsWith("ftp")) {
 		echo(message:"Getting ${config.downloadPath} to ${installDir}/${config.zipName} ...")
-		get(src:"${config.downloadPath}", dest:"${installDir}/${config.zipName}", skipexisting:true)
-	}
+		ServiceUtils.getDownloadUtil().get("${config.downloadPath}", "${installDir}/${config.zipName}", true, "${config.hashDownloadPath}")
+	}		
 	else {
 		echo(message:"Copying ${context.serviceDirectory}/${config.downloadPath} to ${installDir}/${config.zipName} ...")
 		copy(tofile: "${installDir}/${config.zipName}", file:"${context.serviceDirectory}/${config.downloadPath}", overwrite:false)
@@ -51,7 +52,7 @@ if ( warUrl ) {
 	new AntBuilder().sequential {
 		if ( warUrl.toLowerCase().startsWith("http") || warUrl.toLowerCase().startsWith("ftp")) {
 			echo(message:"Getting ${warUrl} to ${applicationWar} ...")
-			get(src:"${warUrl}", dest:"${applicationWar}", skipexisting:false)
+			ServiceUtils.getDownloadUtil().get("${warUrl}", "${applicationWar}", false)
 		}
 		else {
 			echo(message:"Copying ${context.serviceDirectory}/${warUrl} to ${applicationWar} ...")

@@ -13,11 +13,12 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 *******************************************************************************/
+import org.cloudifysource.dsl.utils.ServiceUtils
 config = new ConfigSlurper().parse(new File("activemq.properties").toURL())
 
 new AntBuilder().sequential {
 	mkdir(dir:config.installDir)
-	get(src:config.downloadPath, dest:"${config.installDir}/${config.zipName}", skipexisting:true)
+	ServiceUtils.getDownloadUtil().get("${config.downloadPath}", "${config.installDir}/${config.zipName}", true, "${config.hashDownloadPath}")
 	unzip(src:"${config.installDir}/${config.zipName}", dest:config.installDir, overwrite:true)
 	//dos2unix on the linux script files
 	fixcrlf(srcDir:"${config.installDir}/${config.name}/bin", eol:"lf", eof:"remove", excludes:"*.bat *.jar")
