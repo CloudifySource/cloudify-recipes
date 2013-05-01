@@ -24,7 +24,7 @@ service {
 	numInstances 1
 
     compute {
-        template "MEDIUM_LINUX"
+        template "SMALL_LINUX_x64" // Chef server does not support 32bit
     }
 
 	lifecycle{
