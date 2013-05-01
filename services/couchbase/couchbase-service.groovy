@@ -16,7 +16,7 @@
 service {
 	
 	name serviceName
-	icon "couchbase.jpg"
+	icon "couchbase.png"
 	type "NOSQL_DB"
 	elastic true
 	numInstances 2
