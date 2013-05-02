@@ -15,7 +15,6 @@
 *******************************************************************************/
 import java.util.concurrent.TimeUnit
 import org.cloudifysource.dsl.context.ServiceContextFactory
-import org.cloudifysource.dsl.utils.ServiceUtils
 
 config = new ConfigSlurper().parse(new File("cassandra.properties").toURL())
 
@@ -26,7 +25,7 @@ installDir = System.properties["user.home"]+ "/.cloudify/${config.serviceName}" 
 
 new AntBuilder().sequential {
 	mkdir(dir:installDir)
-	ServiceUtils.getDownloadUtil().get("${config.downloadPath}", "${installDir}/${config.zipName}", true, "${config.hashDownloadPath}")
+	get(src:config.downloadPath, dest:"${installDir}/${config.zipName}", skipexisting:true)
 	untar(src:"${installDir}/${config.zipName}", dest:installDir, compression:"gzip")
 	move(file:"${installDir}/${config.unzipFolder}", tofile:"${home}")
 	chmod(dir:"${home}/bin", perm:'+x', excludes:"*.bat")

@@ -57,7 +57,6 @@ def installWindowsHttpd(config,osConfig,downloadFile,builder) {
 			echo(message:"apacheLB_install.groovy: installing on Windows...")
 			mkdir(dir:"install")
 			mkdir(dir:"${config.downloadFolder}")
-			ServiceUtils.getDownloadUtil().get("${osConfig.downloadUrl}", "${downloadFile}", true, "${osConfig.hashDownloadUrl}")
 			get(src:"${osConfig.downloadUrl}", dest:"${downloadFile}", skipexisting:true)
 			unzip(src:"${downloadFile}", dest:"install", overwrite:true)
 			copy( todir:'install' ) {
