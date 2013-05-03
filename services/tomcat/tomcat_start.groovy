@@ -67,22 +67,22 @@ println "tomcat_start.groovy: Additional java opts are ${javaOpts}"
 
 new AntBuilder().sequential {
 	exec(executable:"${script}.sh", osfamily:"unix") {
+		env(key:"CLASSPATH", value: "") // reset CP to avoid side effects (Cloudify passes all the required files to Groovy in the classpath)
 		envVar.each{
 			env(key:it.key, value:it.value)
 		}
 		env(key:"CATALINA_HOME", value: "${home}")
 		env(key:"CATALINA_BASE", value: "${home}")
-		env(key:"CATALINA_TMPDIR", value: "${home}/temp")
 		env(key:"CATALINA_OPTS", value:"-Dcom.sun.management.jmxremote.port=${currJmxPort} -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false ${javaOpts}")
 		arg(value:"run")
 	}
 	exec(executable:"${script}.bat", osfamily:"windows") { 
+		env(key:"CLASSPATH", value: "") // reset CP to avoid side effects (Cloudify passes all the required files to Groovy in the classpath)
 		envVar.each{
 			env(key:it.key, value:it.value)
 		}
 		env(key:"CATALINA_HOME", value: "${home}")
 		env(key:"CATALINA_BASE", value: "${home}")
-		env(key:"CATALINA_TMPDIR", value: "${home}/temp")
 		env(key:"CATALINA_OPTS", value:"-Dcom.sun.management.jmxremote.port=${currJmxPort} -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false ${javaOpts}")
 		arg(value:"run")
 	}

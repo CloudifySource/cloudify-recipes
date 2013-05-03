@@ -30,15 +30,15 @@ println "tomcat_stop.groovy: tomcat(${instanceID}) script ${script}"
 println "tomcat_stop.groovy: executing command ${script}"
 new AntBuilder().sequential {
 	exec(executable:"${script}.sh", osfamily:"unix") {
-        env(key:"CATALINA_HOME", value: "${home}")
-    env(key:"CATALINA_BASE", value: "${home}")
-    env(key:"CATALINA_TMPDIR", value: "${home}/temp")
+		env(key:"CLASSPATH", value: "") // reset CP to avoid side effects (Cloudify passes all the required files to Groovy in the classpath)
+		env(key:"CATALINA_HOME", value: "${home}")
+		env(key:"CATALINA_BASE", value: "${home}")
 		arg(value:"stop")
 	}
 	exec(executable:"${script}.bat", osfamily:"windows"){
-        env(key:"CATALINA_HOME", value: "${home}")
-    env(key:"CATALINA_BASE", value: "${home}")
-    env(key:"CATALINA_TMPDIR", value: "${home}/temp")
+		env(key:"CLASSPATH", value: "") // reset CP to avoid side effects (Cloudify passes all the required files to Groovy in the classpath)
+		env(key:"CATALINA_HOME", value: "${home}")
+		env(key:"CATALINA_BASE", value: "${home}")
 		arg(value:"stop")
 	}
 }
