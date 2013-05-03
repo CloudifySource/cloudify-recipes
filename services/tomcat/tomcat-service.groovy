@@ -70,6 +70,7 @@ service {
 			return getJmxMetrics("127.0.0.1",currJmxPort,metricNamesToMBeansNames)
 		}
 		
+		init    "tomcat_init.groovy"
 		install "tomcat_install.groovy"
 		start   "tomcat_start.groovy"
 		preStop "tomcat_stop.groovy"
