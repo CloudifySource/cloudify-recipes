@@ -14,34 +14,28 @@
 * limitations under the License.
 *******************************************************************************/
 import org.cloudifysource.dsl.context.ServiceContextFactory
+import org.cloudifysource.dsl.utils.ServiceUtils
+
 println "tomcat_stop.groovy: About to stop tomcat..."
 
-def serviceContext = ServiceContextFactory.getServiceContext()
+def context = ServiceContextFactory.getServiceContext()
 
-def instanceId = serviceContext.instanceId
-def home= serviceContext.attributes.thisInstance["home"]
-println "tomcat_stop.groovy: tomcat(${instanceId}) home ${home}"
+def catalinaHome = context.attributes.thisInstance["catalinaHome"]
+def catalinaBase = context.attributes.thisInstance["catalinaBase"]
 
-def script= serviceContext.attributes.thisInstance["script"]
-if (script) {
-println "tomcat_stop.groovy: tomcat(${instanceId}) script ${script}"
-
-
-println "tomcat_stop.groovy: executing command ${script}"
 new AntBuilder().sequential {
-	exec(executable:"${script}.sh", osfamily:"unix") {
+	exec(executable:"${catalinaHome}/bin/catalina.sh", osfamily:"unix") {
 		env(key:"CLASSPATH", value: "") // reset CP to avoid side effects (Cloudify passes all the required files to Groovy in the classpath)
-		env(key:"CATALINA_HOME", value: "${home}")
-		env(key:"CATALINA_BASE", value: "${home}")
+		env(key:"CATALINA_HOME", value: "${catalinaHome}")
+		env(key:"CATALINA_BASE", value: "${catalinaBase}")
 		arg(value:"stop")
 	}
-	exec(executable:"${script}.bat", osfamily:"windows"){
+	exec(executable:"${catalinaHome}/bin/catalina.bat", osfamily:"windows"){
 		env(key:"CLASSPATH", value: "") // reset CP to avoid side effects (Cloudify passes all the required files to Groovy in the classpath)
-		env(key:"CATALINA_HOME", value: "${home}")
-		env(key:"CATALINA_BASE", value: "${home}")
+		env(key:"CATALINA_HOME", value: "${catalinaHome}")
+		env(key:"CATALINA_BASE", value: "${catalinaBase}")
 		arg(value:"stop")
 	}
 }
 
 println "tomcat_stop.groovy: tomcat is stopped"
-}

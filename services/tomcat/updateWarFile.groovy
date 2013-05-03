@@ -21,24 +21,31 @@ def context = ServiceContextFactory.getServiceContext()
 def config  = new ConfigSlurper().parse(new File("${context.serviceDirectory}/tomcat-service.properties").toURL())
 def instanceId = context.instanceId
 
-installDir = System.properties["user.home"]+ "/.cloudify/${config.serviceName}" + instanceId
-applicationWar = "${installDir}/${config.warName}"
+def warUrl=context.attributes.thisService["warUrl"] 
+println "updateWarFile.groovy: warUrl is ${warUrl}"
 
-newWarFile=context.attributes.thisService["warUrl"] 
-println "updateWarFile.groovy: newWarFile is ${newWarFile}"
+if (! warUrl) return "warUrl is null. So we do nothing."
 
-home = context.attributes.thisInstance["home"]
-webApps="${home}/webapps"
-destWarFile="${webApps}/${config.warName}"
-println "updateWarFile.groovy: destWarFile is ${destWarFile}"
+def catalinaBase = context.attributes.thisInstance["catalinaBase"]
+def contextPath = context.attributes.thisInstance["contextPath"]
+def appBase="${catalinaBase}/webapps"
+
+def installDir = System.properties["user.home"]+ "/.cloudify/${config.serviceName}" + instanceId
+def applicationWar = "${installDir}/${config.warName?: new File(warUrl).name}"
+
 
 new AntBuilder().sequential {
 	
-	echo(message:"updateWarFile.groovy: Getting ${newWarFile} ...")
-	get(src:"${newWarFile}", dest:"${applicationWar}", skipexisting:false)
-	
-	echo(message:"updateWarFile.groovy: Copying ${applicationWar} to ${webApps}...")
-	copy(todir: "${webApps}", file:"${applicationWar}", overwrite:true)	
+	if ( warUrl.toLowerCase().startsWith("http") || warUrl.toLowerCase().startsWith("ftp") || warUrl.toLowerCase().startsWith("file")) {
+		echo(message:"Getting ${warUrl} to ${applicationWar} ...")
+		get(src:"${warUrl}", dest:"${applicationWar}", skipexisting:false)
+	}
+	else {
+		echo(message:"Copying ${context.serviceDirectory}/${warUrl} to ${applicationWar} ...")
+		copy(tofile: "${applicationWar}", file:"${context.serviceDirectory}/${warUrl}", overwrite:true)
+	}
+	echo(message:"Copying ${applicationWar} to ${appBase}...")
+	copy(todir: "${appBase}", file:"${applicationWar}", overwrite:true)
 }
 
 println "updateWarFile.groovy: End"

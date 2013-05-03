@@ -17,3 +17,31 @@ if (!config.containsKey('shutdownPort')) println "tomcat_init.groovy: 'shutdownP
 if (!config.containsKey('jmxPort')) println "tomcat_init.groovy: 'jmxPort' is required."
 if (!config.containsKey('useLoadBalancer')) println "tomcat_init.groovy: 'useLoadBalancer' is required."
 
+// Load the configuration
+def catalinaHome = config.catalinaHome? config.catalinaHome : "${context.serviceDirectory}/${config.name}"
+def catalinaBase = config.catalinaBase? config.catalinaBase : catalinaHome
+def catalinaOpts = config.catalinaOpts? config.catalinaOpts : ""
+def javaOpts = config.javaOpts? config.javaOpts : ""
+def contextPath = contextPath? contextPath : 
+	(context.applicationName != "default")? context.applicationName : "ROOT"
+
+context.attributes.thisInstance["catalinaHome"] = "${catalinaHome}"
+println "tomcat_init.groovy: tomcat(${instanceId}) catalinaHome is ${catalinaHome}"
+context.attributes.thisInstance["catalinaBase"] = "${catalinaBase}"
+println "tomcat_init.groovy: tomcat(${instanceId}) catalinaBase is ${catalinaBase}"
+context.attributes.thisInstance["catalinaOpts"] = "${catalinaOpts}"
+println "tomcat_init.groovy: tomcat(${instanceId}) catalinaOpts is ${catalinaOpts}"
+context.attributes.thisInstance["javaOpts"] = "${javaOpts}"
+println "tomcat_init.groovy: tomcat(${instanceId}) javaOpts is ${javaOpts}"
+context.attributes.thisInstance["contextPath"] = "${contextPath}"
+println "tomcat_init.groovy: tomcat(${instanceId}) contextPath is ${contextPath}"
+context.attributes.thisInstance["envVar"] = config.envVar
+println "tomcat_init.groovy: tomcat(${instanceId}) envVar is ${config.envVar}"
+
+// 'warUrl' can have been set by a customCommand (if self-healing, auto-scaling, etc.)
+warUrl = context.attributes.thisService["warUrl"]
+if ( warUrl == null ) {  
+	if ( config.containsKey("applicationWarUrl") ) {  
+		context.attributes.thisService["warUrl"] = config.applicationWarUrl
+	}
+}
