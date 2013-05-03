@@ -20,14 +20,14 @@ def config = new ConfigSlurper().parse(new File("tomcat-service.properties").toU
 
 println "tomcat_start.groovy: Calculating mongoServiceHost..."
 def serviceContext = ServiceContextFactory.getServiceContext()
-def instanceID = serviceContext.getInstanceId()
-println "tomcat_start.groovy: This tomcat instance ID is ${instanceID}"
+def instanceId = serviceContext.getInstanceId()
+println "tomcat_start.groovy: This tomcat instance Id is ${instanceId}"
 
 def home= serviceContext.attributes.thisInstance["home"]
-println "tomcat_start.groovy: tomcat(${instanceID}) home ${home}"
+println "tomcat_start.groovy: tomcat(${instanceId}) home ${home}"
 
 def script= serviceContext.attributes.thisInstance["script"]
-println "tomcat_start.groovy: tomcat(${instanceID}) script ${script}"
+println "tomcat_start.groovy: tomcat(${instanceId}) script ${script}"
 
 def envVar= config.envVar
 
@@ -50,7 +50,7 @@ println "tomcat_start.groovy executing ${script}"
 
 portIncrement = 0
 if (serviceContext.isLocalCloud()) {
-	portIncrement = instanceID - 1  
+	portIncrement = instanceId - 1  
 }
 
 currJmxPort=config.jmxPort+portIncrement

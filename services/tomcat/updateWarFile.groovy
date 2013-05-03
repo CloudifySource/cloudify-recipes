@@ -17,11 +17,11 @@ import org.cloudifysource.dsl.context.ServiceContextFactory
 
 println "updateWarFile.groovy: Starting..."
 
-context = ServiceContextFactory.getServiceContext()
-config  = new ConfigSlurper().parse(new File("${context.serviceDirectory}/tomcat-service.properties").toURL())
+def context = ServiceContextFactory.getServiceContext()
+def config  = new ConfigSlurper().parse(new File("${context.serviceDirectory}/tomcat-service.properties").toURL())
+def instanceId = context.instanceId
 
-def instanceID = context.getInstanceId()
-installDir = System.properties["user.home"]+ "/.cloudify/${config.serviceName}" + instanceID
+installDir = System.properties["user.home"]+ "/.cloudify/${config.serviceName}" + instanceId
 applicationWar = "${installDir}/${config.warName}"
 
 newWarFile=context.attributes.thisService["warUrl"] 
@@ -43,5 +43,3 @@ new AntBuilder().sequential {
 
 println "updateWarFile.groovy: End"
 return true
-
-

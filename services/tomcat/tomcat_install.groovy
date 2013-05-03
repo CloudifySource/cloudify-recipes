@@ -17,7 +17,7 @@ import org.cloudifysource.dsl.context.ServiceContextFactory
 
 def config = new ConfigSlurper().parse(new File("tomcat-service.properties").toURL())
 def context = ServiceContextFactory.getServiceContext()
-def instanceID = context.getInstanceId()
+def instanceId = context.getInstanceId()
 
 def ctxPath=("default" == context.applicationName)?"":"${context.applicationName}"
 
@@ -28,7 +28,7 @@ def script = "${home}/bin/catalina"
 
 context.attributes.thisInstance["home"] = "${home}"
 context.attributes.thisInstance["script"] = "${script}"
-println "tomcat_install.groovy: tomcat(${instanceID}) home is ${home}"
+println "tomcat_install.groovy: tomcat(${instanceId}) home is ${home}"
 
 
 warUrl= context.attributes.thisService["warUrl"]
@@ -36,7 +36,7 @@ if ( warUrl == null ) {
 	warUrl = "${config.applicationWarUrl}"
 }
 
-installDir = System.properties["user.home"]+ "/.cloudify/${config.serviceName}" + instanceID
+installDir = System.properties["user.home"]+ "/.cloudify/${config.serviceName}" + instanceId
 applicationWar = "${installDir}/${config.warName}"
 
 //download apache tomcat
@@ -73,7 +73,7 @@ if ( warUrl != null && "${warUrl}" != "" ) {
 
 portIncrement = 0
 if (context.isLocalCloud()) {
-  portIncrement = instanceID - 1
+  portIncrement = instanceId - 1
   println "tomcat_install.groovy: Replacing default tomcat port with port ${config.port + portIncrement}"
 }
 

@@ -18,13 +18,13 @@ println "tomcat_stop.groovy: About to stop tomcat..."
 
 def serviceContext = ServiceContextFactory.getServiceContext()
 
-def instanceID=serviceContext.instanceId
+def instanceId = serviceContext.instanceId
 def home= serviceContext.attributes.thisInstance["home"]
-println "tomcat_stop.groovy: tomcat(${instanceID}) home ${home}"
+println "tomcat_stop.groovy: tomcat(${instanceId}) home ${home}"
 
 def script= serviceContext.attributes.thisInstance["script"]
 if (script) {
-println "tomcat_stop.groovy: tomcat(${instanceID}) script ${script}"
+println "tomcat_stop.groovy: tomcat(${instanceId}) script ${script}"
 
 
 println "tomcat_stop.groovy: executing command ${script}"
