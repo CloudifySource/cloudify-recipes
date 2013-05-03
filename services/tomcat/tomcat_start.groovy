@@ -16,7 +16,7 @@
 import org.cloudifysource.dsl.context.ServiceContextFactory
 import java.util.concurrent.TimeUnit
 
-def config=new ConfigSlurper().parse(new File("tomcat-service.properties").toURL())
+def config = new ConfigSlurper().parse(new File("tomcat-service.properties").toURL())
 
 println "tomcat_start.groovy: Calculating mongoServiceHost..."
 def serviceContext = ServiceContextFactory.getServiceContext()
@@ -29,28 +29,28 @@ println "tomcat_start.groovy: tomcat(${instanceID}) home ${home}"
 def script= serviceContext.attributes.thisInstance["script"]
 println "tomcat_start.groovy: tomcat(${instanceID}) script ${script}"
 
-if ( !(config.dbServiceName) ||  "${config.dbServiceName}"=="NO_DB_REQUIRED") {
-	println "Using dummy db host(DUMMY_HOST) and port(0)"
-	dbServiceHost="DUMMY_HOST"
-	dbServicePort="0"
-}
-else {
+def envVar= config.envVar
+
+if ( config.dbServiceName &&  "${config.dbServiceName}" != "NO_DB_REQUIRED") {
 	println "tomcat_start.groovy: waiting for ${config.dbServiceName}..."
 	def dbService = serviceContext.waitForService(config.dbServiceName, 20, TimeUnit.SECONDS) 
 	def dbInstances = dbService.waitForInstances(dbService.numberOfPlannedInstances, 60, TimeUnit.SECONDS) 
-    dbServiceHost = dbInstances[0].hostAddress
+	def dbServiceHost = dbInstances[0].hostAddress
+	envVar.put(config.dbHostVarName, "${dbServiceHost}")
 	println "tomcat_start.groovy: ${config.dbServiceName} host is ${dbServiceHost}"
 	def dbServiceInstances = serviceContext.attributes[config.dbServiceName].instances
 	dbServicePort = dbServiceInstances[1].port
+	envVar.put(config.dbPortVarName, "${dbServicePort}")
 	println "tomcat_start.groovy: ${config.dbServiceName} port is ${dbServicePort}"
 }
+println "tomcat_start.groovy: tomcat(${instanceId}) envVar ${envVar}"
 
 
 println "tomcat_start.groovy executing ${script}"
 
 portIncrement = 0
 if (serviceContext.isLocalCloud()) {
-  portIncrement = instanceID - 1  
+	portIncrement = instanceID - 1  
 }
 
 currJmxPort=config.jmxPort+portIncrement
@@ -67,21 +67,23 @@ println "tomcat_start.groovy: Additional java opts are ${javaOpts}"
 
 new AntBuilder().sequential {
 	exec(executable:"${script}.sh", osfamily:"unix") {
-        env(key:"CATALINA_HOME", value: "${home}")
-        env(key:"CATALINA_BASE", value: "${home}")
-        env(key:"CATALINA_TMPDIR", value: "${home}/temp")
+		envVar.each{
+			env(key:it.key, value:it.value)
+		}
+		env(key:"CATALINA_HOME", value: "${home}")
+		env(key:"CATALINA_BASE", value: "${home}")
+		env(key:"CATALINA_TMPDIR", value: "${home}/temp")
 		env(key:"CATALINA_OPTS", value:"-Dcom.sun.management.jmxremote.port=${currJmxPort} -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false ${javaOpts}")
-        env(key:"${config.dbHostVarName}", value: "${dbServiceHost}")
-        env(key:"${config.dbPortVarName}", value: "${dbServicePort}")		
 		arg(value:"run")
 	}
 	exec(executable:"${script}.bat", osfamily:"windows") { 
-        env(key:"CATALINA_HOME", value: "${home}")
-        env(key:"CATALINA_BASE", value: "${home}")
-        env(key:"CATALINA_TMPDIR", value: "${home}/temp")
+		envVar.each{
+			env(key:it.key, value:it.value)
+		}
+		env(key:"CATALINA_HOME", value: "${home}")
+		env(key:"CATALINA_BASE", value: "${home}")
+		env(key:"CATALINA_TMPDIR", value: "${home}/temp")
 		env(key:"CATALINA_OPTS", value:"-Dcom.sun.management.jmxremote.port=${currJmxPort} -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false ${javaOpts}")
-        env(key:"${config.dbHostVarName}", value: "${dbServiceHost}")
-        env(key:"${config.dbPortVarName}", value: "${dbServicePort}")	
 		arg(value:"run")
 	}
 }
