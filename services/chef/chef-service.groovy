@@ -26,7 +26,7 @@ service {
 
     lifecycle {
         install {
-            ChefBootstrap.getBootstrap(context: context, installFlavor: "gem").install()
+            ChefBootstrap.getBootstrap(context: context).install() // default installation method defined in chef.properties
         }
         start {
             def chefServerURL = context.attributes.global["chef_server_url"]
