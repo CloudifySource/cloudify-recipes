@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 GigaSpaces Technologies Ltd. All rights reserved
+ * Copyright (c) 2013 GigaSpaces Technologies Ltd. All rights reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,6 +74,7 @@ def static startProcess(command, Map env=[:]) {
 }
 // overload shellify to handle different types
 def static shellify_cmd(java.util.ArrayList command) {
+    // TODO: we should add quote to protect each word
     return ["/bin/sh", "-c", command.join(" ")]
 }
 
@@ -93,6 +94,7 @@ def static sudo(command, Map opts=[:]) {
 }
 
 def static sudo(java.util.ArrayList command, Map opts=[:]) {
+    // TODO: we should add quotes to protect each word
     return sudo(command.join(" "), opts)
 }
 
