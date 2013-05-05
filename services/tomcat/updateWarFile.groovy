@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2012 GigaSpaces Technologies Ltd. All rights reserved
+* Copyright (c) 2013 GigaSpaces Technologies Ltd. All rights reserved
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -17,31 +17,40 @@ import org.cloudifysource.dsl.context.ServiceContextFactory
 
 println "updateWarFile.groovy: Starting..."
 
-context = ServiceContextFactory.getServiceContext()
-config  = new ConfigSlurper().parse(new File("${context.serviceDirectory}/tomcat-service.properties").toURL())
+def context = ServiceContextFactory.getServiceContext()
+def config  = new ConfigSlurper().parse(new File("${context.serviceDirectory}/tomcat-service.properties").toURL())
+def instanceId = context.instanceId
 
-def instanceID = context.getInstanceId()
-installDir = System.properties["user.home"]+ "/.cloudify/${config.serviceName}" + instanceID
-applicationWar = "${installDir}/${config.warName}"
+def warUrl=context.attributes.thisService["warUrl"] 
+println "updateWarFile.groovy: warUrl is ${warUrl}"
 
-newWarFile=context.attributes.thisService["warUrl"] 
-println "updateWarFile.groovy: newWarFile is ${newWarFile}"
+if (! warUrl) return "warUrl is null. So we do nothing."
 
-home = context.attributes.thisInstance["home"]
-webApps="${home}/webapps"
-destWarFile="${webApps}/${config.warName}"
-println "updateWarFile.groovy: destWarFile is ${destWarFile}"
+def catalinaBase = context.attributes.thisInstance["catalinaBase"]
+def contextPath = context.attributes.thisInstance["contextPath"]
+
+def installDir = System.properties["user.home"]+ "/.cloudify/${config.serviceName}" + instanceId
+def applicationWar = "${installDir}/${config.warName?: new File(warUrl).name}"
 
 new AntBuilder().sequential {
-	
-	echo(message:"updateWarFile.groovy: Getting ${newWarFile} ...")
-	get(src:"${newWarFile}", dest:"${applicationWar}", skipexisting:false)
-	
-	echo(message:"updateWarFile.groovy: Copying ${applicationWar} to ${webApps}...")
-	copy(todir: "${webApps}", file:"${applicationWar}", overwrite:true)	
+	if ( warUrl.toLowerCase().startsWith("http") || warUrl.toLowerCase().startsWith("ftp") || warUrl.toLowerCase().startsWith("file")) {
+		echo(message:"Getting ${warUrl} to ${applicationWar} ...")
+		get(src:"${warUrl}", dest:"${applicationWar}", skipexisting:false)
+	}
+	else {
+		echo(message:"Copying ${context.serviceDirectory}/${warUrl} to ${applicationWar} ...")
+		copy(tofile: "${applicationWar}", file:"${context.serviceDirectory}/${warUrl}", overwrite:true)
+	}
 }
+
+File ctxConf = new File("${catalinaBase}/conf/Catalina/localhost/${contextPath}.xml")
+if (ctxConf.exists()) {
+	assert ctxConf.delete()
+} else {
+	new File(ctxConf.getParent()).mkdirs()
+}
+assert ctxConf.createNewFile()
+ctxConf.append("<Context docBase=\"${applicationWar}\" />")
 
 println "updateWarFile.groovy: End"
 return true
-
-

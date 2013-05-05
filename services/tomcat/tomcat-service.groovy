@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2012 GigaSpaces Technologies Ltd. All rights reserved
+* Copyright (c) 2013 GigaSpaces Technologies Ltd. All rights reserved
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -26,156 +26,145 @@ service {
 	minAllowedInstances 1
 	maxAllowedInstances 2
 	
-	def portIncrement =  context.isLocalCloud() ? context.getInstanceId()-1 : 0		
+	def config = new ConfigSlurper().parse(new File("${context.serviceDirectory}/tomcat-service.properties").toURL())
+	def instanceId = context.instanceId
 	
+	def portIncrement = context.isLocalCloud() ? instanceId-1 : 0
 	def currJmxPort = jmxPort + portIncrement
 	def currHttpPort = port + portIncrement
 	def currAjpPort = ajpPort + portIncrement
-		
+	
 	compute {
 		template "SMALL_LINUX"
 	}
 
 	lifecycle {
-	
-	
+		
 		details {
 			def currPublicIP
 			
-			if (  context.isLocalCloud()  ) {
+			if (  context.isLocalCloud()  ) { // CLOUDIFY-1696
 				currPublicIP = InetAddress.localHost.hostAddress
 			}
 			else {
-				currPublicIP = context.getPublicAddress()
+				currPublicIP = context.publicAddress
 			}
-			def tomcatURL = "http://${currPublicIP}:${currHttpPort}"	
-		
-			def ctxPath = ("default" == context.applicationName) ? "" : "${context.applicationName}"
-			def applicationURL = "${tomcatURL}/${ctxPath}"
+			
+			def contextPath = context.attributes.thisInstance["contextPath"]
+			if (contextPath == 'ROOT') contextPath="" // ROOT means "" by convention in Tomcat
+			def applicationURL = "http://${currPublicIP}:${currHttpPort}/${contextPath}"
 			println "tomcat-service.groovy: applicationURL is ${applicationURL}"
-		
-            return [
-                "Application URL":"<a href=\"${applicationURL}\" target=\"_blank\">${applicationURL}</a>"
-            ]
-		}	
+			
+			return [
+				"Application URL":"<a href=\"${applicationURL}\" target=\"_blank\">${applicationURL}</a>"
+			]
+		}
 
 		monitors {
-		
-			def ctxPath = ("default" == context.applicationName) ? "" : "${context.applicationName}"
-							
+			def contextPath = context.attributes.thisInstance["contextPath"]
+			if (contextPath == 'ROOT') contextPath="" // ROOT means "" by convention in Tomcat
 			def metricNamesToMBeansNames = [
-				"Current Http Threads Busy": ["Catalina:type=ThreadPool,name=\"http-bio-${currHttpPort}\"", "currentThreadsBusy"],				
-				"Current Http Thread Count": ["Catalina:type=ThreadPool,name=\"http-bio-${currHttpPort}\"", "currentThreadCount"],				
-				"Backlog": ["Catalina:type=ProtocolHandler,port=${currHttpPort}", "backlog"],				
-				"Total Requests Count": ["Catalina:type=GlobalRequestProcessor,name=\"http-bio-${currHttpPort}\"", "requestCount"],				
-				"Active Sessions": ["Catalina:type=Manager,context=/${ctxPath},host=localhost", "activeSessions"],
+				"Current Http Threads Busy": ["Catalina:type=ThreadPool,name=\"http-bio-${currHttpPort}\"", "currentThreadsBusy"],
+				"Current Http Thread Count": ["Catalina:type=ThreadPool,name=\"http-bio-${currHttpPort}\"", "currentThreadCount"],
+				"Backlog": ["Catalina:type=ProtocolHandler,port=${currHttpPort}", "backlog"],
+				"Total Requests Count": ["Catalina:type=GlobalRequestProcessor,name=\"http-bio-${currHttpPort}\"", "requestCount"],
+				"Active Sessions": ["Catalina:type=Manager,context=/${contextPath},host=localhost", "activeSessions"],
 			]
-			
-			return getJmxMetrics("127.0.0.1",currJmxPort,metricNamesToMBeansNames)										
-    	}			
-	
+			return getJmxMetrics("127.0.0.1",currJmxPort,metricNamesToMBeansNames)
+		}
+		
+		init    "tomcat_init.groovy"
 		install "tomcat_install.groovy"
-		start "tomcat_start.groovy"		
+		start   "tomcat_start.groovy"
 		preStop "tomcat_stop.groovy"
 		
 		startDetectionTimeoutSecs 240
 		startDetection {
 			println "tomcat-service.groovy(startDetection): arePortsFree http=${currHttpPort} ajp=${currAjpPort} ..."
 			!ServiceUtils.arePortsFree([currHttpPort, currAjpPort] )
-		}	
+		}
 		
-		def instanceID = context.instanceId
 		
-		postStart {			
+		postStart {
 			if ( useLoadBalancer ) { 
 				println "tomcat-service.groovy: tomcat Post-start ..."
-				def apacheService = context.waitForService("apacheLB", 180, TimeUnit.SECONDS)			
+				def apacheService = context.waitForService("apacheLB", 180, TimeUnit.SECONDS)
 				println "tomcat-service.groovy: invoking add-node of apacheLB ..."
-					
-				def ctxPath = ("default" == context.applicationName)?"":"${context.applicationName}"				
 				
 				def privateIP
-				if ( context.isLocalCloud() ) {
-					privateIP = InetAddress.getLocalHost().getHostAddress()
+				if ( context.isLocalCloud() ) { // CLOUDIFY-1696
+					privateIP = InetAddress.localHost.hostAddress
 				}
 				else {
-					privateIP =System.getenv()["CLOUDIFY_AGENT_ENV_PRIVATE_IP"]
+					privateIP = context.privateAddress
 				}
 				println "tomcat-service.groovy: privateIP is ${privateIP} ..."
 				
-				def currURL="http://${privateIP}:${currHttpPort}/${ctxPath}"
+				def contextPath = context.attributes.thisInstance["contextPath"]
+				if (contextPath == 'ROOT') contextPath="" // ROOT means "" by convention in Tomcat
+				def currURL="http://${privateIP}:${currHttpPort}/${contextPath}"
 				println "tomcat-service.groovy: About to add ${currURL} to apacheLB ..."
-				apacheService.invoke("addNode", currURL as String, instanceID as String)			                 
+				apacheService.invoke("addNode", currURL as String, instanceId as String)
 				println "tomcat-service.groovy: tomcat Post-start ended"
-			}			
+			}
 		}
 		
 		postStop {
 			if ( useLoadBalancer ) { 
 				println "tomcat-service.groovy: tomcat Post-stop ..."
 				try { 
-					def apacheService = context.waitForService("apacheLB", 180, TimeUnit.SECONDS)			
-						
+					def apacheService = context.waitForService("apacheLB", 180, TimeUnit.SECONDS)
+					
 					if ( apacheService != null ) { 
-						def ctxPath = ("default" == context.applicationName)?"":"${context.applicationName}"
-						println "tomcat-service.groovy: postStop ctxPath is ${ctxPath}"				
-						
 						def privateIP
-						if (  context.isLocalCloud()  ) {
+						if (  context.isLocalCloud()  ) { // CLOUDIFY-1696
 							privateIP = InetAddress.localHost.hostAddress
 						}
 						else {
 							privateIP =System.getenv()["CLOUDIFY_AGENT_ENV_PRIVATE_IP"]
-						}				
-						
+						}
 						println "tomcat-service.groovy: privateIP is ${privateIP} ..."
-						def currURL="http://${privateIP}:${currHttpPort}/${ctxPath}"
-						println "tomcat-service.groovy: About to remove ${currURL} from apacheLB ..."						
-						apacheService.invoke("removeNode", currURL as String, instanceID as String)
+						def contextPath = context.attributes.thisInstance["contextPath"]
+						if (contextPath == 'ROOT') contextPath="" // ROOT means "" by convention in Tomcat
+						def currURL="http://${privateIP}:${currHttpPort}/${contextPath}"
+						println "tomcat-service.groovy: About to remove ${currURL} from apacheLB ..."
+						apacheService.invoke("removeNode", currURL as String, instanceId as String)
 					}
 					else {
-						println "tomcat-service.groovy: waitForService returned apacheLB null"
+						println "tomcat-service.groovy: waitForService apacheLB returned null"
 					}
 				}
-				catch (all) {		
+				catch (all) {
 					println "tomcat-service.groovy: Exception in Post-stop: " + all
-				} 
+				}
 				println "tomcat-service.groovy: tomcat Post-stop ended"
-			}			
-		}		
-		
+			}
+		}
 	}
 
-	customCommands ([       	
+	customCommands ([
 		"updateWar" : {warUrl -> 
 			println "tomcat-service.groovy(updateWar custom command): warUrl is ${warUrl}..."
+			if (! warUrl) return "warUrl is null. So we do nothing."
 			context.attributes.thisService["warUrl"] = "${warUrl}"
+			
 			println "tomcat-service.groovy(updateWar customCommand): invoking updateWarFile custom command ..."
-			tomcatService = context.waitForService(serviceName, 60, TimeUnit.SECONDS)
-			tomcatInstances = tomcatService.waitForInstances(tomcatService.numberOfPlannedInstances,60, TimeUnit.SECONDS)				
-			instanceProcessID = context.getInstanceId()			                       
-			tomcatInstances.each {
-				if ( instanceProcessID == it.instanceID ) {
-					println "tomcat-service.groovy(updateWar customCommand):  instanceProcessID is ${instanceProcessID} now invoking updateWarFile..."
-					it.invoke("updateWarFile")
-				}
-			}
-						
+			def service = context.waitForService(context.serviceName, 60, TimeUnit.SECONDS)
+			def currentInstance = service.getInstances().find{ it.instanceId == context.instanceId }
+			currentInstance.invoke("updateWarFile")
+			
 			println "tomcat-service.groovy(updateWar customCommand): End"
 			return true
 		} ,
 		 
 		"updateWarFile" : "updateWarFile.groovy"
-    ])
-
+	])
 	
 	userInterface {
-
+		
 		metricGroups = ([
 			metricGroup {
-
 				name "process"
-
 				metrics([
 				    "Total Process Cpu Time",
 					"Process Cpu Usage",
@@ -184,9 +173,7 @@ service {
 				])
 			} ,
 			metricGroup {
-
 				name "http"
-
 				metrics([
 					"Current Http Threads Busy",
 					"Current Http Thread Count",
@@ -195,8 +182,7 @@ service {
 				])
 			} ,
 
-		]
-		)
+		])
 
 		widgetGroups = ([
 			widgetGroup {
@@ -208,7 +194,7 @@ service {
 						axisYUnit Unit.PERCENTAGE
 					}
 				])
-			},
+			} ,
 			widgetGroup {
 				name "Total Process Virtual Memory"
 				widgets([
@@ -218,7 +204,7 @@ service {
 						axisYUnit Unit.MEMORY
 					}
 				])
-			},
+			} ,
 			widgetGroup {
 				name "Num Of Active Threads"
 				widgets ([
@@ -228,9 +214,8 @@ service {
 						axisYUnit Unit.REGULAR
 					}
 				])
-			}     ,
+			} ,
 			widgetGroup {
-
 				name "Current Http Threads Busy"
 				widgets([
 					balanceGauge{metric = "Current Http Threads Busy"},
@@ -241,7 +226,6 @@ service {
 				])
 			} ,
 			widgetGroup {
-
 				name "Current Http Thread Count"
 				widgets([
 					balanceGauge{metric = "Current Http Thread Count"},
@@ -252,7 +236,6 @@ service {
 				])
 			} ,
 			widgetGroup {
-
 				name "Request Backlog"
 				widgets([
 					balanceGauge{metric = "Backlog"},
@@ -261,7 +244,7 @@ service {
 						axisYUnit Unit.REGULAR
 					}
 				])
-			}  ,
+			} ,
 			widgetGroup {
 				name "Active Sessions"
 				widgets([
@@ -271,7 +254,7 @@ service {
 						axisYUnit Unit.REGULAR
 					}
 				])
-			},
+			} ,
 			widgetGroup {
 				name "Total Requests Count"
 				widgets([
@@ -281,8 +264,7 @@ service {
 						axisYUnit Unit.REGULAR
 					}
 				])
-			}
-			,
+			} ,
 			widgetGroup {
 				name "Total Process Cpu Time"
 				widgets([
@@ -293,16 +275,15 @@ service {
 					}
 				])
 			}
-		]
-		)
+		])
 	}
 	
 	network {
-        port = currHttpPort
-        protocolDescription = "HTTP"
-    }
+		port = currHttpPort
+		protocolDescription = "HTTP"
+	}
 	
-	scaleCooldownInSeconds 30
+	scaleCooldownInSeconds 60
 	samplingPeriodInSeconds 1
 
 	// Defines an automatic scaling rule based on "counter" metric value

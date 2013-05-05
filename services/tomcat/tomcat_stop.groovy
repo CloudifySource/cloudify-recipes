@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2012 GigaSpaces Technologies Ltd. All rights reserved
+* Copyright (c) 2013 GigaSpaces Technologies Ltd. All rights reserved
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -14,34 +14,28 @@
 * limitations under the License.
 *******************************************************************************/
 import org.cloudifysource.dsl.context.ServiceContextFactory
+import org.cloudifysource.dsl.utils.ServiceUtils
+
 println "tomcat_stop.groovy: About to stop tomcat..."
 
-def serviceContext = ServiceContextFactory.getServiceContext()
+def context = ServiceContextFactory.getServiceContext()
 
-def instanceID=serviceContext.instanceId
-def home= serviceContext.attributes.thisInstance["home"]
-println "tomcat_stop.groovy: tomcat(${instanceID}) home ${home}"
+def catalinaHome = context.attributes.thisInstance["catalinaHome"]
+def catalinaBase = context.attributes.thisInstance["catalinaBase"]
 
-def script= serviceContext.attributes.thisInstance["script"]
-if (script) {
-println "tomcat_stop.groovy: tomcat(${instanceID}) script ${script}"
-
-
-println "tomcat_stop.groovy: executing command ${script}"
 new AntBuilder().sequential {
-	exec(executable:"${script}.sh", osfamily:"unix") {
-        env(key:"CATALINA_HOME", value: "${home}")
-    env(key:"CATALINA_BASE", value: "${home}")
-    env(key:"CATALINA_TMPDIR", value: "${home}/temp")
+	exec(executable:"${catalinaHome}/bin/catalina.sh", osfamily:"unix") {
+		env(key:"CLASSPATH", value: "") // reset CP to avoid side effects (Cloudify passes all the required files to Groovy in the classpath)
+		env(key:"CATALINA_HOME", value: "${catalinaHome}")
+		env(key:"CATALINA_BASE", value: "${catalinaBase}")
 		arg(value:"stop")
 	}
-	exec(executable:"${script}.bat", osfamily:"windows"){
-        env(key:"CATALINA_HOME", value: "${home}")
-    env(key:"CATALINA_BASE", value: "${home}")
-    env(key:"CATALINA_TMPDIR", value: "${home}/temp")
+	exec(executable:"${catalinaHome}/bin/catalina.bat", osfamily:"windows"){
+		env(key:"CLASSPATH", value: "") // reset CP to avoid side effects (Cloudify passes all the required files to Groovy in the classpath)
+		env(key:"CATALINA_HOME", value: "${catalinaHome}")
+		env(key:"CATALINA_BASE", value: "${catalinaBase}")
 		arg(value:"stop")
 	}
 }
 
 println "tomcat_stop.groovy: tomcat is stopped"
-}
