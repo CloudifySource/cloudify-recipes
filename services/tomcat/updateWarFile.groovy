@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2012 GigaSpaces Technologies Ltd. All rights reserved
+* Copyright (c) 2013 GigaSpaces Technologies Ltd. All rights reserved
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -33,9 +33,7 @@ def appBase="${catalinaBase}/webapps"
 def installDir = System.properties["user.home"]+ "/.cloudify/${config.serviceName}" + instanceId
 def applicationWar = "${installDir}/${config.warName?: new File(warUrl).name}"
 
-
 new AntBuilder().sequential {
-	
 	if ( warUrl.toLowerCase().startsWith("http") || warUrl.toLowerCase().startsWith("ftp") || warUrl.toLowerCase().startsWith("file")) {
 		echo(message:"Getting ${warUrl} to ${applicationWar} ...")
 		get(src:"${warUrl}", dest:"${applicationWar}", skipexisting:false)

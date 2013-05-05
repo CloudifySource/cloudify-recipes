@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2012 GigaSpaces Technologies Ltd. All rights reserved
+* Copyright (c) 2013 GigaSpaces Technologies Ltd. All rights reserved
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -26,12 +26,14 @@ service {
 	minAllowedInstances 1
 	maxAllowedInstances 2
 	
+	def config = new ConfigSlurper().parse(new File("${context.serviceDirectory}/tomcat-service.properties").toURL())
 	def instanceId = context.instanceId
+	
 	def portIncrement = context.isLocalCloud() ? instanceId-1 : 0
 	def currJmxPort = jmxPort + portIncrement
 	def currHttpPort = port + portIncrement
 	def currAjpPort = ajpPort + portIncrement
-		
+	
 	compute {
 		template "SMALL_LINUX"
 	}
