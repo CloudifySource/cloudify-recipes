@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2012 GigaSpaces Technologies Ltd. All rights reserved
+* Copyright (c) 2013 GigaSpaces Technologies Ltd. All rights reserved
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -18,53 +18,56 @@ import static ChefLoader
 
 service {
     extend "../chef"
-	name "chef-server"
-	type "WEB_SERVER"
-	icon "chef.png"
-	numInstances 1
+    name "chef-server"
+    type "WEB_SERVER"
+    icon "chef.png"
+    numInstances 1
 
     compute {
         template "SMALL_UBUNTU"
     }
 
-	lifecycle{
+    lifecycle{
         start {
             def bootstrap = ChefBootstrap.getBootstrap(installFlavor:"gem", context:context)
             def config = bootstrap.getConfig()
-            bootstrap.runSolo([
-                "chef_server": [
-                    "server_url": "http://localhost:4000",
-                    "init_style": "${config.initStyle}"
-                ],
-                "chef_packages": [
-                    "chef": [
-                        "version": "${config.version}"
+            bootstrap.runSolo(
+                ["recipe[build-essential]", "recipe[chef-server::rubygems-install]", "recipe[chef-server::apache-proxy]" ], 
+                [
+                    "chef_server": [
+                        "server_url": "http://localhost:4000",
+                        "init_style": "${config.initStyle}"
+                    ],
+                    "chef_packages": [
+                        "chef": [
+                            "version": "${config.version}"
+                        ]
                     ]
-                ],
-                "run_list": ["recipe[build-essential]", "recipe[chef-server::rubygems-install]", "recipe[chef-server::apache-proxy]" ]
-            ])
+                ]
+            )
 
             //setting the global attributes to be available for all chef clients  
-            def privateIp = System.getenv()["CLOUDIFY_AGENT_ENV_PRIVATE_IP"]
+            def privateIp = context.privateAddress
             def serverUrl = "http://${privateIp}:4000" as String
             context.attributes.global["chef_validation.pem"] = sudoReadFile("/etc/chef/validation.pem")
             context.attributes.global["chef_server_url"] = serverUrl
+            return null
         }
-		
-		startDetectionTimeoutSecs 600
-		startDetection {
-			ServiceUtils.isPortOccupied(4000)
-		}
-		
-		details {
-			def publicIp = System.getenv()["CLOUDIFY_AGENT_ENV_PUBLIC_IP"]
-			def serverRestUrl = "https://${publicIp}:443"
-			def serverUrl = "http://${publicIp}:4000"
-    		return [
-    			"Rest URL":"<a href=\"${serverRestUrl}\" target=\"_blank\">${serverRestUrl}</a>",
-    			"Server URL":"<a href=\"${serverUrl}\" target=\"_blank\">${serverUrl}</a>"
-    		]
-    	}
+        
+        startDetectionTimeoutSecs 600
+        startDetection {
+            ServiceUtils.isPortOccupied(4000)
+        }
+        
+        details {
+            def publicIp = context.publicAddress
+            def serverRestUrl = "https://${publicIp}:443"
+            def serverUrl = "http://${publicIp}:4000"
+            return [
+                "Rest URL":"<a href=\"${serverRestUrl}\" target=\"_blank\">${serverRestUrl}</a>",
+                "Server URL":"<a href=\"${serverUrl}\" target=\"_blank\">${serverUrl}</a>"
+            ]
+        }
         postStart { 
             if (binding.variables["chefRepo"]) {
                 chef_loader = ChefLoader.get_loader(chefRepo.repo_type)
@@ -77,6 +80,8 @@ service {
         }
     }
 
+    // TODO: improve updateCookbooks with a try/catch (sh can throw an exception that is not printed)
+    // TODO: improve listCookbooks and knife to print eventual error (shellout prints no error)
     customCommands([
         "updateCookbooks": { repo_type="git",
                              url="by default, the existing repo will be reused",
@@ -97,7 +102,5 @@ service {
             chef_loader = ChefLoader.get_loader()
             return chef_loader.invokeKnife(args)
         }
-
-
     ])
 }
