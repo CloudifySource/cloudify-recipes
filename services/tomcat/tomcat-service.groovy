@@ -50,7 +50,8 @@ service {
 				currPublicIP = context.publicAddress
 			}
 			
-			def contextPath = ("default" == context.applicationName) ? "" : "${context.applicationName}"
+			def contextPath = context.attributes.thisInstance["contextPath"]
+			if (contextPath == 'ROOT') contextPath="" // ROOT means "" by convention in Tomcat
 			def applicationURL = "http://${currPublicIP}:${currHttpPort}/${contextPath}"
 			println "tomcat-service.groovy: applicationURL is ${applicationURL}"
 			
@@ -60,8 +61,8 @@ service {
 		}
 
 		monitors {
-			def contextPath = ("default" == context.applicationName) ? "" : "${context.applicationName}"
-			
+			def contextPath = context.attributes.thisInstance["contextPath"]
+			if (contextPath == 'ROOT') contextPath="" // ROOT means "" by convention in Tomcat
 			def metricNamesToMBeansNames = [
 				"Current Http Threads Busy": ["Catalina:type=ThreadPool,name=\"http-bio-${currHttpPort}\"", "currentThreadsBusy"],
 				"Current Http Thread Count": ["Catalina:type=ThreadPool,name=\"http-bio-${currHttpPort}\"", "currentThreadCount"],
@@ -90,8 +91,6 @@ service {
 				def apacheService = context.waitForService("apacheLB", 180, TimeUnit.SECONDS)
 				println "tomcat-service.groovy: invoking add-node of apacheLB ..."
 				
-				def contextPath = ("default" == context.applicationName)?"":"${context.applicationName}"
-				
 				def privateIP
 				if ( context.isLocalCloud() ) { // CLOUDIFY-1696
 					privateIP = InetAddress.localHost.hostAddress
@@ -101,6 +100,8 @@ service {
 				}
 				println "tomcat-service.groovy: privateIP is ${privateIP} ..."
 				
+				def contextPath = context.attributes.thisInstance["contextPath"]
+				if (contextPath == 'ROOT') contextPath="" // ROOT means "" by convention in Tomcat
 				def currURL="http://${privateIP}:${currHttpPort}/${contextPath}"
 				println "tomcat-service.groovy: About to add ${currURL} to apacheLB ..."
 				apacheService.invoke("addNode", currURL as String, instanceId as String)
@@ -115,18 +116,16 @@ service {
 					def apacheService = context.waitForService("apacheLB", 180, TimeUnit.SECONDS)
 					
 					if ( apacheService != null ) { 
-						def contextPath = ("default" == context.applicationName)?"":"${context.applicationName}"
-						println "tomcat-service.groovy: postStop contextPath is ${contextPath}"
-						
 						def privateIP
-						if (  context.isLocalCloud()  ) {
+						if (  context.isLocalCloud()  ) { // CLOUDIFY-1696
 							privateIP = InetAddress.localHost.hostAddress
 						}
 						else {
 							privateIP =System.getenv()["CLOUDIFY_AGENT_ENV_PRIVATE_IP"]
 						}
-						
 						println "tomcat-service.groovy: privateIP is ${privateIP} ..."
+						def contextPath = context.attributes.thisInstance["contextPath"]
+						if (contextPath == 'ROOT') contextPath="" // ROOT means "" by convention in Tomcat
 						def currURL="http://${privateIP}:${currHttpPort}/${contextPath}"
 						println "tomcat-service.groovy: About to remove ${currURL} from apacheLB ..."
 						apacheService.invoke("removeNode", currURL as String, instanceId as String)

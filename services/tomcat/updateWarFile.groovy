@@ -28,7 +28,6 @@ if (! warUrl) return "warUrl is null. So we do nothing."
 
 def catalinaBase = context.attributes.thisInstance["catalinaBase"]
 def contextPath = context.attributes.thisInstance["contextPath"]
-def appBase="${catalinaBase}/webapps"
 
 def installDir = System.properties["user.home"]+ "/.cloudify/${config.serviceName}" + instanceId
 def applicationWar = "${installDir}/${config.warName?: new File(warUrl).name}"
@@ -42,9 +41,16 @@ new AntBuilder().sequential {
 		echo(message:"Copying ${context.serviceDirectory}/${warUrl} to ${applicationWar} ...")
 		copy(tofile: "${applicationWar}", file:"${context.serviceDirectory}/${warUrl}", overwrite:true)
 	}
-	echo(message:"Copying ${applicationWar} to ${appBase}...")
-	copy(todir: "${appBase}", file:"${applicationWar}", overwrite:true)
 }
+
+File ctxConf = new File("${catalinaBase}/conf/Catalina/localhost/${contextPath}.xml")
+if (ctxConf.exists()) {
+	assert ctxConf.delete()
+} else {
+	new File(ctxConf.getParent()).mkdirs()
+}
+assert ctxConf.createNewFile()
+ctxConf.append("<Context docBase=\"${applicationWar}\" />")
 
 println "updateWarFile.groovy: End"
 return true

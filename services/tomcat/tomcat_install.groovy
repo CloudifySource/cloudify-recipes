@@ -57,10 +57,18 @@ if ( warUrl ) {
 			echo(message:"Copying ${context.serviceDirectory}/${warUrl} to ${applicationWar} ...")
 			copy(tofile: "${applicationWar}", file:"${context.serviceDirectory}/${warUrl}", overwrite:true)
 		}
-		echo(message:"Copying ${applicationWar} to ${home}/webapps ...")
-		copy(tofile: "${home}/webapps/${contextPath}.war", file:"${applicationWar}", overwrite:true)
 	}
 }
+
+// Write the context configuration
+File ctxConf = new File("${catalinaBase}/conf/Catalina/localhost/${contextPath}.xml")
+if (ctxConf.exists()) {
+	assert ctxConf.delete()
+} else {
+	new File(ctxConf.getParent()).mkdirs()
+}
+assert ctxConf.createNewFile()
+ctxConf.append("<Context docBase=\"${applicationWar}\" />")
 
 portIncrement = 0
 if (context.isLocalCloud()) {
