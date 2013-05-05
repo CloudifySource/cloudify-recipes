@@ -33,11 +33,11 @@ if (!config.containsKey('jmxPort')) println "tomcat_init.groovy: 'jmxPort' is re
 if (!config.containsKey('useLoadBalancer')) println "tomcat_init.groovy: 'useLoadBalancer' is required."
 
 // Load the configuration
-def catalinaHome = config.catalinaHome? config.catalinaHome : "${context.serviceDirectory}/${config.name}"
-def catalinaBase = config.catalinaBase? config.catalinaBase : catalinaHome
-def catalinaOpts = config.catalinaOpts? config.catalinaOpts : ""
-def javaOpts = config.javaOpts? config.javaOpts : ""
-def contextPath = contextPath? contextPath : 
+def catalinaHome = config.catalinaHome ?: "${context.serviceDirectory}/${config.name}"
+def catalinaBase = config.catalinaBase ?: catalinaHome
+def catalinaOpts = config.catalinaOpts ?: ""
+def javaOpts = config.javaOpts ?: ""
+def contextPath = contextPath ?: 
 	(context.applicationName != "default")? context.applicationName : "ROOT"
 
 context.attributes.thisInstance["catalinaHome"] = "${catalinaHome}"
