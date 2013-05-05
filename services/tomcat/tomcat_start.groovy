@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2012 GigaSpaces Technologies Ltd. All rights reserved
+* Copyright (c) 2013 GigaSpaces Technologies Ltd. All rights reserved
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -16,72 +16,68 @@
 import org.cloudifysource.dsl.context.ServiceContextFactory
 import java.util.concurrent.TimeUnit
 
-def config=new ConfigSlurper().parse(new File("tomcat-service.properties").toURL())
+println "tomcat_start.groovy: Starting Tomcat"
 
-println "tomcat_start.groovy: Calculating mongoServiceHost..."
-def serviceContext = ServiceContextFactory.getServiceContext()
-def instanceID = serviceContext.getInstanceId()
-println "tomcat_start.groovy: This tomcat instance ID is ${instanceID}"
+def context = ServiceContextFactory.getServiceContext()
+def config = new ConfigSlurper().parse(new File("${context.serviceDirectory}/tomcat-service.properties").toURL())
+def instanceId = context.instanceId
+println "tomcat_start.groovy: This tomcat instance Id is ${instanceId}"
 
-def home= serviceContext.attributes.thisInstance["home"]
-println "tomcat_start.groovy: tomcat(${instanceID}) home ${home}"
+def catalinaHome = context.attributes.thisInstance["catalinaHome"]
+println "tomcat_start.groovy: tomcat(${instanceId}) catalinaHome ${catalinaHome}"
+def catalinaBase = context.attributes.thisInstance["catalinaBase"]
+println "tomcat_start.groovy: tomcat(${instanceId}) catalinaBase ${catalinaBase}"
+def catalinaOpts = context.attributes.thisInstance["catalinaOpts"]
+println "tomcat_start.groovy: tomcat(${instanceId}) catalinaOpts ${catalinaOpts}"
+def javaOpts = context.attributes.thisInstance["javaOpts"]
+println "tomcat_start.groovy: tomcat(${instanceId}) javaOpts ${javaOpts}"
+def envVar = context.attributes.thisInstance["envVar"]
 
-def script= serviceContext.attributes.thisInstance["script"]
-println "tomcat_start.groovy: tomcat(${instanceID}) script ${script}"
-
-if ( !(config.dbServiceName) ||  "${config.dbServiceName}"=="NO_DB_REQUIRED") {
-	println "Using dummy db host(DUMMY_HOST) and port(0)"
-	dbServiceHost="DUMMY_HOST"
-	dbServicePort="0"
-}
-else {
+if ( config.dbServiceName &&  "${config.dbServiceName}" != "NO_DB_REQUIRED") {
 	println "tomcat_start.groovy: waiting for ${config.dbServiceName}..."
-	def dbService = serviceContext.waitForService(config.dbServiceName, 20, TimeUnit.SECONDS) 
+	def dbService = context.waitForService(config.dbServiceName, 20, TimeUnit.SECONDS)
 	def dbInstances = dbService.waitForInstances(dbService.numberOfPlannedInstances, 60, TimeUnit.SECONDS) 
-    dbServiceHost = dbInstances[0].hostAddress
+	def dbServiceHost = dbInstances[0].hostAddress
+	envVar.put(config.dbHostVarName, "${dbServiceHost}")
 	println "tomcat_start.groovy: ${config.dbServiceName} host is ${dbServiceHost}"
-	def dbServiceInstances = serviceContext.attributes[config.dbServiceName].instances
+	def dbServiceInstances = context.attributes[config.dbServiceName].instances
 	dbServicePort = dbServiceInstances[1].port
+	envVar.put(config.dbPortVarName, "${dbServicePort}")
 	println "tomcat_start.groovy: ${config.dbServiceName} port is ${dbServicePort}"
 }
+println "tomcat_start.groovy: tomcat(${instanceId}) envVar ${envVar}"
 
 
-println "tomcat_start.groovy executing ${script}"
-
+// trick to be able to havee several instances with localcloud deployment
 portIncrement = 0
-if (serviceContext.isLocalCloud()) {
-  portIncrement = instanceID - 1  
+if (context.isLocalCloud()) {
+	portIncrement = instanceId - 1  
 }
 
 currJmxPort=config.jmxPort+portIncrement
 println "tomcat_start.groovy: jmx port is ${currJmxPort}"
 
-javaOpts = config.javaOpts
-
-// in case this property is not defined, groovy defaults to an empty Map. so we need to convert back to an empty string
-if (! (javaOpts instanceof String) ) {
-	javaOpts = ""
-}
-
-println "tomcat_start.groovy: Additional java opts are ${javaOpts}"
-
 new AntBuilder().sequential {
-	exec(executable:"${script}.sh", osfamily:"unix") {
-        env(key:"CATALINA_HOME", value: "${home}")
-        env(key:"CATALINA_BASE", value: "${home}")
-        env(key:"CATALINA_TMPDIR", value: "${home}/temp")
-		env(key:"CATALINA_OPTS", value:"-Dcom.sun.management.jmxremote.port=${currJmxPort} -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false ${javaOpts}")
-        env(key:"${config.dbHostVarName}", value: "${dbServiceHost}")
-        env(key:"${config.dbPortVarName}", value: "${dbServicePort}")		
+	exec(executable:"${catalinaHome}/bin/catalina.sh", osfamily:"unix") {
+		env(key:"CLASSPATH", value: "") // reset CP to avoid side effects (Cloudify passes all the required files to Groovy in the classpath)
+		envVar.each{
+			env(key:it.key, value:it.value)
+		}
+		env(key:"CATALINA_HOME", value: "${catalinaHome}")
+		env(key:"CATALINA_BASE", value: "${catalinaBase}")
+		env(key:"CATALINA_OPTS", value: "${catalinaOpts} -Dcom.sun.management.jmxremote.port=${currJmxPort} -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false ${javaOpts}")
+		env(key:"JAVA_OPTS", value: "${javaOpts}")
 		arg(value:"run")
 	}
-	exec(executable:"${script}.bat", osfamily:"windows") { 
-        env(key:"CATALINA_HOME", value: "${home}")
-        env(key:"CATALINA_BASE", value: "${home}")
-        env(key:"CATALINA_TMPDIR", value: "${home}/temp")
-		env(key:"CATALINA_OPTS", value:"-Dcom.sun.management.jmxremote.port=${currJmxPort} -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false ${javaOpts}")
-        env(key:"${config.dbHostVarName}", value: "${dbServiceHost}")
-        env(key:"${config.dbPortVarName}", value: "${dbServicePort}")	
+	exec(executable:"${catalinaHome}/bin/catalina.bat", osfamily:"windows") { 
+		env(key:"CLASSPATH", value: "") // reset CP to avoid side effects (Cloudify passes all the required files to Groovy in the classpath)
+		envVar.each{
+			env(key:it.key, value:it.value)
+		}
+		env(key:"CATALINA_HOME", value: "${catalinaHome}")
+		env(key:"CATALINA_BASE", value: "${catalinaBase}")
+		env(key:"CATALINA_OPTS", value:  "${catalinaOpts} -Dcom.sun.management.jmxremote.port=${currJmxPort} -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false ${javaOpts}")
+		env(key:"JAVA_OPTS", value: "${javaOpts}")
 		arg(value:"run")
 	}
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2012 GigaSpaces Technologies Ltd. All rights reserved
+* Copyright (c) 2013 GigaSpaces Technologies Ltd. All rights reserved
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -25,10 +25,9 @@ class JmxMonitors {
 
 	def static urlToConnection = [:]
 	
-	 
 	def static connectRMI(host, port) {
 		if (urlToConnection["${host:port}"] == null)
-			urlToConnection["${host:port}"] = JmxFactory.connect(new JmxUrl("service:jmx:rmi:///jndi/rmi://${host}:${port}/jmxrmi"))	
+			urlToConnection["${host:port}"] = JmxFactory.connect(new JmxUrl("service:jmx:rmi:///jndi/rmi://${host}:${port}/jmxrmi"))
 		return urlToConnection["${host:port}"]
 	}
 	
@@ -39,27 +38,25 @@ class JmxMonitors {
 		def connection = server.MBeanServerConnection
 		String[] names = connection.queryNames(new ObjectName(objectName), null)
 		if (names.length > 0)
-				return (new GroovyMBean(connection, names[0]))[attributeName]
+			return (new GroovyMBean(connection, names[0]))[attributeName]
 		return 0;
 	}
 	
-		/* Returns a map of metrics values */ 
+	/* Returns a map of metrics values */ 
 	def static getJmxMetrics(host,jmxPort,metricNamesToMBeansNames) {
 		def server = connectRMI(host, jmxPort)
 		
-		def metrics  = [:]
-	
+		def metrics = [:]
+		
 		metricNamesToMBeansNames.each{metricName,objectsArr->
 			def objectName=objectsArr[0]
 			def attributeName=objectsArr[1]
-			def currMetricValue = getJMXAttribute(server,objectName , attributeName) 		
+			def currMetricValue = getJMXAttribute(server,objectName , attributeName)
 			metrics.put(metricName,currMetricValue)
 		}
-		
 		
 	//	server.close()
 		return metrics
 	}
-
 }
 
