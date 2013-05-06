@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2012 GigaSpaces Technologies Ltd. All rights reserved
+* Copyright (c) 2013 GigaSpaces Technologies Ltd. All rights reserved
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ class ChefBootstrap {
         return cls
     }
 
-    def ChefBootstrap(options=[:]) {
+    protected def ChefBootstrap(options=[:]) {
         os = OperatingSystem.getInstance()
         if ("context" in options) {
             context = options["context"]
@@ -53,32 +53,21 @@ class ChefBootstrap {
         if (context.is(null)) {
             context = ServiceContextFactory.getServiceContext()
         }
-        def chefProperties = new ConfigSlurper().parse(new File(pathJoin(context.getServiceDirectory(), "chef.properties")).toURL())
+        def chefProperties = new ConfigSlurper().parse(new File(pathJoin(context.getServiceDirectory(), "chef-service.properties")).toURL())
         osConfig = os.isWin32() ? chefProperties.win32 : chefProperties.unix
 
         // Load chef config from context attributes
-        chefConfig = context.attributes.thisInstance.containsKey("chefConfig") ? context.attributes.thisInstance.get("chefConfig") : [:]
+        chefConfig = context.attributes.thisInstance.containsKey("chefConfig") ? context.attributes.thisInstance["chefConfig"] : [:]
         // merge configs: defaults from properties file, persisted config from attributes, options given to this function
         chefConfig = chefProperties.chef.flatten() + chefConfig + options.findAll(){ it.key != "context" }
         // persist to context attributes
         context.attributes.thisInstance["chefConfig"] = chefConfig
     } 
-    def installRuby() {
-        if (this.class.methods.find { it.name == "install_pkgs"}) {
-            install_pkgs(rubyPkgs)
-        } else {
-            rvm()
-        }
+
+    def getConfig() {
+        return chefConfig
     }
-    def installRubyGems() {
-        //install rubygems from source to avoid a version mismatch in rubygems (see rubygems.org)
-        def gemTarball = pathJoin(getTmpDir(), "rubygems.tar.gz")
-        def gemDir = pathJoin(getTmpDir(), "gemInstall")
-        new File(gemDir).mkdir()
-        download(gemTarball, chefConfig.gemTarballUrl)
-        sh("tar -xzf ${gemTarball} --strip-components=1 -C ${gemDir}")
-        sudo("ruby ${gemDir}/setup.rb --no-format-executable")
-    }
+
     def install() {
         if (which("chef-solo").isEmpty()) {
             switch(chefConfig.installFlavor) {
@@ -94,72 +83,37 @@ class ChefBootstrap {
             this.invokeMethod("${chefConfig.installFlavor}Install", null)
         }
     }
-    def gemInstall() {
+
+    protected def installRuby() {
+        if (this.class.methods.find { it.name == "install_pkgs"}) {
+            install_pkgs(rubyPkgs)
+        } else {
+            rvm()
+        }
+    }
+    protected def rvm() {
+        // not implemented yet
+        println "RVM install method is not implemented yet"
+        //throw new RuntimeException("RVM install method is not implemented yet")
+
+    }
+    protected def installRubyGems() {
+        //install rubygems from source to avoid a version mismatch in rubygems (see rubygems.org)
+        def gemTarball = pathJoin(getTmpDir(), "rubygems.tar.gz")
+        def gemDir = pathJoin(getTmpDir(), "gemInstall")
+        new File(gemDir).mkdir()
+        download(gemTarball, chefConfig.gemTarballUrl)
+        sh("tar -xzf ${gemTarball} --strip-components=1 -C ${gemDir}")
+        sudo("ruby ${gemDir}/setup.rb --no-format-executable")
+    }
+    protected def gemInstall() {
         def opts = "-y --no-rdoc --no-ri"
         if (!chefConfig.version.is(null)) {
             opts = "-v ${chefConfig.version} " + opts
         }
         sudo("gem install chef ${opts}")
     }
-    def mkChefDirs() {
-        sudo("mkdir -p '/etc/chef' '/var/chef' '/var/log/chef'")
-    }
-    def configureClient() {
-        mkChefDirs()
-        sudoWriteFile("/etc/chef/client.rb", """
-log_level          :info
-log_location       "/var/log/chef/client.log"
-ssl_verify_mode    :verify_none
-validation_client_name "chef-validator"
-validation_key         "/etc/chef/validation.pem"
-client_key               "/etc/chef/client.pem"
-chef_server_url    "${chefConfig.serverURL}"
-file_cache_path    "/var/chef/cache"
-file_backup_path  "/var/chef/backup"
-pid_file           "/var/run/chef/client.pid"
-Chef::Log::Formatter.show_time = true
-""")
-        if (chefConfig.validationCert) {
-            sudoWriteFile("/etc/chef/validation.pem", chefConfig.validationCert)
-        } else {
-            sudo("cp ${System.properties["user.home"]}/gs-files/validation.pem /etc/chef/validation.pem")
-        }
-    }
-    def runClient(ArrayList runList) {
-        runClient(runListToInitialJson(runList))
-    }
-    def runClient(HashMap initJson=[:]) {
-        configureClient()
-        initJson["cloudify"] = context.attributes.thisService["chef"]
-        def jsonFile = new File(pathJoin(context.getServiceDirectory(), "chef_client.json"))
-        jsonFile.withWriter() { it.write(JsonOutput.toJson(initJson)) }
-        sudo("chef-client -j ${jsonFile.getPath()}")
-    }
-    def runSolo(ArrayList runList) {
-        runSolo(runListToInitialJson(runList))
-    }
-    def runSolo(HashMap initJson=[:], cookbooksUrl=null) {
-        def chefSoloDir = pathJoin(getTmpDir(), "chef-solo")
-        def soloConf = new File([context.getServiceDirectory(), "solo.rb"].join(File.separator)).text =
-        """
-file_cache_path "${chefSoloDir}"
-cookbook_path "${pathJoin(chefSoloDir, "cookbooks")}"
-        """
-        def chef_solo = which("chef-solo")
-        assert ! chef_solo.isEmpty()
-        def jsonFile = new File(pathJoin(context.getServiceDirectory(), "bootstrap_server.json"))
-        jsonFile.text = JsonOutput.toJson(initJson)
-        cookbooksUrl = cookbooksUrl ?: chefConfig.bootstrapCookbooksUrl
-        sudo("""${chef_solo} -c ${context.getServiceDirectory()}/solo.rb -j ${jsonFile} -r ${cookbooksUrl}""")
-    }
-    def runListToInitialJson(ArrayList runList) {
-        def initJson = [:]
-        if (!runList.isEmpty()) {
-            initJson["run_list"] = runList
-        }
-        return initJson
-    }
-    def fatBinaryInstall() {
+    protected def fatBinaryInstall() {
         chefBinPath = "/opt/opscode/bin"
         new AntBuilder().sequential {
             mkdir(dir:osConfig.installDir)
@@ -168,15 +122,107 @@ cookbook_path "${pathJoin(chefSoloDir, "cookbooks")}"
             exec(osfamily:"windows", executable:"msiexec") {
                 ["/i", "/q", "${osConfig.installDir}/${osConfig.installer}"].each { arg(value:it) }
             }
-
         }
         sudo("""${osConfig.installDir}/${osConfig.installer}""")
     }
-    def rvm() {
-        // not implemented yet
-        println "RVM install method is not implemented yet"
+    // install_pkgs and pkgInstall are defined in sub-types (DebianBootstrap, ...)
+
+    def runClient(ArrayList runList=[], HashMap jsonAttributes=[:]) {
+        configureClient()
+        if (runList && !jsonAttributes["run_list"]) {
+            jsonAttributes["run_list"] = runList
+        }
+        // It could be usefull to dump all cloudify attributes, but this would require a change in AttributesAccessor implementation (add a readMultiple...)
+        jsonAttributes["cloudify"] = context.attributes.thisService["chef"]
+        def jsonFile = new File(pathJoin(context.getServiceDirectory(), "chef_client.json"))
+        jsonFile.text = JsonOutput.toJson(jsonAttributes)
+        sudo("""chef-client -j "${jsonFile.getPath()}" """)
     }
-    def which(binary) {
+
+//    def runClient(ArrayList runList) {
+//        runClient(runListToInitialJson(runList))
+//    }
+//    def runClient(HashMap initJson=[:]) {
+//        configureClient()
+//        initJson["cloudify"] = context.attributes.thisService["chef"]
+//        def jsonFile = new File(pathJoin(context.getServiceDirectory(), "chef_client.json"))
+//        jsonFile.withWriter() { it.write(JsonOutput.toJson(initJson)) }
+//        sudo("chef-client -j ${jsonFile.getPath()}")
+//    }
+
+    protected def mkChefDirs() {
+        sudo("mkdir -p '/etc/chef' '/var/chef' '/var/log/chef'")
+    }
+    protected def configureClient() {
+        if (chefConfig.serverURL == null) {
+            throw new RuntimeException("Cannot find a chef server URL in global attribute 'chef_server_url'")
+        }
+        mkChefDirs()
+        sudoWriteFile("/etc/chef/client.rb", """
+log_level          :info
+log_location       "/var/log/chef/client.log"
+ssl_verify_mode    :verify_none
+validation_client_name "chef-validator"
+validation_key         "/etc/chef/validation.pem"
+client_key             "/etc/chef/client.pem"
+chef_server_url    "${chefConfig.serverURL}"
+file_cache_path    "/var/chef/cache"
+file_backup_path   "/var/chef/backup"
+pid_file           "/var/run/chef/client.pid"
+Chef::Log::Formatter.show_time = true
+""")
+        if (chefConfig.validationCert) {
+            sudoWriteFile("/etc/chef/validation.pem", chefConfig.validationCert)
+        } else {
+            sudo("cp -f ${System.properties["user.home"]}/gs-files/validation.pem /etc/chef/validation.pem")
+        }
+    }
+
+    def runSolo(ArrayList runList, HashMap jsonAttributes=[:], cookbooksUrl=null) {
+        def chefSoloDir = pathJoin(getTmpDir(), "chef-solo")
+        def soloConf = new File([context.getServiceDirectory(), "solo.rb"].join(File.separator)).text =
+        """
+file_cache_path "${chefSoloDir}"
+cookbook_path "${pathJoin(chefSoloDir, "cookbooks")}"
+        """
+        def chef_solo = which("chef-solo")
+        assert ! chef_solo.isEmpty()
+        if (runList) {
+            jsonAttributes["run_list"] = runList
+        }
+        def jsonFile = new File(pathJoin(context.getServiceDirectory(), "chef_solo.json"))
+        jsonFile.text = JsonOutput.toJson(jsonAttributes)
+        cookbooksUrl = cookbooksUrl ?: chefConfig.bootstrapCookbooksUrl
+        sudo(""" "${chef_solo}" -c "${context.getServiceDirectory()}/solo.rb" -j "${jsonFile}" -r "${cookbooksUrl}" """)
+    }
+
+//    def runSolo(ArrayList runList) {
+//        runSolo(runListToInitialJson(runList))
+//    }
+//    def runSolo(HashMap initJson=[:], cookbooksUrl=null) {
+//        def chefSoloDir = pathJoin(getTmpDir(), "chef-solo")
+//        def soloConf = new File([context.getServiceDirectory(), "solo.rb"].join(File.separator)).text =
+//        """
+//file_cache_path "${chefSoloDir}"
+//cookbook_path "${pathJoin(chefSoloDir, "cookbooks")}"
+//        """
+//        def chef_solo = which("chef-solo")
+//        assert ! chef_solo.isEmpty()
+//        def jsonFile = new File(pathJoin(context.getServiceDirectory(), "bootstrap_server.json"))
+//        jsonFile.text = JsonOutput.toJson(initJson)
+//        cookbooksUrl = cookbooksUrl ?: chefConfig.bootstrapCookbooksUrl
+//        sudo("""${chef_solo} -c ${context.getServiceDirectory()}/solo.rb -j ${jsonFile} -r ${cookbooksUrl}""")
+//    }
+
+//    protected def runListToInitialJson(ArrayList runList) {
+//        def initJson = [:]
+//        if (!runList.isEmpty()) {
+//            initJson["run_list"] = runList
+//        }
+//        return initJson
+//    }
+
+    protected def which(binary) {
         // check for binaries we already know about
         def filename
         if (binary.startsWith("chef-")) {
@@ -190,7 +236,7 @@ cookbook_path "${pathJoin(chefSoloDir, "cookbooks")}"
             return shellOut("which $binary")
         }
     }
-    def getChefBinPath() {
+    protected def getChefBinPath() {
         def path
         switch (chefConfig.installFlavor) {
             case "gem":
@@ -205,9 +251,6 @@ cookbook_path "${pathJoin(chefSoloDir, "cookbooks")}"
                 path = binPath
         }
         return path
-    }
-    def getConfig() {
-        return chefConfig
     }
 }
 
