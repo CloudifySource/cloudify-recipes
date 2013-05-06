@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 GigaSpaces Technologies Ltd. All rights reserved
+ * Copyright (c) 2013 GigaSpaces Technologies Ltd. All rights reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,35 +25,50 @@ service {
     }
 
     lifecycle {
+        preInstall {
+            def chefServerURL = context.attributes.global["chef_server_url"]
+            def validationCert = context.attributes.global["chef_validation.pem"]
+            if (chefServerURL != null) {
+                println "Using Chef server URL: ${chefServerURL}"
+                ChefBootstrap.getBootstrap(
+                        serverURL: chefServerURL,
+                        validationCert: validationCert,
+                        context: context
+                )
+            }
+
+            persistedRunParams = context.attributes.thisInstance.containsKey("runParams") ? context.attributes.thisInstance["runParams"] : [:]
+            defaultRunParams = binding.variables.containsKey("runParams") ? binding.getVariable("runParams") : [:]
+            // merge: defaults from properties file, then persisted config from attributes
+            runParams = defaultRunParams + persistedRunParams
+            // persist to context attributes (for a self-healing or a custom command)
+            context.attributes.thisInstance["runParams"] = runParams
+        }
         install {
             ChefBootstrap.getBootstrap(context: context, installFlavor: "gem").install()
         }
         start {
-            def chefServerURL = context.attributes.global["chef_server_url"]
-            def validationCert = context.attributes.global["chef_validation.pem"]
+            def runList = binding.variables.containsKey("runList") ? runList : ["role[${context.serviceName}]" as String]
+            def runParams = context.attributes.thisInstance.containsKey("runParams") ? context.attributes.thisInstance["runParams"] : [:]
 
-            if (chefServerURL == null) {
-                throw new RuntimeException("Cannot find a chef server URL in global attribtue 'chef_server_url'")
-            }
-
-            println "Using Chef server URL: ${chefServerURL}"
-
-            def runParamsLocal = binding.variables["runParams"] ? runParams : [run_list: "role[${context.serviceName}]" as String]
-
-            ChefBootstrap.getBootstrap(
-                    serverURL: chefServerURL,
-                    validationCert: validationCert,
-                    context: context
-            ).runClient(runParamsLocal)
+            ChefBootstrap.getBootstrap(context: context).runClient(runList, runParams)
+            return null
         }
 
         locator {
             //hack to avoid monitoring started processes by cloudify
-            return [] as LinkedList
+            //should be redefined when you extend the recipe
+            return NO_PROCESS_LOCATORS
         }
     }
 
     customCommands([
+            "rerun": {
+                def runList = binding.variables.containsKey("runList") ? runList : ["role[${context.serviceName}]" as String]
+                def runParams = context.attributes.thisInstance.containsKey("runParams") ? context.attributes.thisInstance["runParams"] : [:]
+                ChefBootstrap.getBootstrap(context: context).runClient(runList, runParams)
+                return true
+            } ,
             "run_chef": {serviceRunList = "role[${context.serviceName}]", chefType = "client", cookbookUrl = "" ->
 
                 serviceRunList = serviceRunList.split(",").collect() { it.stripIndent() }
@@ -67,11 +82,11 @@ service {
                 try { //hack - to see the error text, we must exit successfully(CLOUDIFY-915)
                     switch (chefType) {
                         case "client":
-                            bootstrap.runClient([run_list: serviceRunList])
+                            bootstrap.runClient(serviceRunList)
                             break
 
                         case "solo":
-                            bootstrap.runSolo([run_list: serviceRunList], cookbookUrl)
+                            bootstrap.runSolo(serviceRunList, [:], cookbookUrl)
                             break
 
                         default:
@@ -81,7 +96,7 @@ service {
                     output += "Chef client run encountered an exception:\n${e}"
                 }
                 println output //goes to the gsc log
-            },
+            } ,
 
             "run_cucumber": "run_cucumber.sh"
     ])
