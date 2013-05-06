@@ -24,7 +24,8 @@ service {
 	numInstances 1
 
     compute {
-        template "SMALL_LINUX_x64" // Chef server does not support 32bit
+		// Chef server does NOT support 32bit !!!
+        template "SMALL_LINUX" 
     }
 
 	lifecycle{
