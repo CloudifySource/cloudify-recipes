@@ -205,6 +205,16 @@ cookbook_path "${pathJoin(chefSoloDir, "cookbooks")}"
         // not implemented yet
         println "RVM install method is not implemented yet"
     }
+    protected isURL(String urlString) {
+        try { 
+            urlString.toURL()   
+            return true
+        } catch (java.net.MalformedURLException e) {
+            return false   
+        } catch (java.lang.NullPointerException e) { 
+            return false
+        }
+    }
     protected def which(binary) {
         // check for binaries we already know about
         def filename
@@ -304,16 +314,6 @@ class RHELBootstrap extends ChefBootstrap {
     def gemInstall() {
         sudo("gem update --system")
         super.gemInstall()
-    }
-    private isURL(String urlString) {
-        try { 
-            urlString.toURL()   
-            return true
-        } catch (java.net.MalformedURLException e) {
-            return false   
-        } catch (java.lang.NullPointerException e) { 
-            return false
-        }
     }
 }
 
