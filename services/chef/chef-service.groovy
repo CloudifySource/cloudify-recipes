@@ -26,6 +26,18 @@ service {
 
     lifecycle {
         init {
+            def chefServerURL = context.attributes.global["chef_server_url"]
+            def validationCert = context.attributes.global["chef_validation.pem"]
+
+            if (chefServerURL == null) {
+                throw new RuntimeException("Cannot find a chef server URL in global attribtue 'chef_server_url'")
+            }
+            println "Using Chef server URL: ${chefServerURL}"
+            ChefBootstrap.getBootstrap(
+                    serverURL: chefServerURL,
+                    validationCert: validationCert,
+            ).runClient(runParamsLocal)
+
             persistedRunParams = context.attributes.thisInstance.containsKey("runParams") ? context.attributes.thisInstance["runParams"] : [:]
             defaultRunParams = binding.variables.containsKey("runParams") ? binding.getVariable("runParams") : [:]
             // merge: defaults from properties file, then persisted config from attributes
@@ -37,20 +49,8 @@ service {
             ChefBootstrap.getBootstrap(context: context).install() // default installation method defined in chef.properties
         }
         start {
-            def chefServerURL = context.attributes.global["chef_server_url"]
-            def validationCert = context.attributes.global["chef_validation.pem"]
-
-            if (chefServerURL == null) {
-                throw new RuntimeException("Cannot find a chef server URL in global attribtue 'chef_server_url'")
-            }
-            println "Using Chef server URL: ${chefServerURL}"
-
             def runParamsLocal = context.attributes.thisInstance.containsKey("runParams") ? context.attributes.thisInstance["runParams"] : [:]
-            ChefBootstrap.getBootstrap(
-                    serverURL: chefServerURL,
-                    validationCert: validationCert,
-                    context: context
-            ).runClient(runParamsLocal)
+            ChefBootstrap.getBootstrap(context: context).runClient(runParamsLocal)
             return null
         }
 
