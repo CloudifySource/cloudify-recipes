@@ -41,7 +41,7 @@ service {
             ])
 
             //setting the global attributes to be available for all chef clients  
-            def privateIp = System.getenv()["CLOUDIFY_AGENT_ENV_PRIVATE_IP"]
+            def privateIp = context.privateAddress
             def serverUrl = "https://${privateIp}:443" as String
             context.attributes.global["chef_validation.pem"] = sudoReadFile("/etc/chef/validation.pem")
             context.attributes.global["chef_server_url"] = serverUrl
