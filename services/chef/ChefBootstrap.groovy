@@ -105,6 +105,9 @@ class ChefBootstrap {
         sudo("mkdir -p '/etc/chef' '/var/chef' '/var/log/chef'")
     }
     protected def configureClient() {
+        if (chefConfig.serverURL == null) {
+            throw new RuntimeException("Cannot find a chef server")
+        }
         mkChefDirs()
         sudoWriteFile("/etc/chef/client.rb", """
 log_level          :info
