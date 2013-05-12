@@ -33,9 +33,9 @@ def installDir = System.properties["user.home"]+ "/.cloudify/${config.serviceNam
 def applicationWar = "${installDir}/${config.warName?: new File(warUrl).name}"
 
 new AntBuilder().sequential {
-	if ( warUrl.toLowerCase().startsWith("http") || warUrl.toLowerCase().startsWith("ftp") || warUrl.toLowerCase().startsWith("file")) {
+	if ( warUrl.toLowerCase().startsWith("http") || warUrl.toLowerCase().startsWith("ftp")) {
 		echo(message:"Getting ${warUrl} to ${applicationWar} ...")
-		get(src:"${warUrl}", dest:"${applicationWar}", skipexisting:false)
+		ServiceUtils.getDownloadUtil().get("${warUrl}", "${applicationWar}", false)
 	}
 	else {
 		echo(message:"Copying ${context.serviceDirectory}/${warUrl} to ${applicationWar} ...")
