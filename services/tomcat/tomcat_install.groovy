@@ -38,7 +38,7 @@ new AntBuilder().sequential {
 	if ( config.downloadPath.toLowerCase().startsWith("http") || config.downloadPath.toLowerCase().startsWith("ftp")) {
 		echo(message:"Getting ${config.downloadPath} to ${installDir}/${config.zipName} ...")
 		ServiceUtils.getDownloadUtil().get("${config.downloadPath}", "${installDir}/${config.zipName}", true, "${config.hashDownloadPath}")
-	}		
+	}
 	else {
 		echo(message:"Copying ${context.serviceDirectory}/${config.downloadPath} to ${installDir}/${config.zipName} ...")
 		copy(tofile: "${installDir}/${config.zipName}", file:"${context.serviceDirectory}/${config.downloadPath}", overwrite:false)
