@@ -43,7 +43,7 @@ service {
             //setting the global attributes to be available for all chef clients  
             def privateIp = context.privateAddress
             def serverUrl = "https://${privateIp}:443" as String
-            context.attributes.global["chef_validation.pem"] = sudoReadFile("/etc/chef/validation.pem")
+            context.attributes.global["chef_validation_pem"] = sudoReadFile("/etc/chef/validation.pem")
             context.attributes.global["chef_server_url"] = serverUrl
         }
         
