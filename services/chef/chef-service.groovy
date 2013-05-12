@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 GigaSpaces Technologies Ltd. All rights reserved
+ * Copyright (c) 2013 GigaSpaces Technologies Ltd. All rights reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,14 @@ service {
     }
 
     lifecycle {
+        init {
+            persistedRunParams = context.attributes.thisInstance.containsKey("runParams") ? context.attributes.thisInstance["runParams"] : [:]
+            defaultRunParams = binding.variables.containsKey("runParams") ? binding.getVariable("runParams") : [:]
+            // merge: defaults from properties file, then persisted config from attributes
+            runParams = defaultRunParams + persistedRunParams
+            // persist to context attributes (for a self-healing or a custom command)
+            context.attributes.thisInstance["runParams"] = runParams
+        }
         install {
             ChefBootstrap.getBootstrap(context: context).install() // default installation method defined in chef.properties
         }
@@ -35,17 +43,14 @@ service {
             if (chefServerURL == null) {
                 throw new RuntimeException("Cannot find a chef server URL in global attribtue 'chef_server_url'")
             }
-
             println "Using Chef server URL: ${chefServerURL}"
 
-            def runParamsLocal = binding.variables["runParams"] ? runParams : [run_list: "role[${context.serviceName}]" as String]
-
+            def runParamsLocal = context.attributes.thisInstance.containsKey("runParams") ? context.attributes.thisInstance["runParams"] : [:]
             ChefBootstrap.getBootstrap(
                     serverURL: chefServerURL,
                     validationCert: validationCert,
                     context: context
             ).runClient(runParamsLocal)
-
             return null
         }
 
@@ -57,7 +62,7 @@ service {
 
     customCommands([
             "rerun": {
-                def runParamsLocal = binding.variables["runParams"] ? runParams : [run_list: "role[${context.serviceName}]" as String]
+                def runParamsLocal = context.attributes.thisInstance.containsKey("runParams") ? context.attributes.thisInstance["runParams"] : [:]
                 ChefBootstrap.getBootstrap(context: context).runClient(runParamsLocal)
                 return true
             },
