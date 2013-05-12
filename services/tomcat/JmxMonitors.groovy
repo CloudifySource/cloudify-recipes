@@ -43,19 +43,20 @@ class JmxMonitors {
 	}
 	
 	/* Returns a map of metrics values */ 
-	def static getJmxMetrics(host,jmxPort,metricNamesToMBeansNames) {
-		def server = connectRMI(host, jmxPort)
-		
+	def static getJmxMetrics(host, jmxPort, metricNamesToMBeansNames) {
+		def jmxConnector = connectRMI(host, jmxPort)
 		def metrics = [:]
-		
-		metricNamesToMBeansNames.each{metricName,objectsArr->
-			def objectName=objectsArr[0]
-			def attributeName=objectsArr[1]
-			def currMetricValue = getJMXAttribute(server,objectName , attributeName)
-			metrics.put(metricName,currMetricValue)
+		try {
+			metricNamesToMBeansNames.each{metricName,objectsArr->
+				def objectName=objectsArr[0]
+				def attributeName=objectsArr[1]
+				def currMetricValue = getJMXAttribute(jmxConnector, objectName, attributeName)
+				metrics.put(metricName, currMetricValue)
+			}
+		} catch (IOException ex) {
+			// Force a new connection for the next try
+			urlToConnection["${host:jmxPort}"] = null
 		}
-		
-	//	server.close()
 		return metrics
 	}
 }
