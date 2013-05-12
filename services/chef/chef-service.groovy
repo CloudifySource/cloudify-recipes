@@ -26,8 +26,9 @@ service {
 
     lifecycle {
         init {
-            def chefServerURL = context.attributes.global["chef_server_url"]
-            def validationCert = context.attributes.global["chef_validation.pem"]
+            // Look for local configuration (external Chef server), then in Cloudify global attributes (Chef server deployed by Cloudify)
+            def chefServerURL = binding.variables.containsKey("chef_server_url") ?: context.attributes.global["chef_server_url"]
+            def validationCert = binding.variables.containsKey("chef_validation.pem") ?: context.attributes.global["chef_validation.pem"]
 
             if (chefServerURL == null) {
                 throw new RuntimeException("Cannot find a chef server URL in global attribtue 'chef_server_url'")
