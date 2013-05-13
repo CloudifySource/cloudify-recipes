@@ -25,8 +25,8 @@ class ChefLoader{
             case "svn":
                 return new ChefSvnLoader()
                 //break unneeded
-            case "tar":
-                return new ChefTarLoader()
+            case "tgz":
+                return new ChefTgzLoader()
                 //break unneeded
             default:
               throw new Exception("Unrecognized type(${type}), please use one of: 'git', 'svn' or 'tar'")
@@ -142,7 +142,7 @@ class ChefSvnLoader extends ChefLoaderBase {
     }
 }
 
-class ChefTarLoader extends ChefLoaderBase {
+class ChefTgzLoader extends ChefLoaderBase {
     String local_tarball_path = underHomeDir("chef_data.tgz")
     def fetch(url, inner_path) {
         download(local_tarball_path, url)
