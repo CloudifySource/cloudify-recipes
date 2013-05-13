@@ -18,17 +18,17 @@ import static ChefLoader
 
 service {
     extend "../chef"
-	name "chef-server"
-	type "WEB_SERVER"
-	icon "chef.png"
-	numInstances 1
-
+    name "chef-server"
+    type "WEB_SERVER"
+    icon "chef.png"
+    numInstances 1
+    
     compute {
-		// Chef server does NOT support 32bit !!!
+        // Chef server does NOT support 32bit !!!
         template "SMALL_LINUX" 
     }
 
-	lifecycle{
+    lifecycle{
         start {
             // chefServerVersion is defined in properties file
             def bootstrap = ChefBootstrap.getBootstrap(installFlavor:"fatBinary", context:context)
@@ -41,26 +41,26 @@ service {
             ])
 
             //setting the global attributes to be available for all chef clients  
-            def privateIp = System.getenv()["CLOUDIFY_AGENT_ENV_PRIVATE_IP"]
+            def privateIp = context.privateAddress
             def serverUrl = "https://${privateIp}:443" as String
-            context.attributes.global["chef_validation.pem"] = sudoReadFile("/etc/chef/validation.pem")
+            context.attributes.global["chef_validation_pem"] = sudoReadFile("/etc/chef/validation.pem")
             context.attributes.global["chef_server_url"] = serverUrl
         }
-		
-		startDetectionTimeoutSecs 600
-		startDetection {
-			ServiceUtils.isPortOccupied(443)
-		}
-		
-		details {
-			def publicIp = System.getenv()["CLOUDIFY_AGENT_ENV_PUBLIC_IP"]
-			def serverRestUrl = "https://${publicIp}:443"
-			def serverUrl = "https://${publicIp}:443"
-    		return [
-    			"Rest URL":"<a href=\"${serverRestUrl}\" target=\"_blank\">${serverRestUrl}</a>",
-    			"Server URL":"<a href=\"${serverUrl}\" target=\"_blank\">${serverUrl}</a>"
-    		]
-    	}
+        
+        startDetectionTimeoutSecs 600
+        startDetection {
+            ServiceUtils.isPortOccupied(443)
+        }
+        
+        details {
+            def publicIp = System.getenv()["CLOUDIFY_AGENT_ENV_PUBLIC_IP"]
+            def serverRestUrl = "https://${publicIp}:443"
+            def serverUrl = "https://${publicIp}:443"
+            return [
+                "Rest URL":"<a href=\"${serverRestUrl}\" target=\"_blank\">${serverRestUrl}</a>",
+                "Server URL":"<a href=\"${serverUrl}\" target=\"_blank\">${serverUrl}</a>"
+            ]
+        }
         postStart { 
             if (binding.variables["chefRepo"]) {
                 chef_loader = ChefLoader.get_loader(chefRepo.repo_type)

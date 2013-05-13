@@ -45,7 +45,7 @@ class ChefBootstrap {
         return cls
     }
 
-    def ChefBootstrap(options=[:]) {
+    protected def ChefBootstrap(options=[:]) {
         os = OperatingSystem.getInstance()
         if ("context" in options) {
             context = options["context"]
@@ -63,14 +63,14 @@ class ChefBootstrap {
         // persist to context attributes
         context.attributes.thisInstance["chefConfig"] = chefConfig
     } 
-    def installRuby() {
+    protected def installRuby() {
         if (this.class.methods.find { it.name == "install_pkgs"}) {
             install_pkgs(rubyPkgs)
         } else {
             rvm()
         }
     }
-    def installRubyGems() {
+    protected def installRubyGems() {
         //install rubygems from source to avoid a version mismatch in rubygems (see rubygems.org)
         def gemTarball = pathJoin(getTmpDir(), "rubygems.tar.gz")
         def gemDir = pathJoin(getTmpDir(), "gemInstall")
@@ -94,17 +94,20 @@ class ChefBootstrap {
             this.invokeMethod("${chefConfig.installFlavor}Install", null)
         }
     }
-    def gemInstall() {
+    protected def gemInstall() {
         def opts = "-y --no-rdoc --no-ri"
         if (!chefConfig.version.is(null)) {
             opts = "-v ${chefConfig.version} " + opts
         }
         sudo("gem install chef ${opts}")
     }
-    def mkChefDirs() {
+    protected def mkChefDirs() {
         sudo("mkdir -p '/etc/chef' '/var/chef' '/var/log/chef'")
     }
-    def configureClient() {
+    protected def configureClient() {
+        if (chefConfig.serverURL == null) {
+            throw new RuntimeException("Cannot find a chef server")
+        }
         mkChefDirs()
         sudoWriteFile("/etc/chef/client.rb", """
 log_level          :info
@@ -112,17 +115,17 @@ log_location       "/var/log/chef/client.log"
 ssl_verify_mode    :verify_none
 validation_client_name "chef-validator"
 validation_key         "/etc/chef/validation.pem"
-client_key               "/etc/chef/client.pem"
+client_key             "/etc/chef/client.pem"
 chef_server_url    "${chefConfig.serverURL}"
 file_cache_path    "/var/chef/cache"
-file_backup_path  "/var/chef/backup"
+file_backup_path   "/var/chef/backup"
 pid_file           "/var/run/chef/client.pid"
 Chef::Log::Formatter.show_time = true
 """)
         if (chefConfig.validationCert) {
             sudoWriteFile("/etc/chef/validation.pem", chefConfig.validationCert)
         } else {
-            sudo("cp ${System.properties["user.home"]}/gs-files/validation.pem /etc/chef/validation.pem")
+            sudo("cp -f ${System.properties["user.home"]}/gs-files/validation.pem /etc/chef/validation.pem")
         }
     }
     def runClient(ArrayList runList) {
@@ -180,7 +183,7 @@ cookbook_path "${pathJoin(chefSoloDir, "cookbooks")}"
         }
         return initJson
     }
-    def fatBinaryInstall() {
+    protected def fatBinaryInstall() {
         chefBinPath = "/opt/chef/bin"
         new AntBuilder().sequential {
             mkdir(dir:osConfig.installDir)
@@ -201,11 +204,21 @@ cookbook_path "${pathJoin(chefSoloDir, "cookbooks")}"
     protected berksfileExists() {
         return new File(context.getServiceDirectory(), "Berksfile").exists()
     }
-    def rvm() {
+    protected def rvm() {
         // not implemented yet
         println "RVM install method is not implemented yet"
     }
-    def which(binary) {
+    protected isURL(String urlString) {
+        try { 
+            urlString.toURL()   
+            return true
+        } catch (java.net.MalformedURLException e) {
+            return false   
+        } catch (java.lang.NullPointerException e) { 
+            return false
+        }
+    }
+    protected def which(binary) {
         // check for binaries we already know about
         def filename
         if (binary.startsWith("chef-")) {
@@ -219,10 +232,10 @@ cookbook_path "${pathJoin(chefSoloDir, "cookbooks")}"
             return shellOut("which $binary")
         }
     }
-    def getGemsBinPath() {
+    protected def getGemsBinPath() {
         return shellOut("gem env").split("\n").find { it =~ "EXECUTABLE DIRECTORY" }.split(":")[1].stripIndent()
     }
-    def getChefBinPath() {
+    protected def getChefBinPath() {
         def path
         switch (chefConfig.installFlavor) {
             case "gem":
@@ -241,7 +254,7 @@ cookbook_path "${pathJoin(chefSoloDir, "cookbooks")}"
     def getConfig() {
         return chefConfig
     }
-    def getCookbooksWithBerkshelf() {
+    protected def getCookbooksWithBerkshelf() {
         runApply("chef_gem \"berkshelf\"")
         def gemBinPath
         def chefSoloDir = getChefSoloDir()
@@ -258,7 +271,7 @@ cookbook_path "${pathJoin(chefSoloDir, "cookbooks")}"
         // TODO: adapt for rvm
         sudo("gem install ${gem} --no-ri --no-rdoc")
     }
-    private getChefSoloDir() {
+    protected getChefSoloDir() {
         pathJoin(getTmpDir(), "chef-solo")
     }
 }
@@ -304,16 +317,6 @@ class RHELBootstrap extends ChefBootstrap {
     def gemInstall() {
         sudo("gem update --system")
         super.gemInstall()
-    }
-    private isURL(String urlString) {
-        try { 
-            urlString.toURL()   
-            return true
-        } catch (java.net.MalformedURLException e) {
-            return false   
-        } catch (java.lang.NullPointerException e) { 
-            return false
-        }
     }
 }
 

@@ -25,8 +25,8 @@ class ChefLoader{
             case "svn":
                 return new ChefSvnLoader()
                 //break unneeded
-            case "tar":
-                return new ChefTarLoader()
+            case "tgz":
+                return new ChefTgzLoader()
                 //break unneeded
             default:
               throw new Exception("Unrecognized type(${type}), please use one of: 'git', 'svn' or 'tar'")
@@ -73,13 +73,14 @@ cache_options( :path => '${underHomeDir(".chef/checksums")}' )
 cookbook_path [ '${underHomeDir("cookbooks")}' ]
 """)
 
-        sudo("cp /etc/chef/webui.pem ${webui_pem}")
+        sudo("cp -f /etc/chef/webui.pem ${webui_pem}")
         sudo("chown `whoami` ${webui_pem}")
     }
 
     abstract fetch(url, inner_path)
 
     def symlink(inner_path) {
+        if (inner_path == null) inner_path = ""
         ["cookbooks", "roles"].each{ chef_dir ->
             def chef_dir_in_repo = pathJoin(local_repo_dir, inner_path, chef_dir)
             sh("rm -f ${underHomeDir(chef_dir)}")
@@ -91,7 +92,9 @@ cookbook_path [ '${underHomeDir("cookbooks")}' ]
         sudo("knife cookbook upload -a")
         def roles_dir = underHomeDir("roles")
         if (pathExists(roles_dir)) {
-            sudo("knife role from file ${pathJoin(roles_dir, "*.rb")}")
+            new File(roles_dir).eachFile{file->
+                sudo("knife role from file ${file.getAbsolutePath()}")
+            }
         }
     }
 
@@ -121,7 +124,7 @@ class ChefGitLoader extends ChefLoaderBase {
             sh("git clone ${url} ${local_repo_dir}")
         }
 
-        if (inner_path!=null) {symlink(inner_path)}
+        symlink(inner_path)
     }
 }
 
@@ -138,16 +141,16 @@ class ChefSvnLoader extends ChefLoaderBase {
             sh("svn co ${url} ${local_repo_dir}")
         }
 
-        if (inner_path!=null) {symlink(inner_path)}
+        symlink(inner_path)
     }
 }
 
-class ChefTarLoader extends ChefLoaderBase {
+class ChefTgzLoader extends ChefLoaderBase {
     String local_tarball_path = underHomeDir("chef_data.tgz")
     def fetch(url, inner_path) {
         download(local_tarball_path, url)
         sh("tar -xzf ${local_tarball_path} -C ${local_repo_dir}")
         
-        if (inner_path!=null) {symlink(inner_path)}
+        symlink(inner_path)
     }
 }
