@@ -58,9 +58,9 @@ println "Connection succeeded"
 mongodInstances=serviceContext.attributes.mongod.instances		
 	
 mongodHostInstances.each {
-		mongodPort = mongodInstances[it.instanceID].port		
+		mongodPort = mongodInstances[it.instanceId].port		
 		mongodHost = it.hostAddress		
-		println "mongos_poststart.groovy: mongod #"+it.instanceID + " host and port = ${mongodHost}:${mongodPort}"		
+		println "mongos_poststart.groovy: mongod #"+it.instanceId + " host and port = ${mongodHost}:${mongodPort}"		
 		result = db.command(["addshard":"${mongodHost}:${mongodPort}"])		
 		println "mongos_poststart.groovy: db result: ${result}"
 }
