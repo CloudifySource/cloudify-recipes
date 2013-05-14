@@ -20,6 +20,6 @@ config = new ConfigSlurper().parse(new File("solr.properties").toURL())
 
 new AntBuilder().sequential {
 	mkdir(dir:config.installDir)
-	ServiceUtils.getDownloadUtil().get("${config.downloadPath}", "${installDir}/${config.zipName}", true, "${config.hashDownloadPath}")
+	ServiceUtils.getDownloadUtil().get("${config.downloadPath}", "${config.installDir}/${config.zipName}", true, "${config.hashDownloadPath}")
 	unzip(src:"${config.installDir}/${config.zipName}", dest:config.installDir, overwrite:true)
 }
