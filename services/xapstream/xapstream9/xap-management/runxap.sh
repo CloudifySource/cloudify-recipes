@@ -1,6 +1,3 @@
-
-XAPBINDIR=$1
-
 CLASSPATH=
 bootclasspath=
 CLASS=
@@ -15,7 +12,6 @@ GS_LOGGING_CONFIG_FILE_PROP=
 JAVA_OPTIONS=
 JSHOMEDIR=
 LOOKUPGROUPS=
-LOOKUPLOCATORS=localhost
 SIGAR_JARS=
 PRE_CLASSPATH=
 POST_CLASSPATH=
@@ -30,10 +26,5 @@ startParm=
 launchTarget=
 options=
 
-BINDIR=install/gigaspaces-xap-9.1-lite/gigaspaces-xap-premium-9.1.0-ga/bin
-
-$BINDIR/gsm.sh &
-sleep 3
-$BINDIR/gsc.sh &
-sleep 10
-$BINDIR/gs-webui.sh
+$XAPDIR/bin/gsm.sh &
+$XAPDIR/bin/gs-webui.sh
