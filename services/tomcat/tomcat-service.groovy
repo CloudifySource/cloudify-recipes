@@ -26,7 +26,6 @@ service {
 	minAllowedInstances 1
 	maxAllowedInstances 2
 	
-	def config = new ConfigSlurper().parse(new File("${context.serviceDirectory}/tomcat-service.properties").toURL())
 	def instanceId = context.instanceId
 	
 	def portIncrement = context.isLocalCloud() ? instanceId-1 : 0
