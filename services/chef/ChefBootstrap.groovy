@@ -71,9 +71,11 @@ class ChefBootstrap {
         }
     }
     def installRubyGems() {
+        if (!which("gem").isEmpty()) { return }
         //install rubygems from source to avoid a version mismatch in rubygems (see rubygems.org)
-        def gemTarball = pathJoin(getTmpDir(), "rubygems.tar.gz")
-        def gemDir = pathJoin(getTmpDir(), "gemInstall")
+        def tmpDir = getTmpDir()
+        def gemTarball = pathJoin(tmpDir, "rubygems.tar.gz")
+        def gemDir = pathJoin(tmpDir, "gemInstall")
         new File(gemDir).mkdir()
         download(gemTarball, chefConfig.gemTarballUrl)
         sh("tar -xzf ${gemTarball} --strip-components=1 -C ${gemDir}")
@@ -85,7 +87,7 @@ class ChefBootstrap {
                 case ["fatBinary", "pkg"]: break
                 case "gem":
                     installRuby() //there are multiple packages here, and we want to be sure they're all installed
-                    if (which("gem").isEmpty()) { installRubyGems() }
+                    installRubyGems()
                     break
                 default:
                     throw new Exception("Support for the install flavor ${chefConfig.installFlavor} is not implemented")
@@ -148,29 +150,40 @@ Chef::Log::Formatter.show_time = true
         sudo("${chef_apply} ${tempRecipeFile.getAbsolutePath()}")
         tempRecipeFile.delete()
     }
-    def runSolo(ArrayList runList) {
-        runSolo(runListToInitialJson(runList))
+    def runSolo(ArrayList runList, String cookbooksUrl=null, String cookbooksPath=null) {
+        runSolo(runListToInitialJson(runList), cookbooksUrl, cookbooksPath)
     }
-    def runSolo(HashMap initJson=[:], String cookbooksUrl=null) {
-        def chefSoloDir = getChefSoloDir()
-        def soloConf = new File([context.getServiceDirectory(), "solo.rb"].join(File.separator)).text =
-        """
-file_cache_path "${chefSoloDir}"
-cookbook_path "${pathJoin(chefSoloDir, "cookbooks")}"
-        """
+    def runSolo(HashMap initJson=[:], String cookbooksUrl=null, String cookbooksPath=null) {
+        File soloTmpDir = getTmpDir()
+        assert(!soloTmpDir.is(null))
+        if (isURL(cookbooksUrl)) {
+        } else if ("bootstrapCookbooksUrl" in chefConfig && isURL(chefConfig.bootstrapCookbooksUrl)) {
+            execSolo(initJson, cookbooksUrl)
+        } else if (!cookbooksPath.is(null)) {
+            println "Running chef-solo with cookbooksPath: ${cookbooksPath}"
+            execSolo(initJson, null, cookbooksPath)
+        } else if (cookbooksPath.is(null) && berksfileExists()) {
+            def berkshelfCookbooksPath = new File(soloTmpDir, "cookbooks")
+            getCookbooksWithBerkshelf(berkshelfCookbooksPath)
+            println "Running chef-solo with berkshelf cookbooks"
+            execSolo(initJson, soloTmpDir, null, berkshelfCookbooksPath)
+        } else {
+            throw new Exception("No berksfile present and cookbooksUrl, cookbooksPath are not set")
+        }
+        soloTmpDir.deleteDir()
+    }
+    private execSolo(HashMap initJson=[:], File soloTmpDir, String cookbooksUrl=null, String cookbooksPath=null) {
         def chef_solo = which("chef-solo")
         assert ! chef_solo.isEmpty()
-        def jsonFile = new File(pathJoin(context.getServiceDirectory(), "bootstrap_server.json"))
-        jsonFile.text = JsonOutput.toJson(initJson)
-        if (isURL(cookbooksUrl)) {
-            sudo("""${chef_solo} -c ${context.getServiceDirectory()}/solo.rb -j ${jsonFile} -r ${cookbooksUrl}""")
-        } else if ("bootstrapCookbooksUrl" in chefConfig && isURL(chefConfig.bootstrapCookbooksUrl)) {
-            sudo("""${chef_solo} -c ${context.getServiceDirectory()}/solo.rb -j ${jsonFile} -r ${chefConfig.bootstrapCookbooksUrl}""")
-        } else if (berksfileExists()) {
-            getCookbooksWithBerkshelf()
-            sudo("""${chef_solo} -c ${context.getServiceDirectory()}/solo.rb -j ${jsonFile}""")
+        def soloConf = new File(soloTmpDir, "solo.rb") << """
+file_cache_path "${soloTmpDir}"
+cookbook_path "${cookbooksPath}"
+"""
+        def jsonFile = new File(soloTmpDir, "dna.json") << JsonOutput.toJson(initJson)
+        if (cookbooksUrl.is(null)) {
+            sudo("""${chef_solo} -c ${soloConf} -j ${jsonFile}""")
         } else {
-            throw new Exception("No berksfile present and cookbooksUrl is not set")
+            sudo("""${chef_solo} -c ${soloConf} -j ${jsonFile} -r ${chefConfig.bootstrapCookbooksUrl}""")
         }
     }
     protected runListToInitialJson(ArrayList runList) {
@@ -219,8 +232,13 @@ cookbook_path "${pathJoin(chefSoloDir, "cookbooks")}"
             return shellOut("which $binary")
         }
     }
-    def getGemsBinPath() {
-        return shellOut("gem env").split("\n").find { it =~ "EXECUTABLE DIRECTORY" }.split(":")[1].stripIndent()
+    String getGemsBinPath() {
+        def ret = shellOut("gem env")
+        if (ret.is(null)) { 
+            return null
+        } else { 
+            ret.split("\n").find { it =~ "EXECUTABLE DIRECTORY" }.split(":")[1].stripIndent()
+        }
     }
     def getChefBinPath() {
         def path
@@ -238,28 +256,36 @@ cookbook_path "${pathJoin(chefSoloDir, "cookbooks")}"
         }
         return path
     }
+    def getChefGemBinPath() {
+        def path
+        switch (chefConfig.installFlavor) {
+            case "gem":
+                if (! which("gem").isEmpty()) {
+                    path = getGemsBinPath()
+                } else { path = "" }
+                break
+            case "fatBinary":
+                path = "/opt/chef/embedded/bin"
+                break
+            default:
+                path = binPath
+        }
+        return path
+    }
     def getConfig() {
         return chefConfig
     }
-    def getCookbooksWithBerkshelf() {
-        runApply("chef_gem \"berkshelf\"")
-        def gemBinPath
-        def chefSoloDir = getChefSoloDir()
-        if (chefConfig.installFlavor == "fatBinary") {
-            gemBinPath = "/opt/chef/embedded/bin"
-        } else {
-            gemBinPath = getGemsBinPath()
-        }
-        new AntBuilder().exec(executable:"${gemBinPath}/berks", dir:context.getServiceDirectory()) {
-            ["install", "--path", "${pathJoin(chefSoloDir, "cookbooks")}"].each{arg(value:it)}
-        }
+    def getCookbooksWithBerkshelf(cookbooksPath) {
+        // First, make sure we have berkshelf
+        runSolo(["recipe[berkshelf]"], null, pathJoin(context.getServiceDirectory(), "berks-cookbooks"))
+        // Now, run it to retrieve all other cookbooks
+        def gemBinPath = getChefGemBinPath()
+        println "Getting cookbooks with berkshelf"
+        sh(["${gemBinPath}/berks", "install", "--path", "${cookbooksPath}"], cwd:context.getServiceDirectory())
     }
     protected gemInstallGem(gem) {
         // TODO: adapt for rvm
         sudo("gem install ${gem} --no-ri --no-rdoc")
-    }
-    private getChefSoloDir() {
-        pathJoin(getTmpDir(), "chef-solo")
     }
 }
 
