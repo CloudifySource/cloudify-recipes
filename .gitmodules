@@ -1,6 +1,3 @@
-[submodule "services/chef/berks-cookbooks/ruby"]
-	path = services/chef/berks-cookbooks/ruby
-	url = https://github.com/skottler/ruby-cookbook.git
 [submodule "services/chef/berks-cookbooks/xml"]
 	path = services/chef/berks-cookbooks/xml
 	url = https://github.com/opscode-cookbooks/xml.git
