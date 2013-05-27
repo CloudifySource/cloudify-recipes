@@ -1,0 +1,6 @@
+[submodule "services/chef/berks-cookbooks/xml"]
+	path = services/chef/berks-cookbooks/xml
+	url = https://github.com/opscode-cookbooks/xml.git
+[submodule "services/chef/berks-cookbooks/build-essential"]
+	path = services/chef/berks-cookbooks/build-essential
+	url = https://github.com/opscode-cookbooks/build-essential.git

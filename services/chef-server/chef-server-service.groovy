@@ -32,7 +32,6 @@ service {
         start {
             // chefServerVersion is defined in properties file
             def bootstrap = ChefBootstrap.getBootstrap(installFlavor:"fatBinary", context:context)
-            bootstrap.runApply("""package \"git\"""")
             bootstrap.runSolo([
                 "chef-server": [
                     "version": "${chefServerVersion}"
