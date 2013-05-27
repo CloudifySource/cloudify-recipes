@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
+
 class ShellRuntimeException extends Exception {
     String stdout
     String stderr
@@ -39,11 +40,21 @@ ${this.stderr}
     }
 }
 
+def static sh(Map opts, ArrayList command, shellify=true) {
+    sh(command, shellify, opts)
+}
+def static sh(Map opts, String command, shellify=true) {
+    sh(command, shellify, opts)
+}
 def static sh(command, shellify=true, Map opts=[:]) {
     Map env = opts.env?: [:]
     println("Running \"${command}\"")
     if (shellify) {command = shellify_cmd(command)}
-    def proc = startProcess(command, env)
+    def args = [command, env]
+    if ("cwd" in opts) {
+        args << opts.cwd
+    }
+    def proc = startProcess(*args)
     def stdout = ""
     def stderr = ""
     proc.inputStream.eachLine { println "STDOUT: ${it}";  stdout += "${it}\n" }
@@ -64,11 +75,17 @@ def static shellOut(command, Map env=[:]) {
     return startProcess(shellify_cmd(command), env).inputStream.text
 }
 
-def static startProcess(command, Map env=[:]) {
+def static startProcess(command, Map env=[:], String cwd) {
+    startProcess(command, env, new File(cwd))
+}
+def static startProcess(command, Map env=[:], File cwd=null) {
     ProcessBuilder pb = new ProcessBuilder(command)
     def environment = pb.environment()
     if (!env.isEmpty()) {
         environment += env
+    }
+    if (!cwd.is(null)) {
+        pb.directory(cwd)
     }
     return pb.start()
 }
@@ -126,8 +143,11 @@ def static underHomeDir(inner_path) {
     return pathJoin(System.properties["user.home"], inner_path)
 }
 
-def static getTmpDir() {
-    return "/tmp"
+def static File getTmpDir() {
+    File tempFile = File.createTempFile(new Random().randInt(1000000).toString(), "")
+    if (tempFile.exists) { tempFile.delete() }
+    tempFile.mkdir()
+    return tempFile
 }
 
 def static sudoReadFile(filename) {
