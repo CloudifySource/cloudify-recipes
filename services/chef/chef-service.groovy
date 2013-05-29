@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 GigaSpaces Technologies Ltd. All rights reserved
+ * Copyright (c) 2013 GigaSpaces Technologies Ltd. All rights reserved
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,14 @@ service {
     }
 
     lifecycle {
+        init {
+            // runParams can have been set by a custom command before init (self-healing...)
+            // So we persist the dynamic configuration into Cloudify attributes.
+            persistedRunParams = context.attributes.thisInstance.containsKey("runParams") ? context.attributes.thisInstance["runParams"] : [:]
+            defaultRunParams = binding.variables.containsKey("runParams") ? binding.getVariable("runParams") : [run_list: "role[${context.serviceName}]" as String]
+            runParams = defaultRunParams + persistedRunParams
+            context.attributes.thisInstance["runParams"] = runParams
+        }
         install {
             ChefBootstrap.getBootstrap(context: context).install() // default installation method defined in chef-service.properties
         }
@@ -38,7 +46,7 @@ service {
 
             println "Using Chef server URL: ${chefServerURL}"
 
-            def runParamsLocal = binding.variables["runParams"] ? runParams : [run_list: "role[${context.serviceName}]" as String]
+            def runParamsLocal = context.attributes.thisInstance["runParams"]
 
             ChefBootstrap.getBootstrap(
                     serverURL: chefServerURL,
