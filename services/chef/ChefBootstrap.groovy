@@ -232,6 +232,16 @@ cookbook_path "${cookbooksPath}"
             return shellOut("which $binary")
         }
     }
+    protected isURL(String urlString) {
+        try { 
+            urlString.toURL()
+            return true
+        } catch (java.net.MalformedURLException e) {
+            return false
+        } catch (java.lang.NullPointerException e) { 
+            return false
+        }
+    }
     protected String getGemsBinPath() {
         def ret = shellOut("gem env")
         if (ret.is(null)) { 
@@ -330,16 +340,6 @@ class RHELBootstrap extends ChefBootstrap {
     def gemInstall() {
         sudo("gem update --system")
         super.gemInstall()
-    }
-    private isURL(String urlString) {
-        try { 
-            urlString.toURL()   
-            return true
-        } catch (java.net.MalformedURLException e) {
-            return false   
-        } catch (java.lang.NullPointerException e) { 
-            return false
-        }
     }
 }
 
