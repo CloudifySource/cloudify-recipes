@@ -28,7 +28,7 @@ class ChefBootstrap {
     protected ServiceContext context = null
     def opscode_gpg_key_url = "http://apt.opscode.com/packages@opscode.com.gpg.key"
 
-    def static getBootstrap(options=[:]) {
+    public def static getBootstrap(options=[:]) {
         def os = OperatingSystem.getInstance()
         def cls
         switch (os.getVendor()) {
@@ -45,7 +45,7 @@ class ChefBootstrap {
         return cls
     }
 
-    def ChefBootstrap(options=[:]) {
+    protected def ChefBootstrap(options=[:]) {
         os = OperatingSystem.getInstance()
         if ("context" in options) {
             context = options["context"]
@@ -63,14 +63,14 @@ class ChefBootstrap {
         // persist to context attributes
         context.attributes.thisInstance["chefConfig"] = chefConfig
     } 
-    def installRuby() {
+    protected def installRuby() {
         if (this.class.methods.find { it.name == "install_pkgs"}) {
             install_pkgs(rubyPkgs)
         } else {
             rvm()
         }
     }
-    def installRubyGems() {
+    protected def installRubyGems() {
         if (!which("gem").isEmpty()) { return }
         //install rubygems from source to avoid a version mismatch in rubygems (see rubygems.org)
         def tmpDir = getTmpDir()
@@ -81,7 +81,7 @@ class ChefBootstrap {
         sh("tar -xzf ${gemTarball} --strip-components=1 -C ${gemDir}")
         sudo("ruby ${gemDir}/setup.rb --no-format-executable")
     }
-    def install() {
+    public def install() {
         if (which("chef-solo").isEmpty()) {
             switch(chefConfig.installFlavor) {
                 case ["fatBinary", "pkg"]: break
@@ -96,17 +96,17 @@ class ChefBootstrap {
             this.invokeMethod("${chefConfig.installFlavor}Install", null)
         }
     }
-    def gemInstall() {
+    protected def gemInstall() {
         def opts = "-y --no-rdoc --no-ri"
         if (!chefConfig.version.is(null)) {
             opts = "-v ${chefConfig.version} " + opts
         }
         sudo("gem install chef ${opts}")
     }
-    def mkChefDirs() {
+    protected def mkChefDirs() {
         sudo("mkdir -p '/etc/chef' '/var/chef' '/var/log/chef'")
     }
-    def configureClient() {
+    protected def configureClient() {
         mkChefDirs()
         sudoWriteFile("/etc/chef/client.rb", """
 log_level          :info
@@ -114,10 +114,10 @@ log_location       "/var/log/chef/client.log"
 ssl_verify_mode    :verify_none
 validation_client_name "chef-validator"
 validation_key         "/etc/chef/validation.pem"
-client_key               "/etc/chef/client.pem"
+client_key             "/etc/chef/client.pem"
 chef_server_url    "${chefConfig.serverURL}"
 file_cache_path    "/var/chef/cache"
-file_backup_path  "/var/chef/backup"
+file_backup_path   "/var/chef/backup"
 pid_file           "/var/run/chef/client.pid"
 Chef::Log::Formatter.show_time = true
 """)
@@ -127,17 +127,17 @@ Chef::Log::Formatter.show_time = true
             sudo("cp ${System.properties["user.home"]}/gs-files/validation.pem /etc/chef/validation.pem")
         }
     }
-    def runClient(ArrayList runList) {
+    public def runClient(ArrayList runList) {
         runClient(runListToInitialJson(runList))
     }
-    def runClient(HashMap initJson=[:]) {
+    public def runClient(HashMap initJson=[:]) {
         configureClient()
         initJson["cloudify"] = context.attributes.thisService["chef"]
         def jsonFile = new File(pathJoin(context.getServiceDirectory(), "chef_client.json"))
         jsonFile.withWriter() { it.write(JsonOutput.toJson(initJson)) }
         sudo("chef-client -j ${jsonFile.getPath()}")
     }
-    def runApply(String inlineRecipe) {
+    public def runApply(String inlineRecipe) {
         if (chefConfig.version.tokenize('.')[0].toInteger() < 11 ) {
             throw new Exception("chef-apply is only available on Chef 11")
         }
@@ -150,10 +150,10 @@ Chef::Log::Formatter.show_time = true
         sudo("${chef_apply} ${tempRecipeFile.getAbsolutePath()}")
         tempRecipeFile.delete()
     }
-    def runSolo(ArrayList runList, String cookbooksUrl=null, String cookbooksPath=null) {
+    public def runSolo(ArrayList runList, String cookbooksUrl=null, String cookbooksPath=null) {
         runSolo(runListToInitialJson(runList), cookbooksUrl, cookbooksPath)
     }
-    def runSolo(HashMap initJson=[:], String cookbooksUrl=null, String cookbooksPath=null) {
+    public def runSolo(HashMap initJson=[:], String cookbooksUrl=null, String cookbooksPath=null) {
         File soloTmpDir = getTmpDir()
         assert(!soloTmpDir.is(null))
         if (isURL(cookbooksUrl)) {
@@ -193,7 +193,7 @@ cookbook_path "${cookbooksPath}"
         }
         return initJson
     }
-    def fatBinaryInstall() {
+    protected def fatBinaryInstall() {
         chefBinPath = "/opt/chef/bin"
         new AntBuilder().sequential {
             mkdir(dir:osConfig.installDir)
@@ -214,11 +214,11 @@ cookbook_path "${cookbooksPath}"
     protected berksfileExists() {
         return new File(context.getServiceDirectory(), "Berksfile").exists()
     }
-    def rvm() {
+    protected def rvm() {
         // not implemented yet
         println "RVM install method is not implemented yet"
     }
-    def which(binary) {
+    protected def which(binary) {
         // check for binaries we already know about
         def filename
         if (binary.startsWith("chef-")) {
@@ -232,7 +232,7 @@ cookbook_path "${cookbooksPath}"
             return shellOut("which $binary")
         }
     }
-    String getGemsBinPath() {
+    protected String getGemsBinPath() {
         def ret = shellOut("gem env")
         if (ret.is(null)) { 
             return null
@@ -240,7 +240,7 @@ cookbook_path "${cookbooksPath}"
             ret.split("\n").find { it =~ "EXECUTABLE DIRECTORY" }.split(":")[1].stripIndent()
         }
     }
-    def getChefBinPath() {
+    protected def getChefBinPath() {
         def path
         switch (chefConfig.installFlavor) {
             case "gem":
@@ -256,7 +256,7 @@ cookbook_path "${cookbooksPath}"
         }
         return path
     }
-    def getChefGemBinPath() {
+    protected def getChefGemBinPath() {
         def path
         switch (chefConfig.installFlavor) {
             case "gem":
@@ -272,10 +272,10 @@ cookbook_path "${cookbooksPath}"
         }
         return path
     }
-    def getConfig() {
+    public def getConfig() {
         return chefConfig
     }
-    def getCookbooksWithBerkshelf(cookbooksPath) {
+    protected def getCookbooksWithBerkshelf(cookbooksPath) {
         // First, make sure we have berkshelf
         runSolo(["recipe[berkshelf]"], null, pathJoin(context.getServiceDirectory(), "berks-cookbooks"))
         // Now, run it to retrieve all other cookbooks
