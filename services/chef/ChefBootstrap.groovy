@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2012 GigaSpaces Technologies Ltd. All rights reserved
+* Copyright (c) 2013 GigaSpaces Technologies Ltd. All rights reserved
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -107,6 +107,9 @@ class ChefBootstrap {
         sudo("mkdir -p '/etc/chef' '/var/chef' '/var/log/chef'")
     }
     protected def configureClient() {
+        if (chefServerURL == null) {
+            throw new RuntimeException("Cannot find a chef server URL. Check cloudify global attribute 'chef_server_url'")
+        }
         mkChefDirs()
         sudoWriteFile("/etc/chef/client.rb", """
 log_level          :info
