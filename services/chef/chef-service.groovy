@@ -55,6 +55,10 @@ service {
     }
 
     customCommands([
+            "run_apply": { inlineRecipe ->
+                bootstrap = ChefBootstrap.getBootstrap(context: context)
+                bootstrap.runApply(inlineRecipe)
+            },
             "run_chef": {serviceRunList = "role[${context.serviceName}]", chefType = "client", cookbookUrl = "" ->
 
                 serviceRunList = serviceRunList.split(",").collect() { it.stripIndent() }
