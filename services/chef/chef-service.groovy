@@ -45,6 +45,7 @@ service {
                     validationCert: validationCert,
                     context: context
             ).runClient(runParamsLocal)
+            return null
         }
 
         locator {
