@@ -32,6 +32,12 @@ service {
             def chefServerURL = context.attributes.global["chef_server_url"]
             def validationCert = context.attributes.global["chef_validation.pem"]
 
+            if (chefServerURL == null) {	    
+                def chefConfig = context.attributes.thisInstance["chefConfig"]
+                chefServerURL = chefConfig.serverURL
+                validationCert = chefConfig.validationCert
+			}
+			
             if (chefServerURL == null) {
                 throw new RuntimeException("Cannot find a chef server URL in global attribtue 'chef_server_url'")
             }
