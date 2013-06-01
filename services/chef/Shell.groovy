@@ -144,8 +144,8 @@ def static underHomeDir(inner_path) {
 }
 
 def static File getTmpDir() {
-    File tempFile = File.createTempFile(new Random().randInt(1000000).toString(), "")
-    if (tempFile.exists) { tempFile.delete() }
+    File tempFile = File.createTempFile(new Random().nextInt().abs().toString(), "")
+    if (tempFile.exists()) { tempFile.delete() }
     tempFile.mkdir()
     return tempFile
 }
