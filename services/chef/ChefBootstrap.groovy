@@ -166,7 +166,7 @@ Chef::Log::Formatter.show_time = true
             def berkshelfCookbooksPath = new File(soloTmpDir, "cookbooks")
             getCookbooksWithBerkshelf(berkshelfCookbooksPath)
             println "Running chef-solo with berkshelf cookbooks"
-            execSolo(initJson, soloTmpDir, null, berkshelfCookbooksPath)
+            execSolo(initJson, soloTmpDir, null, berkshelfCookbooksPath.path)
         } else {
             throw new Exception("No berksfile present and cookbooksUrl, cookbooksPath are not set")
         }
