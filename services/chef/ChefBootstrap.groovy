@@ -53,7 +53,7 @@ class ChefBootstrap {
         if (context.is(null)) {
             context = ServiceContextFactory.getServiceContext()
         }
-        def chefProperties = new ConfigSlurper().parse(new File(pathJoin(context.getServiceDirectory(), "chef.properties")).toURL())
+        def chefProperties = new ConfigSlurper().parse(new File(pathJoin(context.getServiceDirectory(), "chef-service.properties")).toURL())
         osConfig = os.isWin32() ? chefProperties.win32 : chefProperties.unix
 
         // Load chef config from context attributes
