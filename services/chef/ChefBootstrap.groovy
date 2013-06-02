@@ -124,7 +124,7 @@ Chef::Log::Formatter.show_time = true
         if (chefConfig.validationCert) {
             sudoWriteFile("/etc/chef/validation.pem", chefConfig.validationCert)
         } else {
-            sudo("cp ${System.properties["user.home"]}/gs-files/validation.pem /etc/chef/validation.pem")
+            sudo("cp -f ${System.properties["user.home"]}/gs-files/validation.pem /etc/chef/validation.pem")
         }
     }
     public def runClient(ArrayList runList) {
