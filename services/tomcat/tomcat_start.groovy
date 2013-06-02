@@ -65,7 +65,7 @@ new AntBuilder().sequential {
 		}
 		env(key:"CATALINA_HOME", value: "${catalinaHome}")
 		env(key:"CATALINA_BASE", value: "${catalinaBase}")
-		env(key:"CATALINA_OPTS", value: "${catalinaOpts} -Dcom.sun.management.jmxremote.port=${currJmxPort} -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false ${javaOpts}")
+		env(key:"CATALINA_OPTS", value: "${catalinaOpts} -Dcom.sun.management.jmxremote.port=${currJmxPort} -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false")
 		env(key:"JAVA_OPTS", value: "${javaOpts}")
 		arg(value:"run")
 	}
@@ -76,7 +76,7 @@ new AntBuilder().sequential {
 		}
 		env(key:"CATALINA_HOME", value: "${catalinaHome}")
 		env(key:"CATALINA_BASE", value: "${catalinaBase}")
-		env(key:"CATALINA_OPTS", value:  "${catalinaOpts} -Dcom.sun.management.jmxremote.port=${currJmxPort} -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false ${javaOpts}")
+		env(key:"CATALINA_OPTS", value: "${catalinaOpts} -Dcom.sun.management.jmxremote.port=${currJmxPort} -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false")
 		env(key:"JAVA_OPTS", value: "${javaOpts}")
 		arg(value:"run")
 	}

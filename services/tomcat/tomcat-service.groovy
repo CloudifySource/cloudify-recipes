@@ -40,15 +40,7 @@ service {
 	lifecycle {
 		
 		details {
-			def currPublicIP
-			
-			if (  context.isLocalCloud()  ) { // CLOUDIFY-1696
-				currPublicIP = InetAddress.localHost.hostAddress
-			}
-			else {
-				currPublicIP = context.publicAddress
-			}
-			
+			def currPublicIP = context.publicAddress
 			def contextPath = context.attributes.thisInstance["contextPath"]
 			if (contextPath == 'ROOT') contextPath="" // ROOT means "" by convention in Tomcat
 			def applicationURL = "http://${currPublicIP}:${currHttpPort}/${contextPath}"
@@ -90,13 +82,7 @@ service {
 				def apacheService = context.waitForService("apacheLB", 180, TimeUnit.SECONDS)
 				println "tomcat-service.groovy: invoking add-node of apacheLB ..."
 				
-				def privateIP
-				if ( context.isLocalCloud() ) { // CLOUDIFY-1696
-					privateIP = InetAddress.localHost.hostAddress
-				}
-				else {
-					privateIP = context.privateAddress
-				}
+				def privateIP = context.privateAddress
 				println "tomcat-service.groovy: privateIP is ${privateIP} ..."
 				
 				def contextPath = context.attributes.thisInstance["contextPath"]
@@ -115,13 +101,7 @@ service {
 					def apacheService = context.waitForService("apacheLB", 180, TimeUnit.SECONDS)
 					
 					if ( apacheService != null ) { 
-						def privateIP
-						if (  context.isLocalCloud()  ) { // CLOUDIFY-1696
-							privateIP = InetAddress.localHost.hostAddress
-						}
-						else {
-							privateIP =System.getenv()["CLOUDIFY_AGENT_ENV_PRIVATE_IP"]
-						}
+						def privateIP = context.privateAddress
 						println "tomcat-service.groovy: privateIP is ${privateIP} ..."
 						def contextPath = context.attributes.thisInstance["contextPath"]
 						if (contextPath == 'ROOT') contextPath="" // ROOT means "" by convention in Tomcat
