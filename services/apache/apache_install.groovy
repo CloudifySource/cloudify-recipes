@@ -91,11 +91,11 @@ else {
 	useDB = true
 		
 	if ( !(config.dbHost) ||  "${config.dbHost}"=="DB_INSTALLED_BY_CLOUDIFY") {
-		dbService = context.waitForService(config.dbServiceName, 180, TimeUnit.SECONDS)
+		dbService = context.waitForService(config.dbServiceName, 360, TimeUnit.SECONDS)
 		if (dbService == null) {
 			throw new IllegalStateException("${config.dbServiceName} service not found.");
 		}
-		ServiceInstance[] dbInstances = dbService.waitForInstances(dbService.numberOfPlannedInstances, 180, TimeUnit.SECONDS)
+		ServiceInstance[] dbInstances = dbService.waitForInstances(dbService.numberOfPlannedInstances, 360, TimeUnit.SECONDS)
 
 		if (dbInstances == null) {
 			throw new IllegalStateException("dbInstances not found.");
