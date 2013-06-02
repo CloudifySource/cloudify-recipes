@@ -25,6 +25,14 @@ service {
     }
 
     lifecycle {
+        init {
+            // runParams can have been set by a custom command before init (self-healing...)
+            // So we persist the dynamic configuration into Cloudify attributes.
+            persistedRunParams = context.attributes.thisInstance.containsKey("runParams") ? context.attributes.thisInstance["runParams"] : [:]
+            defaultRunParams = binding.variables.containsKey("runParams") ? binding.getVariable("runParams") : [run_list: "role[${context.serviceName}]" as String]
+            runParams = defaultRunParams + persistedRunParams
+            context.attributes.thisInstance["runParams"] = runParams
+        }
         install {
             ChefBootstrap.getBootstrap(context: context).install() // default installation method defined in chef-service.properties
         }
@@ -38,7 +46,7 @@ service {
 
             println "Using Chef server URL: ${chefServerURL}"
 
-            def runParamsLocal = binding.variables["runParams"] ? runParams : [run_list: "role[${context.serviceName}]" as String]
+            def runParamsLocal = context.attributes.thisInstance.containsKey("runParams") ? context.attributes.thisInstance["runParams"] : [run_list: "role[${context.serviceName}]" as String]
 
             ChefBootstrap.getBootstrap(
                     serverURL: chefServerURL,
