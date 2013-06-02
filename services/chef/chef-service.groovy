@@ -63,6 +63,11 @@ service {
     }
 
     customCommands([
+            "rerun": { 
+                bootstrap = ChefBootstrap.getBootstrap(context: context)
+                runParamsLocal = context.attributes.thisInstance.containsKey("runParams") ? context.attributes.thisInstance["runParams"] : [run_list: "role[${context.serviceName}]" as String]
+                bootstrap.runClient(runParamsLocal)
+            },
             "run_apply" : {inlineRecipe ->
                 bootstrap = ChefBootstrap.getBootstrap(context: context)
                 bootstrap.runApply(inlineRecipe)
