@@ -107,6 +107,10 @@ class ChefBootstrap {
         sudo("mkdir -p '/etc/chef' '/var/chef' '/var/log/chef'")
     }
     protected def configureClient() {
+        if (chefServerURL == null) {
+            throw new RuntimeException("Cannot find a chef server URL in global attribute 'chef_server_url'")
+        }
+
         mkChefDirs()
         sudoWriteFile("/etc/chef/client.rb", """
 log_level          :info
