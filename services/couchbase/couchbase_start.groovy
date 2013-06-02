@@ -95,8 +95,8 @@ if ( postStartRequired == "true" ) {
 			println "couchbase_start.groovy: In loop b4 index ${index} ... "
 			currInstance = couchbaseInstances[index]
 
-			println "couchbase_start.groovy: In loop after index ${index} currInstance.getInstanceID = " + currInstance.getInstanceID() 
-			if ( firstInstanceID == currInstance.getInstanceID()  ) {	
+			println "couchbase_start.groovy: In loop after index ${index} currInstance.getInstanceId = " + currInstance.getInstanceId() 
+			if ( firstInstanceID == currInstance.getInstanceId()  ) {	
 				try { 
 					firstInstance = currInstance											
 					newServerHost = context.attributes.thisInstance["myHostAddress"] 
