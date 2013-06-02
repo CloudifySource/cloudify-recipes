@@ -108,11 +108,12 @@ class ChefBootstrap {
     }
     def configureClient() {
         mkChefDirs()
+		def validationClientName = chefConfig.validationClientName ? chefConfig.validationClientName: "chef-validator"
         sudoWriteFile("/etc/chef/client.rb", """
 log_level          :info
 log_location       "/var/log/chef/client.log"
 ssl_verify_mode    :verify_none
-validation_client_name "chef-validator"
+validation_client_name "${validationClientName}"
 validation_key         "/etc/chef/validation.pem"
 client_key               "/etc/chef/client.pem"
 chef_server_url    "${chefConfig.serverURL}"
