@@ -156,17 +156,17 @@ Chef::Log::Formatter.show_time = true
     def runSolo(HashMap initJson=[:], String cookbooksUrl=null, String cookbooksPath=null) {
         File soloTmpDir = getTmpDir()
         assert(!soloTmpDir.is(null))
-        if (isURL(cookbooksUrl)) {
+        if (!cookbooksUrl.is(null) && isURL(cookbooksUrl)) {
         } else if ("bootstrapCookbooksUrl" in chefConfig && isURL(chefConfig.bootstrapCookbooksUrl)) {
-            execSolo(initJson, cookbooksUrl)
+            execSolo(initJson, soloTmpDir, cookbooksUrl)
         } else if (!cookbooksPath.is(null)) {
             println "Running chef-solo with cookbooksPath: ${cookbooksPath}"
-            execSolo(initJson, null, cookbooksPath)
+            execSolo(initJson, soloTmpDir, null, cookbooksPath)
         } else if (cookbooksPath.is(null) && berksfileExists()) {
             def berkshelfCookbooksPath = new File(soloTmpDir, "cookbooks")
             getCookbooksWithBerkshelf(berkshelfCookbooksPath)
             println "Running chef-solo with berkshelf cookbooks"
-            execSolo(initJson, soloTmpDir, null, berkshelfCookbooksPath)
+            execSolo(initJson, soloTmpDir, null, berkshelfCookbooksPath.path)
         } else {
             throw new Exception("No berksfile present and cookbooksUrl, cookbooksPath are not set")
         }
