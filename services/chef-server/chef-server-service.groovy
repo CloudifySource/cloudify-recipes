@@ -88,6 +88,12 @@ service {
             chef_loader = ChefLoader.get_loader()
             return chef_loader.listCookbooks()
         },
+        "cleanupNode": { String node_name ->
+            chef_loader = ChefLoader.get_loader()
+            chef_loader.invokeKnife(["node", "delete", node_name, "-y"])
+            chef_loader.invokeKnife(["client", "delete", node_name, "-y"])
+            return "${node_name} cleaned up"
+        },
         "knife": { String... args=[] ->
             chef_loader = ChefLoader.get_loader()
             return chef_loader.invokeKnife(args)
