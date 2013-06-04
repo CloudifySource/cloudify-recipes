@@ -345,6 +345,16 @@ class RHELBootstrap extends ChefBootstrap {
         sudo("gem update --system")
         super.gemInstall()
     }
+  private isURL(String urlString) {
+        try { 
+            urlString.toURL()   
+            return true
+        } catch (java.net.MalformedURLException e) {
+            return false   
+        } catch (java.lang.NullPointerException e) { 
+            return false
+        }
+    }
 }
 
 class SuSEBootstrap extends ChefBootstrap {
