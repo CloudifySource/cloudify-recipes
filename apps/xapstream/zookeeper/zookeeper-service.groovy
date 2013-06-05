@@ -1,0 +1,4 @@
+service {
+        extend "../../../services/zookeeper"
+}
+
