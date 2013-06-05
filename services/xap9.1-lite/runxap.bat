@@ -33,4 +33,3 @@ start /b %root%\gigaspaces-xap-9.1-lite\gigaspaces-xap-premium-9.1.0-ga\bin\gsc.
 
 cmd /c %root%\gigaspaces-xap-9.1-lite\gigaspaces-xap-premium-9.1.0-ga\bin\gs-webui.bat
 
-
