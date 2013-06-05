@@ -28,7 +28,10 @@ SET options=
 
 SET root=install
 
-start /b %root%\gigaspaces-xap-9.1-lite\gigaspaces-xap-premium-9.1.0-ga\bin\gs-agent.bat gsa.gsm 1 gsa.gsc 1
+start /b %root%\gigaspaces-xap-9.1-lite\gigaspaces-xap-premium-9.1.0-ga\bin\gsm.bat
+start /b %root%\gigaspaces-xap-9.1-lite\gigaspaces-xap-premium-9.1.0-ga\bin\gsc.bat
 
 cmd /c %root%\gigaspaces-xap-9.1-lite\gigaspaces-xap-premium-9.1.0-ga\bin\gs-webui.bat
+
+
 
