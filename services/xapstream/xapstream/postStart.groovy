@@ -18,7 +18,7 @@ import org.openspaces.admin.AdminFactory
 import org.openspaces.admin.gsa.GridServiceAgents
 import org.openspaces.admin.application.config.ApplicationConfig
 import org.openspaces.admin.pu.config.ProcessingUnitConfig
-import org.cloudifysource.utilitydomain.context.ServiceContextFactory
+import org.cloudifysource.dsl.context.ServiceContextFactory
 import org.cloudifysource.dsl.utils.ServiceUtils
 
 def context = ServiceContextFactory.getServiceContext()
