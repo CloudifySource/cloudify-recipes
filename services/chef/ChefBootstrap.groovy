@@ -112,6 +112,7 @@ class ChefBootstrap {
         }
 
         mkChefDirs()
+        def environment = chefConfig.environment ? chefConfig.environment : "_default"
         sudoWriteFile("/etc/chef/client.rb", """
 log_level          :info
 log_location       "/var/log/chef/client.log"
@@ -120,6 +121,7 @@ validation_client_name "chef-validator"
 validation_key         "/etc/chef/validation.pem"
 client_key             "/etc/chef/client.pem"
 chef_server_url    "${chefConfig.serverURL}"
+environment    "${environment}"
 file_cache_path    "/var/chef/cache"
 file_backup_path   "/var/chef/backup"
 pid_file           "/var/run/chef/client.pid"
