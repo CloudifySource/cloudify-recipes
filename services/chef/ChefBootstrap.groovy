@@ -130,6 +130,11 @@ Chef::Log::Formatter.show_time = true
         } else {
             sudo("cp -f ${System.properties["user.home"]}/gs-files/validation.pem /etc/chef/validation.pem")
         }
+        
+        if (chefConfig.encryptedDataBagSecret) {
+            sudoWriteFile("/etc/chef/encrypted_data_bag_secret", chefConfig.encryptedDataBagSecret)
+        }
+
     }
     public def runClient(ArrayList runList) {
         runClient(runListToInitialJson(runList))
