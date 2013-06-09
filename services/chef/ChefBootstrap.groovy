@@ -112,6 +112,7 @@ class ChefBootstrap {
         }
 
         mkChefDirs()
+		def environment = chefConfig.environment ? chefConfig.environment : "_default" 
 		def validationClientName = chefConfig.validationClientName ? chefConfig.validationClientName: "chef-validator"
         sudoWriteFile("/etc/chef/client.rb", """
 log_level          :info
@@ -121,6 +122,7 @@ validation_client_name "${validationClientName}"
 validation_key         "/etc/chef/validation.pem"
 client_key             "/etc/chef/client.pem"
 chef_server_url    "${chefConfig.serverURL}"
+environment    "${environment}" 
 file_cache_path    "/var/chef/cache"
 file_backup_path   "/var/chef/backup"
 pid_file           "/var/run/chef/client.pid"
@@ -131,6 +133,10 @@ Chef::Log::Formatter.show_time = true
         } else {
             sudo("cp -f ${System.properties["user.home"]}/gs-files/validation.pem /etc/chef/validation.pem")
         }
+        
+		if (chefConfig.encryptedDataBagSecret) {
+            sudoWriteFile("/etc/chef/encrypted_data_bag_secret", chefConfig.encryptedDataBagSecret)
+        } 
     }
     public def runClient(ArrayList runList) {
         runClient(runListToInitialJson(runList))
