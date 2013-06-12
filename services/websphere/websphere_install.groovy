@@ -14,6 +14,9 @@
 * limitations under the License.
 *******************************************************************************/
 import groovy.util.ConfigSlurper
+import org.cloudifysource.dsl.context.ServiceContextFactory
+
+context = ServiceContextFactory.getServiceContext()
 
 println "websphere_install.groovy: Installing..."
 websphereConfig = new ConfigSlurper().parse(new File("websphere-service.properties").toURL())
@@ -46,6 +49,15 @@ new AntBuilder().sequential {
 	
 	chmod(dir:"${websphereConfig.wasUnzippedFolder}", perm:'+x', includes:"*")		
 	echo(message:"End of chmodding ${websphereConfig.wasUnzippedFolder}")
+}
+
+new AntBuilder().sequential {
+	echo(message:"Chmodding ${context.serviceDirectory} ...")
+	chmod(dir:"${context.serviceDirectory}", perm:'+x', includes:"*.sh")	
+	
+	echo(message:"Executing ${context.serviceDirectory}/installMissingLibs.sh ...")
+	exec(executable:"${context.serviceDirectory}/installMissingLibs.sh", osfamily:"unix")
+	echo(message:"After ${context.serviceDirectory}/installMissingLibs.sh")
 }
 
 println "websphere_install.groovy: Setting ${websphereConfig.responsefile} in installation directory ${websphereConfig.installDir} ..."
