@@ -15,6 +15,8 @@ GS_LOGGING_CONFIG_FILE_PROP=
 JAVA_OPTIONS=
 JSHOMEDIR=
 LOOKUPGROUPS=
+#LOOKUPLOCATORS=localhost
+LOOKUPLOCATORS=
 SIGAR_JARS=
 PRE_CLASSPATH=
 POST_CLASSPATH=
@@ -31,6 +33,8 @@ options=
 
 BINDIR=install/gigaspaces-xap-9.1-lite/gigaspaces-xap-premium-9.1.0-ga/bin
 
-$BINDIR/gs-agent.sh gsa.gsm 1 gsa.gsc 1 &
+$BINDIR/gsm.sh &
+sleep 3
+$BINDIR/gsc.sh &
 sleep 10
 $BINDIR/gs-webui.sh
