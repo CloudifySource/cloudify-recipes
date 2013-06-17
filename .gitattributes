@@ -6,5 +6,6 @@
 *.exe binary
 *.dll binary
 *.png binary
+*.jpg binary
 *.war binary
 *.zip binary

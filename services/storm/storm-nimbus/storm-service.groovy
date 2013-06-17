@@ -47,7 +47,7 @@ service {
 						"TimeoutInSeconds" : 60,
 						"Host" : "127.0.0.1"
 					])
-		}, 
+		},
 		plugin {
 			name "storm-nimbus"
 			className "org.cloudifysource.storm.plugins.StormNimbusPlugin"
@@ -58,7 +58,7 @@ service {
 				"Task Count":"task_count",
 				"Worker Count":"worker_count"
 			])
-		} 
+		}
 
 	])
 
@@ -68,9 +68,9 @@ service {
 
 		/*
 			Deploys a topology that utilizes XAP for streaming and/or
- 			persistence.  Assumes a xapstream instance is part of the application */ 
+ 			persistence.  Assumes a xapstream instance is part of the application */
 
-		"deploy-xapstream" : {topoUrl, className, topoName, Object[] args -> 
+		"deploy-xapstream" : {topoUrl, className, topoName, Object[] args ->
 			context.attributes.thisService["topoUrl"] = "${topoUrl}"
 			context.attributes.thisService["topoName"] = "${topoName}"
 			context.attributes.thisService["className"] = "${className}"
@@ -78,27 +78,27 @@ service {
 			for(arg in args){
 				argline+=arg.toString()+" "
 			}
-				
+
 			context.attributes.thisService["args"] = "${argline}"
 
 			println "storm-service.groovy(deploy custom command): topoUrl is ${topoUrl}..."
 			println "storm-service.groovy(deploy customCommand): invoking deploy custom command ..."
 			nimbusService = context.waitForService("storm-nimbus", 60, TimeUnit.SECONDS)
-			nimbusInstances = nimbusService.waitForInstances(1,60, TimeUnit.SECONDS)				
+			nimbusInstances = nimbusService.waitForInstances(1,60, TimeUnit.SECONDS)
 			xapService = context.waitForService("xapstream", 60, TimeUnit.SECONDS)
 			xapInstances = xapService.waitForInstances(1,60,TimeUnit.SECONDS)
 			context.attributes.thisService["xapHost"]=xapInstances[0].getHostAddress()
 
-			instanceID = context.getInstanceId()			                       
+			instanceID = context.getInstanceId()
 			if ( instanceID == nimbusInstances[0].instanceID ) {
 				println "storm-service.groovy(deploy customCommand):  instanceID is ${instanceID} now invoking deploy-xapstream-file..."
 				nimbusInstances[0].invoke("deploy-xapstream-file")
 			}
-						
+
 			println "storm-service.groovy(deploy-xapstream customCommand): End"
 			return true
 		} ,
-		 
+
 
 		"deploy-xapstream-file":"commands/deploy-xapstream.groovy",
 
@@ -177,5 +177,3 @@ service {
 		)
 	}
 }
-
-
