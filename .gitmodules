@@ -4,3 +4,12 @@
 [submodule "services/chef/berks-cookbooks/build-essential"]
 	path = services/chef/berks-cookbooks/build-essential
 	url = https://github.com/opscode-cookbooks/build-essential.git
+[submodule "services/chef/berks-cookbooks/gecode"]
+	path = services/chef/berks-cookbooks/gecode
+	url = https://github.com/opscode-cookbooks/gecode.git
+[submodule "services/chef/berks-cookbooks/apt"]
+	path = services/chef/berks-cookbooks/apt
+	url = https://github.com/opscode-cookbooks/apt.git
+[submodule "services/chef/berks-cookbooks/yum"]
+	path = services/chef/berks-cookbooks/yum
+	url = https://github.com/opscode-cookbooks/yum.git
