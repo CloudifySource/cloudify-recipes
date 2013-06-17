@@ -165,7 +165,7 @@ Chef::Log::Formatter.show_time = true
         runSolo(runListToInitialJson(runList), cookbooksUrl, cookbooksPath)
     }
     public def runSolo(HashMap initJson=[:], String cookbooksUrl=null, String cookbooksPath=null) {
-        File soloTmpDir = getTmpDir()
+        File soloTmpDir = getTmpDir() as File		
         assert(!soloTmpDir.is(null))
         if (!cookbooksUrl.is(null) && isURL(cookbooksUrl)) {
         } else if ("bootstrapCookbooksUrl" in chefConfig && isURL(chefConfig.bootstrapCookbooksUrl)) {
