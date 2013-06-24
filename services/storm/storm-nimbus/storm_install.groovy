@@ -71,4 +71,3 @@ new File("${config.installDir}/${config.name}/conf/storm.yaml").withWriter{ out-
   out.write(template.toString())
 }
 
-
