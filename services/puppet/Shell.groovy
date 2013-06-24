@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
+
 class ShellRuntimeException extends Exception {
     String stdout
     String stderr
@@ -39,11 +40,21 @@ ${this.stderr}
     }
 }
 
+def static sh(Map opts, ArrayList command, shellify=true) {
+    sh(command, shellify, opts)
+}
+def static sh(Map opts, String command, shellify=true) {
+    sh(command, shellify, opts)
+}
 def static sh(command, shellify=true, Map opts=[:]) {
     Map env = opts.env?: [:]
     println("Running \"${command}\"")
     if (shellify) {command = shellify_cmd(command)}
-    def proc = startProcess(command, env, opts["cwd"])
+    def args = [command, env]
+    if ("cwd" in opts) {
+        args << opts.cwd
+    }
+    def proc = startProcess(*args)
     def stdout = ""
     def stderr = ""
     proc.inputStream.eachLine { println "STDOUT: ${it}";  stdout += "${it}\n" }
@@ -60,21 +71,22 @@ def static test(command) {
     return (sh(command, true, [ignore_failure: true]) == 0)
 }
 
-def static shellOut(command, Map env=[:], org.codehaus.groovy.runtime.GStringImpl cwd) { shellOut(command, env, cwd.toString()) }
-
-def static shellOut(command, Map env=[:]) { shellOut(command, env, null) }
-
-def static shellOut(command, Map env=[:], String cwd) {
-    return startProcess(shellify_cmd(command), env, cwd).inputStream.text
+def static shellOut(command, Map env=[:]) {
+    return startProcess(shellify_cmd(command), env).inputStream.text
 }
 
-def static startProcess(command, Map env=[:], cwd) {
+def static startProcess(command, Map env=[:], String cwd) {
+    startProcess(command, env, new File(cwd))
+}
+def static startProcess(command, Map env=[:], File cwd=null) {
     ProcessBuilder pb = new ProcessBuilder(command)
     def environment = pb.environment()
     if (!env.isEmpty()) {
         environment += env
     }
-    if (cwd) { pb.directory(new File(cwd)) }
+    if (!cwd.is(null)) {
+        pb.directory(cwd)
+    }
     return pb.start()
 }
 // overload shellify to handle different types
@@ -101,15 +113,15 @@ def static sudo(java.util.ArrayList command, Map opts=[:]) {
     return sudo(command.join(" "), opts)
 }
 
-def static sudoShellOut(command, Map env=[:], cwd=null) {
+def static sudoShellOut(command, Map env=[:]) {
     if (System.getProperty("user.name") != "root") {
         command = "sudo ${command}"
     }
-    return "\n" + shellOut(command, env, cwd)
+    return "\n" + shellOut(command, env)
 }
 
-def static sudoShellOut(List command, Map env=[:], cwd=null) {
-    return sudoShellOut(command.join(" "), env, cwd)
+def static sudoShellOut(List command, Map env=[:]) {
+    return sudoShellOut(command.join(" "), env)
 }
 
 
@@ -131,8 +143,11 @@ def static underHomeDir(inner_path) {
     return pathJoin(System.properties["user.home"], inner_path)
 }
 
-def static getTmpDir() {
-    return "/tmp"
+def static File getTmpDir() {
+    File tempFile = File.createTempFile(new Random().nextInt().abs().toString(), "")
+    if (tempFile.exists()) { tempFile.delete() }
+    tempFile.mkdir()
+    return tempFile
 }
 
 def static sudoReadFile(filename) {

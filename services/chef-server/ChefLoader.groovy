@@ -16,7 +16,7 @@
 
 import static Shell.*
 
-class ChefLoader{ 
+class ChefLoader{
     def static get_loader(type="git") {
            switch (type) {
             case "git":
@@ -48,7 +48,7 @@ abstract class ChefLoaderBase {
             sudo("zypper install ${pkg}")
         } else {
             throw new Exception("Failed to find a package manager")
-        }        
+        }
     }
 
     def initialize() {
@@ -59,7 +59,7 @@ abstract class ChefLoaderBase {
         sh("mkdir -p ${local_repo_dir} ${underHomeDir(".chef")}")
 
         def webui_pem = underHomeDir(".chef/chef-webui.pem")
-        sudoWriteFile(underHomeDir(".chef/knife.rb"), 
+        sudoWriteFile(underHomeDir(".chef/knife.rb"),
 """
 log_level :info
 log_location STDOUT
@@ -83,7 +83,7 @@ cookbook_path [ '${underHomeDir("cookbooks")}' ]
         ["cookbooks", "roles"].each{ chef_dir ->
             def chef_dir_in_repo = pathJoin(local_repo_dir, inner_path, chef_dir)
             sh("rm -f ${underHomeDir(chef_dir)}")
-            sh("ln -sf ${chef_dir_in_repo} ${underHomeDir(chef_dir)}") 
+            sh("ln -sf ${chef_dir_in_repo} ${underHomeDir(chef_dir)}")
         }
     }
 
@@ -115,11 +115,10 @@ class ChefGitLoader extends ChefLoaderBase {
         }
 
         def git_dir = pathJoin(local_repo_dir, ".git")
-        if (pathExists(git_dir)) {
-            sh("cd ${local_repo_dir}; git pull origin master")
-        } else {
-            sh("git clone ${url} ${local_repo_dir}")
+        if (! pathExists(git_dir)) {
+            sh("git clone --recursive ${url} ${local_repo_dir}")
         }
+        sh("cd ${local_repo_dir}; git submodule update --init --recursive; git pull origin master")
 
         if (inner_path!=null) {symlink(inner_path)}
     }
@@ -147,7 +146,7 @@ class ChefTarLoader extends ChefLoaderBase {
     def fetch(url, inner_path) {
         download(local_tarball_path, url)
         sh("tar -xzf ${local_tarball_path} -C ${local_repo_dir}")
-        
+
         if (inner_path!=null) {symlink(inner_path)}
     }
 }
