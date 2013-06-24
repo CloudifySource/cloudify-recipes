@@ -52,10 +52,6 @@ abstract class ChefLoaderBase {
     }
 
     def initialize() {
-        if (! test("ruby -r mime/types -e true")) {
-            install_pkg("ruby-mime-types")
-        }
-
         sh("mkdir -p ${local_repo_dir} ${underHomeDir(".chef")}")
 
         def webui_pem = underHomeDir(".chef/chef-webui.pem")
