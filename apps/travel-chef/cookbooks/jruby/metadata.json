@@ -1,0 +1,34 @@
+{
+  "name": "jruby",
+  "description": "Installs/Configures jruby",
+  "long_description": "Description\n===========\n\nInstalls JRuby into `/usr/local/lib/jruby`\n\nBinaries are linked to `/usr/local/bin/jruby`\n\n/usr/local/bin/ is added to $PATH\n\nRequirements\n============\n\nPlatform:\n\n* Debian, Ubuntu (tested on 10.04), CentOS (tested with 5.7)\n\nThe following Opscode cookbooks are dependencies:\n\n* java\n\nAttributes\n==========\n\n* `['jruby']['version']`\n* `['jruby']['checksum']`\n* `['jruby']['install_path']`\n* `['jruby']['gems']` \n* `['jruby']['nailgun']` # disabled by default.\n\nUsage\n=====\n\ninclude_recipe \"jruby\"\n\n\n\n",
+  "maintainer": "Jorge Falcão",
+  "maintainer_email": "falcao@intelie.com.br",
+  "license": "Apache 2.0",
+  "platforms": {
+    "ubuntu": ">= 0.0.0",
+    "debian": ">= 0.0.0",
+    "centos": ">= 0.0.0"
+  },
+  "dependencies": {
+    "java": ">= 0.0.0",
+    "install_from": ">= 0.0.0"
+  },
+  "recommendations": {
+  },
+  "suggestions": {
+  },
+  "conflicting": {
+  },
+  "providing": {
+  },
+  "replacing": {
+  },
+  "attributes": {
+  },
+  "groupings": {
+  },
+  "recipes": {
+  },
+  "version": "0.2.5"
+}
