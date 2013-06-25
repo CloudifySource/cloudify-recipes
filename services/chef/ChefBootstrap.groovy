@@ -107,9 +107,15 @@ class ChefBootstrap {
         sudo("mkdir -p '/etc/chef' '/var/chef' '/var/log/chef'")
     }
     protected def configureClient() {
-        if (chefServerURL == null) {
-            throw new RuntimeException("Cannot find a chef server URL in global attribute 'chef_server_url'")
-        }
+		if ("serverURL" in chefConfig) {
+			if (chefConfig.serverURL == null) {
+				throw new RuntimeException("Cannot find a chef server URL in global attribute 'chef_server_url', chefConfig.serverURL is null")
+			}
+		}
+		else {
+			throw new RuntimeException("Cannot find a chef server URL (serverURL) in chefConfig")
+		}
+        
 
         mkChefDirs()
 		def environment = chefConfig.environment ? chefConfig.environment : "_default" 
