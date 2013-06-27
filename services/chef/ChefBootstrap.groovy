@@ -224,11 +224,8 @@ cookbook_path "${cookbooksPath}"
             }
         }
         if (os.getVendor() != "Win32") {
-            if (chefConfig.version)
-                sudo("""${osConfig.installDir}/${osConfig.installer} -v ${chefConfig.version}""")
-            else {
-                sudo("""${osConfig.installDir}/${osConfig.installer}""")
-            }
+            def versionParam = chefConfig.version ? "-v ${chefConfig.version}" : ""
+            sudo("${osConfig.installDir}/${osConfig.installer} ${versionParam}")
         }
     }
     protected berksfileExists() {
