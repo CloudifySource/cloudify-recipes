@@ -25,7 +25,7 @@ service {
 
     compute {
 		// Chef server does NOT support 32bit !!!
-        template "SMALL_LINUX" 
+        template "SMALL_LINUX"
     }
 
 	lifecycle{
@@ -39,18 +39,18 @@ service {
                 "run_list": ["recipe[chef-server]"]
             ])
 
-            //setting the global attributes to be available for all chef clients  
+            //setting the global attributes to be available for all chef clients
             def privateIp = System.getenv()["CLOUDIFY_AGENT_ENV_PRIVATE_IP"]
             def serverUrl = "https://${privateIp}:443" as String
-            context.attributes.global["chef_validation.pem"] = sudoReadFile("/etc/chef/validation.pem")
+            context.attributes.global["chef_validation.pem"] = sudoReadFile("/etc/chef-server/chef-validator.pem")
             context.attributes.global["chef_server_url"] = serverUrl
         }
-		
+
 		startDetectionTimeoutSecs 600
 		startDetection {
 			ServiceUtils.isPortOccupied(443)
 		}
-		
+
 		details {
 			def publicIp = System.getenv()["CLOUDIFY_AGENT_ENV_PUBLIC_IP"]
 			def serverRestUrl = "https://${publicIp}:443"
@@ -60,7 +60,7 @@ service {
     			"Server URL":"<a href=\"${serverUrl}\" target=\"_blank\">${serverUrl}</a>"
     		]
     	}
-        postStart { 
+        postStart {
             if (binding.variables["chefRepo"]) {
                 chef_loader = ChefLoader.get_loader(chefRepo.repo_type)
                 chef_loader.initialize()
@@ -76,12 +76,12 @@ service {
         "updateCookbooks": { repo_type="git",
                              url="by default, the existing repo will be reused",
                              inner_path=null ->
-            chef_loader = ChefLoader.get_loader(repo_type) 
+            chef_loader = ChefLoader.get_loader(repo_type)
             chef_loader.fetch(url, inner_path)
             chef_loader.upload()
         },
-        "cleanupCookbooks": { 
-            chef_loader = ChefLoader.get_loader() 
+        "cleanupCookbooks": {
+            chef_loader = ChefLoader.get_loader()
             chef_loader.cleanup_local_repo()
         },
         "listCookbooks": {

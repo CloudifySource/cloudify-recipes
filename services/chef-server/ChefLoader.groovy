@@ -54,8 +54,6 @@ abstract class ChefLoaderBase {
     def initialize() {
         sh("mkdir -p ${local_repo_dir} ${underHomeDir(".chef")}")
 
-        //the new chef-11 omnitruck differs in its install path, and some other attributes
-        Boolean isOmnitruck = test("ls /etc/chef-server")
         def webui_pem = underHomeDir(".chef/chef-webui.pem")
         sudoWriteFile(underHomeDir(".chef/knife.rb"),
 """
@@ -65,14 +63,13 @@ node_name 'chef-webui'
 client_key '${webui_pem}'
 validation_client_name 'chef-validator'
 validation_key '${underHomeDir(".chef/chef-validator.pem")}'
-chef_server_url '${isOmnitruck ? 'https://localhost:443' : 'http://localhost:4000'}'
+chef_server_url 'https://localhost:443'
 cache_type 'BasicFile'
 cache_options( :path => '${underHomeDir(".chef/checksums")}' )
 cookbook_path [ '${underHomeDir("cookbooks")}' ]
 """)
 
-        String originalWebuiPem = isOmnitruck ? "/etc/chef-server/chef-webui.pem" :"/etc/chef/webui.pem"
-        sudo("cp ${originalWebuiPem} ${webui_pem}")
+        sudo("cp /etc/chef-server/chef-webui.pem ${webui_pem}")
         sudo("chown `whoami` ${webui_pem}")
     }
 
