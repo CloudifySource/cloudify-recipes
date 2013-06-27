@@ -324,8 +324,11 @@ class DebianBootstrap extends ChefBootstrap {
 
     def rubyPkgs = ["ruby-dev", "ruby", "ruby-json", "libopenssl-ruby", "build-essential"]
     def binPath = "/usr/bin"
+    def install(options) {
+        sudo("apt-get update") //having an updated cache is useful for all install types
+        return super.install(options)
+    }
     def install_pkgs(List pkgs) {
-        sudo("apt-get update")
         sudo("apt-get install -y ${pkgs.join(" ")}", [env: ["DEBIAN_FRONTEND": "noninteractive", "DEBIAN_PRIORITY": "critical"]])
     }
     def pkgInstall() {
