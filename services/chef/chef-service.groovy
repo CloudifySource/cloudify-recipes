@@ -40,14 +40,14 @@ service {
             def chefServerURL = context.attributes.global["chef_server_url"]
             def validationCert = context.attributes.global["chef_validation.pem"]
 
-            if (chefServerURL == null) {	    
+            if (chefServerURL == null) {
                 def chefConfig = context.attributes.thisInstance["chefConfig"]
                 chefServerURL = chefConfig.serverURL
                 validationCert = chefConfig.validationCert
 			}
-			
+
             if (chefServerURL == null) {
-                throw new RuntimeException("Cannot find a chef server URL in global attribtue 'chef_server_url'")
+                throw new RuntimeException("Cannot find a chef server URL in global attribute 'chef_server_url'")
             }
 
             println "Using Chef server URL: ${chefServerURL}"
@@ -69,7 +69,7 @@ service {
     }
 
     customCommands([
-            "rerun": { 
+            "rerun": {
                 bootstrap = ChefBootstrap.getBootstrap(context: context)
                 runParamsLocal = context.attributes.thisInstance.containsKey("runParams") ? context.attributes.thisInstance["runParams"] : [run_list: "role[${context.serviceName}]" as String]
                 bootstrap.runClient(runParamsLocal)
