@@ -60,7 +60,7 @@ service {
 			name "portLiveness"
 			className "org.cloudifysource.usm.liveness.PortLivenessDetector"
 			config ([
-						"Port" : [8999],
+						"Port" : [uiPort],
 						"TimeoutInSeconds" : 60,
 						"Host" : "127.0.0.1"
 					])

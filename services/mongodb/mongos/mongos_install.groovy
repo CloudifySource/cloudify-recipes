@@ -41,7 +41,7 @@ println "mongos_install.groovy: mongos(${instanceID}) home is ${home}"
 builder = new AntBuilder()
 builder.sequential {
 	mkdir(dir:"${installDir}")
-	get(src:"${osConfig.downloadPath}", dest:"${installDir}/${osConfig.zipName}", skipexisting:true)
+	ServiceUtils.getDownloadUtil().get("${osConfig.downloadPath}", "${installDir}/${osConfig.zipName}", true, "${osConfig.hashDownloadPath}")
 }
 
 if(ServiceUtils.isWindows()) {

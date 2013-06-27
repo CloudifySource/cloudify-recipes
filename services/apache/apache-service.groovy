@@ -92,7 +92,7 @@ service {
 		protocolDescription "HTTP"
 	}
 	
-	scaleCooldownInSeconds 20
+	scaleCooldownInSeconds 30
 	samplingPeriodInSeconds 1
 	
 	scalingRules ([

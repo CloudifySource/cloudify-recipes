@@ -63,7 +63,7 @@ if (elasticsearchInstances == null) {
 unicastsHosts =""	
 elasticsearchInstances.each {
 	unicastsHosts += it.hostAddress+","
-	println "elasticsearch_install.groovy: elasticsearch #"+it.instanceID + " adding " + it.hostAddress
+	println "elasticsearch_install.groovy: elasticsearch #"+it.instanceId + " adding " + it.hostAddress
 }
 
 unicastsHostsLen=unicastsHosts.length()

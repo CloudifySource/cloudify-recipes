@@ -60,7 +60,22 @@ service {
 			def myPids = ServiceUtils.ProcessUtils.getPidsWithQuery("State.Name.re=mysql.*\\.exe|mysqld")
 			println ":mysql-service.groovy: current PIDs: ${myPids}"
 			return myPids
-        }	
+		}
+		
+		details {
+			def currPublicIP
+			
+			if ( context.isLocalCloud() ) {
+				currPublicIP = InetAddress.localHost.hostAddress	
+			}
+			else {
+				currPublicIP =context.getPublicAddress()	
+			}
+			return [	
+				"MySQL IP":currPublicIP,
+				"MySQL Port":jdbcPort
+			]
+		}	
 	}
 	
 	customCommands ([

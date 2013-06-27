@@ -24,42 +24,37 @@ service {
 	numInstances 1
 
     compute {
-        template "SMALL_UBUNTU"
+		// Chef server does NOT support 32bit !!!
+        template "SMALL_LINUX" 
     }
 
 	lifecycle{
         start {
-            def bootstrap = ChefBootstrap.getBootstrap(installFlavor:"gem", context:context)
-            def config = bootstrap.getConfig()
+            // chefServerVersion is defined in properties file
+            def bootstrap = ChefBootstrap.getBootstrap(installFlavor:"fatBinary", context:context)
             bootstrap.runSolo([
-                "chef_server": [
-                    "server_url": "http://localhost:4000",
-                    "init_style": "${config.initStyle}"
+                "chef-server": [
+                    "version": "${chefServerVersion}"
                 ],
-                "chef_packages": [
-                    "chef": [
-                        "version": "${config.version}"
-                    ]
-                ],
-                "run_list": ["recipe[build-essential]", "recipe[chef-server::rubygems-install]", "recipe[chef-server::apache-proxy]" ]
+                "run_list": ["recipe[chef-server]"]
             ])
 
             //setting the global attributes to be available for all chef clients  
             def privateIp = System.getenv()["CLOUDIFY_AGENT_ENV_PRIVATE_IP"]
-            def serverUrl = "http://${privateIp}:4000" as String
+            def serverUrl = "https://${privateIp}:443" as String
             context.attributes.global["chef_validation.pem"] = sudoReadFile("/etc/chef/validation.pem")
             context.attributes.global["chef_server_url"] = serverUrl
         }
 		
 		startDetectionTimeoutSecs 600
 		startDetection {
-			ServiceUtils.isPortOccupied(4000)
+			ServiceUtils.isPortOccupied(443)
 		}
 		
 		details {
 			def publicIp = System.getenv()["CLOUDIFY_AGENT_ENV_PUBLIC_IP"]
 			def serverRestUrl = "https://${publicIp}:443"
-			def serverUrl = "http://${publicIp}:4000"
+			def serverUrl = "https://${publicIp}:443"
     		return [
     			"Rest URL":"<a href=\"${serverRestUrl}\" target=\"_blank\">${serverRestUrl}</a>",
     			"Server URL":"<a href=\"${serverUrl}\" target=\"_blank\">${serverUrl}</a>"
@@ -92,6 +87,12 @@ service {
         "listCookbooks": {
             chef_loader = ChefLoader.get_loader()
             return chef_loader.listCookbooks()
+        },
+        "cleanupNode": { String node_name ->
+            chef_loader = ChefLoader.get_loader()
+            chef_loader.invokeKnife(["node", "delete", node_name, "-y"])
+            chef_loader.invokeKnife(["client", "delete", node_name, "-y"])
+            return "${node_name} cleaned up"
         },
         "knife": { String... args=[] ->
             chef_loader = ChefLoader.get_loader()

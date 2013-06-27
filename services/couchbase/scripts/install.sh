@@ -54,7 +54,7 @@ fi
 #   Failed dependencies: 
 #    libcrypto.so.6 is needed by couchbase-server-2.0.0-1976.i386
 #    libssl.so.6 is needed by couchbase-server-2.0.0-1976.i386
-ver2="2.0.0"
+ver2="2.0"
 
 if [[ $rpmFile =~ .*$ver2.* ]]
 then

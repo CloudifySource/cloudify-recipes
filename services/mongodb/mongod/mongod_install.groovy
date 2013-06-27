@@ -50,7 +50,7 @@ println "mongod_install.groovy: mongod(${instanceID}) port ${currPort}"
 builder = new AntBuilder()
 builder.sequential {
 	mkdir(dir:"${installDir}")
-	get(src:"${osConfig.downloadPath}", dest:"${installDir}/${osConfig.zipName}", skipexisting:true)
+	ServiceUtils.getDownloadUtil().get("${osConfig.downloadPath}", "${installDir}/${osConfig.zipName}", true, "${osConfig.hashDownloadPath}")
 }
 
 if(ServiceUtils.isWindows()) {

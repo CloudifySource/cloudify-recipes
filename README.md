@@ -33,3 +33,6 @@ Cloudify Documentation:
 Cloudify Users Forums: 
 * http://forums.cloudifysource.org
 
+If you use the Cloudify 2.5* Ga version, please use the following recipes version:
+* https://github.com/CloudifySource/cloudify-recipes/archive/2.5.0_ga_build4010_04_10_2013.zip
+
