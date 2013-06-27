@@ -1,7 +1,8 @@
 #
-# Author:: Seth Chisamore (<schisamo@opscode.com>)
-# Copyright:: Copyright (c) 2011 Opscode, Inc.
-# License:: Apache License, Version 2.0
+# Cookbook Name:: mysql_test
+# Attributes:: default
+#
+# Copyright 2012, Opscode, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,18 +17,11 @@
 # limitations under the License.
 #
 
-module Opscode
-  module Mysql
-    module Helpers
+# Must be specified for chef-solo for successful re-converge
+override['mysql']['server_root_password'] = 'ebrilvOpCethHienRoj7'
 
-      def debian_before_squeeze?
-        (node['platform'] == "debian") && (node['platform_version'].to_f < 6.0)
-      end
+default['mysql_test']['database'] = 'mysql_test'
+default['mysql_test']['username'] = 'test_user'
+default['mysql_test']['password'] = 'neshFiapog'
 
-      def ubuntu_before_lucid?
-        (node['platform'] == "ubuntu") && (node['platform_version'].to_f < 10.0)
-      end
-
-    end
-  end
-end
+override['mysql']['bind_address'] = 'localhost'

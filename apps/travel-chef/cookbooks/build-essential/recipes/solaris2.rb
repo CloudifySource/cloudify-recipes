@@ -1,7 +1,8 @@
 #
-# Author:: Seth Chisamore (<schisamo@opscode.com>)
-# Copyright:: Copyright (c) 2011 Opscode, Inc.
-# License:: Apache License, Version 2.0
+# Cookbook Name:: build-essential
+# Recipe:: solaris2
+#
+# Copyright 2013, Opscode, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,18 +17,26 @@
 # limitations under the License.
 #
 
-module Opscode
-  module Mysql
-    module Helpers
+%w{
+  autoconf
+  automake
+  bison
+  coreutils
+  flex
+  gcc4core
+  gcc4g++
+  gcc4objc
+  gcc3core
+  gcc3g++
+  ggrep
+  gmake
+  gtar
+  pkgconfig
+}.each do |pkg|
 
-      def debian_before_squeeze?
-        (node['platform'] == "debian") && (node['platform_version'].to_f < 6.0)
-      end
-
-      def ubuntu_before_lucid?
-        (node['platform'] == "ubuntu") && (node['platform_version'].to_f < 10.0)
-      end
-
-    end
+  r = pkgutil_package pkg do
+    action( node['build_essential']['compiletime'] ? :nothing : :install )
   end
+  r.run_action(:install) if node['build_essential']['compiletime']
+
 end

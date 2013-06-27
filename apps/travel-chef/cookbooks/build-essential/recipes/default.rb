@@ -1,7 +1,8 @@
 #
-# Author:: Seth Chisamore (<schisamo@opscode.com>)
-# Copyright:: Copyright (c) 2011 Opscode, Inc.
-# License:: Apache License, Version 2.0
+# Cookbook Name:: build-essential
+# Recipe:: default
+#
+# Copyright 2008-2009, Opscode, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,18 +17,8 @@
 # limitations under the License.
 #
 
-module Opscode
-  module Mysql
-    module Helpers
-
-      def debian_before_squeeze?
-        (node['platform'] == "debian") && (node['platform_version'].to_f < 6.0)
-      end
-
-      def ubuntu_before_lucid?
-        (node['platform'] == "ubuntu") && (node['platform_version'].to_f < 10.0)
-      end
-
-    end
-  end
+begin
+  include_recipe "build-essential::#{node['platform_family']}"
+rescue Chef::Exceptions::RecipeNotFound
+  Chef::Log.warn "A build-essential recipe does not exist for the platform_family: #{node['platform_family']}"
 end
