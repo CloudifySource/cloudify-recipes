@@ -62,7 +62,7 @@ class ChefBootstrap {
         chefConfig = chefProperties.chef.flatten() + chefConfig + options.findAll(){ it.key != "context" }
         // persist to context attributes
         context.attributes.thisInstance["chefConfig"] = chefConfig
-    } 
+    }
     protected def installRuby() {
         if (this.class.methods.find { it.name == "install_pkgs"}) {
             install_pkgs(rubyPkgs)
@@ -115,11 +115,11 @@ class ChefBootstrap {
 		else {
 			throw new RuntimeException("Cannot find a chef server URL (serverURL) in chefConfig")
 		}
-        
+
 
         mkChefDirs()
-		def environment = chefConfig.environment ? chefConfig.environment : "_default" 
-		def validationClientName = chefConfig.validationClientName ? chefConfig.validationClientName: "chef-validator"
+		def environment = chefConfig.environment ?: "_default"
+		def validationClientName = chefConfig.validationClientName ?: "chef-validator"
         sudoWriteFile("/etc/chef/client.rb", """
 log_level          :info
 log_location       "/var/log/chef/client.log"
@@ -128,7 +128,7 @@ validation_client_name "${validationClientName}"
 validation_key         "/etc/chef/validation.pem"
 client_key             "/etc/chef/client.pem"
 chef_server_url    "${chefConfig.serverURL}"
-environment    "${environment}" 
+environment    "${environment}"
 file_cache_path    "/var/chef/cache"
 file_backup_path   "/var/chef/backup"
 pid_file           "/var/run/chef/client.pid"
@@ -136,13 +136,16 @@ Chef::Log::Formatter.show_time = true
 """)
         if (chefConfig.validationCert) {
             sudoWriteFile("/etc/chef/validation.pem", chefConfig.validationCert)
-        } else {
+        } else if (test("stat ${System.properties["user.home"]}/gs-files/validation.pem")) {
+            //a validation file was put in the service directory
             sudo("cp -f ${System.properties["user.home"]}/gs-files/validation.pem /etc/chef/validation.pem")
+        } else {
+            throw new Exception("Cannot find a chef validation certificate for this client. Please provide the certificate either in the validationCert property or as a 'validation.pem' file in the service directory")
         }
-        
+
 		if (chefConfig.encryptedDataBagSecret) {
             sudoWriteFile("/etc/chef/encrypted_data_bag_secret", chefConfig.encryptedDataBagSecret)
-        } 
+        }
     }
     public def runClient(ArrayList runList) {
         runClient(runListToInitialJson(runList))
@@ -171,7 +174,7 @@ Chef::Log::Formatter.show_time = true
         runSolo(runListToInitialJson(runList), cookbooksUrl, cookbooksPath)
     }
     public def runSolo(HashMap initJson=[:], String cookbooksUrl=null, String cookbooksPath=null) {
-        File soloTmpDir = getTmpDir() as File		
+        File soloTmpDir = getTmpDir() as File
         assert(!soloTmpDir.is(null))
         if (!cookbooksUrl.is(null) && isURL(cookbooksUrl)) {
         } else if ("bootstrapCookbooksUrl" in chefConfig && isURL(chefConfig.bootstrapCookbooksUrl)) {
@@ -185,7 +188,7 @@ Chef::Log::Formatter.show_time = true
             println "Running chef-solo with berkshelf cookbooks"
             execSolo(initJson, soloTmpDir, null, berkshelfCookbooksPath.path)
         } else {
-            throw new Exception("No berksfile present and cookbooksUrl, cookbooksPath are not set")
+            throw new Exception("No Berksfile present and cookbooksUrl, cookbooksPath are not set")
         }
         soloTmpDir.deleteDir()
     }
@@ -250,20 +253,20 @@ cookbook_path "${cookbooksPath}"
         }
     }
     protected isURL(String urlString) {
-        try { 
-            urlString.toURL()   
+        try {
+            urlString.toURL()
             return true
         } catch (java.net.MalformedURLException e) {
-            return false   
-        } catch (java.lang.NullPointerException e) { 
+            return false
+        } catch (java.lang.NullPointerException e) {
             return false
         }
     }
     protected String getGemsBinPath() {
         def ret = shellOut("gem env")
-        if (ret.is(null)) { 
+        if (ret.is(null)) {
             return null
-        } else { 
+        } else {
             ret.split("\n").find { it =~ "EXECUTABLE DIRECTORY" }.split(":")[1].stripIndent()
         }
     }
@@ -344,7 +347,7 @@ class RHELBootstrap extends ChefBootstrap {
     def install(options) {
         if (os.getVendor() in ["CentOS", "Red Hat"]) {
             def shortVersion = os.getVendorVersion().tokenize(".")[0]
-            if (shortVersion.toInteger() < 6) { 
+            if (shortVersion.toInteger() < 6) {
                 sudo("wget -O /etc/yum.repos.d/aegisco.repo http://rpm.aegisco.com/aegisco/el5/aegisco.repo")
             }
             sudo("rpm -Uvh http://rbel.frameos.org/rbel${shortVersion}")
@@ -357,7 +360,7 @@ class RHELBootstrap extends ChefBootstrap {
     def gemInstall() {
         sudo("gem update --system")
         super.gemInstall()
-    }  
+    }
 }
 
 class SuSEBootstrap extends ChefBootstrap {
