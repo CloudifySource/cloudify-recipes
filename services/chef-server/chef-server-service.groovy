@@ -25,7 +25,7 @@ service {
 
     compute {
 		// Chef server does NOT support 32bit !!!
-        template "SMALL_LINUX"
+        template "SMALL_UBUNTU"
     }
 
 	lifecycle{
