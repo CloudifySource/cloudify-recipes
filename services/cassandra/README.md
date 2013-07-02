@@ -7,11 +7,24 @@
 **Contributors**:    [Uri Cohen](https://github.com/uric)  
 **Homepage**:   [http://www.cloudifysource.org](http://www.cloudifysource.org)  
 **License**:      Apache 2.0   
-**Release Date**:  *Under Construction*  
+**Release Date**:  July 2nd 2013  
+
+
+
+Tested on:
+--------
+
+* <strong>EC2 Linux</strong> 
+.
+* <strong>OpenStack Linux</strong> 
+.
+* <strong>Rackspace Linux</strong>
+
+
 
 Synopsis
 --------
 
 This folder contains a service recipe for Cassandra, which is a highly scalable, eventually consistent, distributed, structured key-value store.
 
-* Note that this recipe is under construction. We will test it and release it asap.
+
