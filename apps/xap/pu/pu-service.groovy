@@ -94,6 +94,8 @@ service {
 
                     file.delete()
                     return res
-            }
+            },
+            "deployPU" : "deployPU.groovy",
+            "deployEDG" : "deployEDG.groovy"
     ])
 }
