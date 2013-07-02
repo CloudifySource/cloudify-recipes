@@ -96,6 +96,7 @@ service {
                     return res
             },
             "deployPU" : "deployPU.groovy",
-            "deployEDG" : "deployEDG.groovy"
+            "deployEDG" : "deployEDG.groovy",
+            "undeploy" : "undeploy.groovy"
     ])
 }
