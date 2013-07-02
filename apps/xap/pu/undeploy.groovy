@@ -30,9 +30,7 @@ if (instanceID == 1) {
 	gridServiceManagers.waitFor(1, 120, TimeUnit.SECONDS);
 	println "gsm is ready..."
 
-	StringTokenizer grids = new StringTokenizer(dataGrids, ",");
-	StringTokenizer primaries = new StringTokenizer(dataGridsPrimary, ",");
-	StringTokenizer backups = new StringTokenizer(dataGridsBackups, ",");
+	StringTokenizer pus = new StringTokenizer(pus, ",");
 		
 	while (pus.hasMoreElements()) {
 		def pu = pus.nextElement();
