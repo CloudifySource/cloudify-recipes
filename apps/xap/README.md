@@ -23,9 +23,9 @@ The XAP application enable you to deploy XAP EDG or ProcessingUnits using Cloudi
 The default XAP version is the latest stable one 9.5.2.
 
 This application contains 3 services:
-    1. <strong>mgt</strong> - this service is running single GridServiceManager and LookUp Service.
-    2. <strong>pu</strong> - this service is running is running GridServiceContainers (configured at pu-service.properties file)
-    3. <strong>webui</strong> - this service is running a XAP management console.
+    <strong>mgt</strong> - this service is running single GridServiceManager and LookUp Service.
+    <strong>pu</strong> - this service is running is running GridServiceContainers (configured at pu-service.properties file)
+    <strong>webui</strong> - this service is running a XAP management console.
 
 
 Deployment
