@@ -30,11 +30,11 @@ if (instanceID == 1) {
 	gridServiceManagers.waitFor(1, 120, TimeUnit.SECONDS);
 	println "gsm is ready..."
 
-	StringTokenizer pus = new StringTokenizer(pus, ",");
+	StringTokenizer puss = new StringTokenizer(pus, ",");
 		
-	while (pus.hasMoreElements()) {
-		def pu = pus.nextElement();
-		admin.processingUnits.processingUnit(pu).undeployAndWait(30, TimeUnit.SECONDS)
+	while (puss.hasMoreElements()) {
+		def pu = puss.nextElement();
+		admin.processingUnits.getProcessingUnit(pu).undeployAndWait(30, TimeUnit.SECONDS)
 	}
 }
 
