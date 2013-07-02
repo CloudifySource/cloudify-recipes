@@ -1,13 +1,13 @@
 # XAP
 
 **Status**: Tested  
-**Description**: Xap recipe
+**Description**: Xap recipe  
 **Maintainer**:       Cloudify  
 **Maintainer email**: cloudifysource@gigaspaces.com  
-**Contributors**:    [kobi](https://github.com/kobikis)
-**License**:      Apache 2.0
-**Linux* sudoer permissions**:	required
-**Release Date**: July 2st 2013
+**Contributors**:    [kobi](https://github.com/kobikis)  
+**License**:      Apache 2.0  
+**Linux* sudoer permissions**:	required  
+**Release Date**: July 2st 2013  
 
 
 Tested on:
