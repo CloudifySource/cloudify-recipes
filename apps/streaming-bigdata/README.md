@@ -4,7 +4,7 @@
 
 ## In Depth Tutorial 
 
-An in-depth tutorial for this application can be found [here](http://wiki.gigaspaces.com/wiki/display/XAP91/Your+First+Real+Time+Big+Data+Analytics+Application).
+An in-depth tutorial for this application can be found [here](http://wiki.gigaspaces.com/wiki/display/XAP96/Your+First+Real+Time+Big+Data+Analytics+Application).
 
 ## Usecase
 
