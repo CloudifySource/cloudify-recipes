@@ -4,8 +4,7 @@ import org.openspaces.admin.AdminFactory
 import org.openspaces.admin.gsm.GridServiceManagers
 import org.openspaces.admin.pu.ProcessingUnit;
 
-import java.util.concurrent.TimeUnit
-import org.openspaces.admin.space.SpaceDeployment;
+import java.util.concurrent.TimeUnit;
 import org.cloudifysource.dsl.context.ServiceContextFactory
 
 def pus = args[0]
@@ -34,6 +33,7 @@ if (instanceID == 1) {
 		
 	while (puss.hasMoreElements()) {
 		def pu = puss.nextElement();
+        admin.processingUnits.waitFor(pu, 30, TimeUnit.SECONDS)
 		admin.processingUnits.getProcessingUnit(pu).undeployAndWait(30, TimeUnit.SECONDS)
 	}
 }
