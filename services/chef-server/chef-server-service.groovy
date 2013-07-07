@@ -30,18 +30,27 @@ service {
 
 	lifecycle{
         start {
-            // chefServerVersion is defined in properties file
+            def privateIp = System.getenv()["CLOUDIFY_AGENT_ENV_PRIVATE_IP"]
+            def serverUrl = "https://${privateIp}:443" as String
             def bootstrap = ChefBootstrap.getBootstrap(installFlavor:"fatBinary", context:context)
+
+            def chefServerConfig = [:]
+            // If the chef-server isn't externally routable, we need to use privateIp
+            // (https://tickets.opscode.com/browse/CHEF-4086)
+            if (!externallyRoutableHostname) { // see properties file
+                chefServerConfig["bookshelf"] = ["url": serverUrl ]
+                chefServerConfig["nginx"]     = ["url": serverUrl ]
+            }
+
             bootstrap.runSolo([
                 "chef-server": [
-                    "version": "${chefServerVersion}"
+                    "version": "${chefServerVersion}", // defined in properties file
+                    "configuration": chefServerConfig
                 ],
                 "run_list": ["recipe[chef-server]"]
             ])
 
             //setting the global attributes to be available for all chef clients
-            def privateIp = System.getenv()["CLOUDIFY_AGENT_ENV_PRIVATE_IP"]
-            def serverUrl = "https://${privateIp}:443" as String
             context.attributes.global["chef_validation.pem"] = sudoReadFile("/etc/chef-server/chef-validator.pem")
             context.attributes.global["chef_server_url"] = serverUrl
         }
