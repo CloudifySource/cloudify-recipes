@@ -20,7 +20,7 @@ service {
   statelessProcessingUnit {	
     binaries "rt-analytics-feeder.jar"
     //possible values "list-feeder" or "twitter-feeder"
-    springProfilesActive "twitter-feeder"
+    springProfilesActive "list-feeder"
     sla {
       highlyAvailable false
       memoryCapacityPerContainer 64 
