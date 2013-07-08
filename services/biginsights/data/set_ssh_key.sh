@@ -5,6 +5,7 @@ if [[ $EUID -ne 0 ]]; then
 	if [ ! -d ~root/.ssh ]; then
 		sudo mkdir ~root/.ssh
 	fi		
+	sudo /etc/init.d/iptables stop
 	sudo sed -i 's/^PermitRootLogin.*no/PermitRootLogin yes/g' /etc/ssh/sshd_config
 	sudo cp ./id_rsa ~root/.ssh/id_rsa
 	sudo sudo chmod 600 ~root/.ssh/id_rsa
@@ -39,6 +40,7 @@ else
 	if [ ! -d ~/.ssh ]; then
 		mkdir ~/.ssh
 	fi	
+	/etc/init.d/iptables stop
 	sed -i 's/^PermitRootLogin.*no/PermitRootLogin yes/g' /etc/ssh/sshd_config
 	echo about to create passwordless SSH access
 	cp ./id_rsa ~root/.ssh/id_rsa
