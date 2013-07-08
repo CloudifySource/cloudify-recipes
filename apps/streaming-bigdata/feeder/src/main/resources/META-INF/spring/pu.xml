@@ -26,7 +26,15 @@
     -->
     <os-core:giga-space id="gigaSpace" space="space"/>
 
+
 	<beans profile="twitter-feeder">
+        <bean id="twitterTemplate"
+            class="org.springframework.social.twitter.api.impl.TwitterTemplate">
+            <constructor-arg value="${twitter.oauth.consumerKey}" />
+            <constructor-arg value="${twitter.oauth.consumerSecret}" />
+            <constructor-arg value="${twitter.oauth.accessToken}" />
+            <constructor-arg value="${twitter.oauth.accessTokenSecret}" />
+        </bean>
 	    <bean name="taskScheduler" class="org.openspaces.bigdata.feeder.TaskScheduler">
 	        <property name="delayInMs" value="${twitter.delayInMs}"/>
 	    </bean>

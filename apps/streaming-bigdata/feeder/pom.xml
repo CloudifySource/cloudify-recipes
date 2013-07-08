@@ -20,7 +20,7 @@
 		<dependency>
 			<groupId>org.springframework.social</groupId>
 			<artifactId>spring-social-twitter</artifactId>
-			<version>1.0.2.RELEASE</version>
+			<version>1.0.5.RELEASE</version>
 		</dependency>
 	</dependencies>
 	<build>

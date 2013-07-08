@@ -46,21 +46,13 @@ public class TwitterHomeTimelineFeederTask implements Runnable {
 	@Resource
 	private GigaSpace gigaSpace;
 	private final Set<Long> previousTimeLineTweets = new HashSet<Long>();	
-	private final TwitterTemplate twitterTemplate;
 	
 	@Value("${twitter.screenName}")
 	private String screenName;
 	
-    public TwitterHomeTimelineFeederTask() throws Exception {
-		try{
-			log.info("Creating twitter template");
-			twitterTemplate = new TwitterTemplate();
-		} catch(Exception e){
-			log.log(Level.SEVERE, "error while creating twitter template", e);
-			throw e;
-		}
-    }
-	
+    @Resource
+    private TwitterTemplate twitterTemplate;
+
 	@Override
 	public void run() {
     	List<Tweet> userTimeline;
