@@ -4,7 +4,8 @@ if [[ $EUID -ne 0 ]]; then
 	echo "Not root, need sudo"		
 	if [ ! -d ~root/.ssh ]; then
 		sudo mkdir ~root/.ssh
-	fi		
+	fi
+    sudo /etc/init.d/iptables stop
 	sudo sed -i 's/^PermitRootLogin.*no/PermitRootLogin yes/g' /etc/ssh/sshd_config
 	sudo cp ./id_rsa ~root/.ssh/id_rsa
 	sudo sudo chmod 600 ~root/.ssh/id_rsa
@@ -20,7 +21,8 @@ if [[ $EUID -ne 0 ]]; then
 else
 	if [ ! -d ~/.ssh ]; then
 		mkdir ~/.ssh
-	fi	
+	fi
+    /etc/init.d/iptables stop
 	sed -i 's/^PermitRootLogin.*no/PermitRootLogin yes/g' /etc/ssh/sshd_config
 	cp ./id_rsa ~root/.ssh/id_rsa
 	chmod 600 ~root/.ssh/id_rsa
