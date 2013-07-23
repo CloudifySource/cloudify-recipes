@@ -1,0 +1,1 @@
+default['ohai']['plugins']['cloudify'] = 'ohai_plugins'

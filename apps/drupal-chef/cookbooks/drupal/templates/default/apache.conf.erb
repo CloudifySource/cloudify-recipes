@@ -1,0 +1,12 @@
+<VirtualHost *:80>
+  ServerAdmin webmaster@localhost
+  ServerName <%= node["fqdn"] %>
+  DocumentRoot <%= node["drupal"]["dir"] %>
+  RewriteEngine On
+
+  <Directory <%= node["drupal"]["dir"] %>>
+    Options FollowSymLinks
+    AllowOverride All
+  </Directory>
+</VirtualHost>
+
