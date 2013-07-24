@@ -16,25 +16,12 @@ include_recipe "php::module_gd"
 include_recipe "mysql::server"
 include_recipe "mysql::ruby"
 
-currdhost = search(:node, 'run_list:recipe\[mysql\:\:server\]').first.ipaddress
+mysqlhost = search(:node, 'run_list:recipe\[mysql\:\:server\]').first.ipaddress
 
-connection_info = {:host => "#{currdhost}", 
-	:username => 'root', 
-	:password => node['mysql']['server_root_password']}
-mysql_database "drupal" do 
-	connection(connection_info)
-	action :create
-end
-
-mysql_database_user 'drupal' do 
-	connection connection_info
-	password node['drupal']['password']
-	database_name 'drupal'
-	host '%'
-	privileges [:all]
-	action :grant
-end 
-
+#connection_info = {:host => "#{mysqlhost}", 
+#	:username => 'root', 
+#	:password => node['mysql']['server_root_password']}
+	
 # remote_file "#{Chef::Config.file_cache_path}/drupal.tar.gz do
 #  source node["drupal"]["tarball_url"]
 #  mode 0644
