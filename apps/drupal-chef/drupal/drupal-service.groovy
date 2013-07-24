@@ -29,7 +29,7 @@ service {
     }
 
     lifecycle {
-		def httpPort = 8080
+		def httpPort = 80
 		startDetectionTimeoutSecs 800
 		startDetection {			
 			ServiceUtils.isPortOccupied(httpPort)
