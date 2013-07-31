@@ -1,0 +1,11 @@
+version = "9.5.1-ga-b8700"
+#name = "gigaspaces-xap-premium-${version}"
+#zipName = "${name}.zip"
+#installDir = "install"
+#downloadPath = "https://s3.amazonaws.com/xap_9.1_lite/gigaspaces-xap-9.1-lite.zip"
+#downloadPath = "file://c:/Users/DeWayne/Downloads/${zipName}"
+#uiPort=8999
+
+#xapDir="${installDir}/${name}"
+#binDir="${xapDir}/bin"
+#gscSize="2G"

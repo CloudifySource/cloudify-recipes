@@ -1,0 +1,19 @@
+@echo off
+
+set ISLOCALCLOUD=true
+set USM_INSTANCEID=2
+set MANAGEMENT_NODE=true
+
+if %ISLOCALCLOUD% ==true (
+	if %USM_INSTANCEID% == 1 (
+ echo "LOCALCLOUD INSTANCE 1"
+	) ELSE (
+ echo "LOCALCLOUD INSTANCE >1"
+	)
+ ) ELSE (
+	if %MANAGEMENT_NODE% == true (
+echo "STARTING MANAGEMENT NODE"
+	) ELSE (	
+ echo "STARTING CONTAINER NODE"
+	)
+)

@@ -1,0 +1,9 @@
+<!-- For more information please visit http://www.gigaspaces.com -->
+<com>
+	<j_spaces>
+		<kernel>
+			<!-- can also be set via system property using -Dcom.gs.licensekey -->
+			<licensekey>${license}</licensekey>
+		</kernel>
+	</j_spaces>
+</com>
