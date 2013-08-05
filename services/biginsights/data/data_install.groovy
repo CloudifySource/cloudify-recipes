@@ -1,4 +1,4 @@
-import org.cloudifysource.dsl.context.ServiceContextFactory
+import org.cloudifysource.utilitydomain.context.ServiceContextFactory
 import groovy.text.SimpleTemplateEngine
 
 def config = new ConfigSlurper().parse(new File("data-service.properties").toURL())

@@ -16,7 +16,7 @@
 @Grab(group='com.gmongo', module='gmongo', version='0.8')
 import com.gmongo.GMongo
 
-import org.cloudifysource.dsl.context.ServiceContextFactory
+import org.cloudifysource.utilitydomain.context.ServiceContextFactory
 import java.util.concurrent.TimeUnit
 
 config = new ConfigSlurper().parse(new File('mongos-service.properties').toURL())

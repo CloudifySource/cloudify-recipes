@@ -1,4 +1,4 @@
-import org.cloudifysource.dsl.context.ServiceContextFactory
+import org.cloudifysource.utilitydomain.context.ServiceContextFactory
 
 config = new ConfigSlurper().parse(new File("mgt-service.properties").toURL())
 

@@ -15,8 +15,8 @@
 *******************************************************************************/
 
 import org.hyperic.sigar.OperatingSystem
-import org.cloudifysource.dsl.context.ServiceContextFactory
-import org.cloudifysource.dsl.context.ServiceContext
+import org.cloudifysource.utilitydomain.context.ServiceContextFactory
+import org.cloudifysource.domain.context.ServiceContext
 import groovy.json.JsonOutput
 import static Shell.*
 

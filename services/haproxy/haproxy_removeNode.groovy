@@ -1,4 +1,4 @@
-import org.cloudifysource.dsl.context.ServiceContextFactory
+import org.cloudifysource.utilitydomain.context.ServiceContextFactory
 
 /**
  * This scripts implement the removeNode custome command. This command enables the back end server to remove itself

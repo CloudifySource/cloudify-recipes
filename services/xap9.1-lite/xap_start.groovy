@@ -17,7 +17,7 @@ import java.io.InputStream
 import java.io.BufferedReader
 import java.util.Arrays
 import groovy.util.ConfigSlurper;
-import org.cloudifysource.dsl.context.ServiceContextFactory
+import org.cloudifysource.utilitydomain.context.ServiceContextFactory
 
 
 context=ServiceContextFactory.serviceContext

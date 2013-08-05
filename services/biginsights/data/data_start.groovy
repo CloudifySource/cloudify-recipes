@@ -1,4 +1,4 @@
-import org.cloudifysource.dsl.context.ServiceContextFactory
+import org.cloudifysource.utilitydomain.context.ServiceContextFactory
 import java.util.concurrent.TimeUnit
 
 def serviceContext = ServiceContextFactory.getServiceContext()

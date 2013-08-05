@@ -17,7 +17,7 @@
 // Mocks for running ChefBootstrap without cloudify runtime environment
 // Note, this is not a full mock, it does not implement the original interface
 
-package org.cloudifysource.dsl.context
+package org.cloudifysource.utilitydomain.context
 
 class Attributes {
     def thisInstance = [:]

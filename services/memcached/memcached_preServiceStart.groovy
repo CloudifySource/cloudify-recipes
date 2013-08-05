@@ -1,4 +1,4 @@
-import org.cloudifysource.dsl.context.ServiceContextFactory
+import org.cloudifysource.utilitydomain.context.ServiceContextFactory
 import java.util.concurrent.TimeUnit
 /**
  * It was observed that the attribute value set by using the attributes API was not cleared after uninstall of the application.

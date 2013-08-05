@@ -1,11 +1,11 @@
-import org.cloudifysource.dsl.context.Service
-import org.cloudifysource.dsl.context.ServiceInstance
+import org.cloudifysource.domain.context.Service
+import org.cloudifysource.domain.context.ServiceInstance
 import org.openspaces.admin.AdminFactory
 import org.openspaces.admin.gsm.GridServiceManagers
 import org.openspaces.admin.pu.ProcessingUnit;
 
 import java.util.concurrent.TimeUnit;
-import org.cloudifysource.dsl.context.ServiceContextFactory
+import org.cloudifysource.utilitydomain.context.ServiceContextFactory
 
 def pus = args[0]
 

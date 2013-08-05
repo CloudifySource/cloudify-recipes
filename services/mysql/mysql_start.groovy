@@ -16,7 +16,7 @@
 import org.hyperic.sigar.OperatingSystem
 import java.util.concurrent.TimeUnit
 import org.cloudifysource.dsl.utils.ServiceUtils;
-import org.cloudifysource.dsl.context.ServiceContextFactory
+import org.cloudifysource.utilitydomain.context.ServiceContextFactory
 import static mysql_runner.*
 
 config=new ConfigSlurper().parse(new File('mysql-service.properties').toURL())

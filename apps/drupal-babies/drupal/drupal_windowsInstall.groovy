@@ -14,7 +14,7 @@
 * limitations under the License.
 *******************************************************************************/
 import org.cloudifysource.dsl.utils.ServiceUtils;
-import org.cloudifysource.dsl.context.ServiceContextFactory
+import org.cloudifysource.utilitydomain.context.ServiceContextFactory
 
 context = ServiceContextFactory.getServiceContext()
 config = new ConfigSlurper().parse(new File("drupal-service.properties").toURL())

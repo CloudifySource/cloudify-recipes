@@ -1,4 +1,4 @@
-import org.cloudifysource.dsl.context.ServiceContextFactory
+import org.cloudifysource.utilitydomain.context.ServiceContextFactory
 
 /**
  * This scripts stops the haproxy gracefully. We put the logic of stoping haproxy in preStop lifecycle event because

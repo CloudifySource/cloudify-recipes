@@ -1,6 +1,6 @@
-import org.cloudifysource.dsl.context.Service
-import org.cloudifysource.dsl.context.ServiceInstance
-import org.cloudifysource.dsl.context.ServiceContextFactory
+import org.cloudifysource.domain.context.Service
+import org.cloudifysource.domain.context.ServiceInstance
+import org.cloudifysource.utilitydomain.context.ServiceContextFactory
 
 println "start post-start"
 

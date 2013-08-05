@@ -1,4 +1,4 @@
-import org.cloudifysource.dsl.context.ServiceContextFactory
+import org.cloudifysource.utilitydomain.context.ServiceContextFactory
 
 /**
  * This scripts implements the addNode custom command. This command enables a new back end server to add itself to the

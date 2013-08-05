@@ -13,9 +13,9 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 *******************************************************************************/
-import org.cloudifysource.dsl.context.ServiceContextFactory
+import org.cloudifysource.utilitydomain.context.ServiceContextFactory
 import java.util.concurrent.TimeUnit
-import org.cloudifysource.dsl.context.ServiceInstance;
+import org.cloudifysource.domain.context.ServiceInstance;
 
 config = new ConfigSlurper().parse(new File("play-service.properties").toURL())
 

@@ -16,8 +16,8 @@
 import org.hyperic.sigar.OperatingSystem
 import java.util.concurrent.TimeUnit
 import org.cloudifysource.dsl.utils.ServiceUtils;
-import org.cloudifysource.dsl.context.ServiceContextFactory
-import org.cloudifysource.dsl.context.ServiceInstance;
+import org.cloudifysource.utilitydomain.context.ServiceContextFactory
+import org.cloudifysource.domain.context.ServiceInstance;
 
 context = ServiceContextFactory.getServiceContext()
 config = new ConfigSlurper().parse(new File("apache-service.properties").toURL())

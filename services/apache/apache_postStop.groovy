@@ -15,7 +15,7 @@
 *******************************************************************************/
 
 import static apache_addRemoveNode.*
-import org.cloudifysource.dsl.context.ServiceContextFactory
+import org.cloudifysource.utilitydomain.context.ServiceContextFactory
 
 
 context = ServiceContextFactory.getServiceContext()

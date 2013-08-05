@@ -16,7 +16,7 @@
 import java.util.concurrent.TimeUnit
 import groovy.text.SimpleTemplateEngine
 import groovy.util.ConfigSlurper;
-import org.cloudifysource.dsl.context.ServiceContextFactory
+import org.cloudifysource.utilitydomain.context.ServiceContextFactory
 
 
 def config = new ConfigSlurper().parse(new File("zookeeper-service.properties").toURL())

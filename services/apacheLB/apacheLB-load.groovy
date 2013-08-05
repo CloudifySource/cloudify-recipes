@@ -14,7 +14,7 @@
 * limitations under the License.
 *******************************************************************************/
 import org.hyperic.sigar.OperatingSystem
-import org.cloudifysource.dsl.context.ServiceContextFactory
+import org.cloudifysource.utilitydomain.context.ServiceContextFactory
 
 
 /* In order to test your application under load, you can use this "load" custom command.
