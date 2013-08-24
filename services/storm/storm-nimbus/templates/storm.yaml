@@ -6,6 +6,7 @@ println "  -  \"${zook.hostAddress}\""
 # 
 nimbus.host: "${nimbus}"
 # 
+storm.local.hostname: "${hostName}"
 # 
 # ##### These may optionally be filled in:
 #    

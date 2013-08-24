@@ -16,8 +16,11 @@
 config = new ConfigSlurper().parse(new File("storm-service.properties").toURL())
 
 new AntBuilder().sequential {
-	exec(executable:"${config.script}", osfamily:"unix") {
+	exec(executable:"${config.script}", osfamily:"unix", spawn:"true") {
 		arg(line:"nimbus")
+	}
+	exec(executable:"${config.script}", osfamily:"unix") {
+		arg(line:"ui")
 	}
 }
 
