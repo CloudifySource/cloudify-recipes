@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" id="WebApp_ID" version="2.5">
+  <display-name>GigaSpacesWebExample</display-name>
+  <welcome-file-list>
+    <welcome-file>SessionContents.jsp</welcome-file>
+  </welcome-file-list>
+  <servlet>
+    <description></description>
+    <display-name>UpdateSessionServlet</display-name>
+    <servlet-name>UpdateSessionServlet</servlet-name>
+    <servlet-class>com.gigaspaces.examples.web.UpdateSessionServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>UpdateSessionServlet</servlet-name>
+    <url-pattern>/UpdateSessionServlet</url-pattern>
+  </servlet-mapping>
+  <listener>
+    <listener-class>org.apache.shiro.web.env.EnvironmentLoaderListener</listener-class>
+  </listener>
+  <listener>
+    <listener-class>org.openspaces.sessions.shiro.GigaCacheManager</listener-class>
+  </listener>
+  <filter>
+    <filter-name>ShiroFilter</filter-name>
+    <filter-class>org.apache.shiro.web.servlet.ShiroFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>ShiroFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  <filter>
+    <filter-name>MyFilter</filter-name>
+    <filter-class>com.gigaspaces.examples.web.MyFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>MyFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+</web-app>
