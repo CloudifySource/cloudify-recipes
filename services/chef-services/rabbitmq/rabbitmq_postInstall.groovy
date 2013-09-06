@@ -30,7 +30,7 @@ if (numberOfActualInstances > 0){
 	def rabbitmqInstances = rabbitmqService.waitForInstances(numberOfActualInstances, 180, TimeUnit.SECONDS)
 	for (i in rabbitmqInstances){
 		if (myInstanceID != i.getInstanceId()){
-			println "Invoking addHostFileEntry to add ${hostsFileEntry} to instance ${i.getInstanceID()}'s hosts file"
+			println "Invoking addHostFileEntry to add ${hostsFileEntry} to instance ${i.getInstanceId()}'s hosts file"
 			i.invoke("addHostFileEntry", ipAddress as String, hostname as String)
 		}
 	}
