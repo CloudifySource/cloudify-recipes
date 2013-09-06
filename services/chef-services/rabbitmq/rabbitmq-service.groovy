@@ -10,7 +10,7 @@ service {
 	maxAllowedInstances 2
 	
 	compute {
-		template "SMALL_LINUX"
+		template "SMALL_UBUNTU"
 	}
 	
 	lifecycle{
