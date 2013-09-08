@@ -8,7 +8,7 @@
 	<packaging>pom</packaging>
 
 	<properties>
-		<gsVersion>9.7.0-10483-513-SNAPSHOT</gsVersion>
+		<gsVersion>9.7.0-10484-M3</gsVersion>
 	</properties>
 
 	<modules>
