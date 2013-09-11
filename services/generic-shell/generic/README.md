@@ -1,4 +1,4 @@
-# Couchbase
+# Generic Shell Script Based Recipe 
 
 **Status**: Tested  
 **Description**: Generic recipe for any shell script   
@@ -14,7 +14,7 @@
 
 
 Tested on:
---------
+----------
 
 * <strong>EC2</strong>: 
  * <strong>CentOs 5</strong> imageId "us-east-1/ami-76f0061f", hardwareId "m1.small", locationId "us-east-1"   
