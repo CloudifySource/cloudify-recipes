@@ -27,11 +27,11 @@ space=context.attributes.thisService["space"]
 count=Integer.valueOf(context.attributes.thisService["count"] )
 streamname=context.attributes.thisService["streamname"] 
 
-factory = new XAPStreamFactory(locator,space)
+factory = new XAPStreamFactory("jini://*/*/${space}?locators=${locator}")
 xts=null
 factory.listStreams().each{
 	if(it == streamname){
-		xts=factory.openTupleStream(streamname)
+		xts=factory.getTupleStream(streamname)
 		return;
 	}
 }
