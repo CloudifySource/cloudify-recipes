@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xmlns:os-core="http://www.openspaces.org/schema/core"
+  xmlns:os-events="http://www.openspaces.org/schema/events"
+  xmlns:os-remoting="http://www.openspaces.org/schema/remoting"
+  xmlns:os-sla="http://www.openspaces.org/schema/sla"
+  xmlns:os-gateway="http://www.openspaces.org/schema/core/gateway"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans 
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    http://www.openspaces.org/schema/core 
+    http://www.openspaces.org/schema/9.5/core/openspaces-core.xsd
+    http://www.openspaces.org/schema/events 
+    http://www.openspaces.org/schema/9.5/events/openspaces-events.xsd
+    http://www.openspaces.org/schema/remoting 
+    http://www.openspaces.org/schema/9.5/remoting/openspaces-remoting.xsd
+    http://www.openspaces.org/schema/sla 
+    http://www.openspaces.org/schema/9.5/sla/openspaces-sla.xsd
+    http://www.openspaces.org/schema/core/gateway 
+    http://www.openspaces.org/schema/9.5/core/gateway/openspaces-gateway.xsd">
+
+<% if(binding.variables.containsKey("targets") && targets && targets.size()>0){
+println """\
+<os-gateway:delegator id="delegator" 
+  local-gateway-name=\"${localgwname}\" gateway-lookups=\"gatewayLookups\">
+  <os-gateway:delegations> """
+targets.each{
+println "    <os-gateway:delegation target=\"${it}\"/>"
+}
+println """\
+  </os-gateway:delegations>
+</os-gateway:delegator> """
+}
+%>
+
+<% if( binding.variables.containsKey("sources") && sources && sources.size()>0){
+
+println """\
+<os-gateway:sink id=\"sink\" 
+  local-gateway-name=\"${localgwname}\" 
+  gateway-lookups=\"gatewayLookups\" 
+  local-space-url=\"${localspaceurl}\">
+  <os-gateway:sources>    """
+sources.each{
+println "   <os-gateway:source name=\"${it}\"/>"
+}
+println """\
+  </os-gateway:sources>
+</os-gateway:sink> """
+}
+%>
+
+<os-gateway:lookups id="gatewayLookups">
+<%
+lookups.each{
+println """\
+  <os-gateway:lookup gateway-name=\"${it['gwname']}\" 
+    host=\"${it['address']}\" discovery-port=\"${it['discoport']}\" 
+    communication-port=\"${it['commport']}\" /> """
+} %>
+
+</os-gateway:lookups>
+
+</beans>
+
+<!--The above ports and host names are randomly selected and 
+have no meaning, all sites could designate the same ports as well -->

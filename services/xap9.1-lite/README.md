@@ -26,4 +26,3 @@ Synopsis:
 Known limitations:
 ---------------
 
-Does not run GSA. Port conflict yet to be resolved.
