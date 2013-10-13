@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit
 import static com.gigaspaces.log.LogEntryMatchers.lastN
 import static com.gigaspaces.log.LogEntryMatchers.continuous
 import java.io.File
-import org.cloudifysource.dsl.context.ServiceContextFactory
+import org.cloudifysource.utilitydomain.context.ServiceContextFactory
 
 println "start post-start"
 

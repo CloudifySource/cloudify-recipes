@@ -1,6 +1,7 @@
 import org.cloudifysource.dsl.utils.ServiceUtils;
-import org.cloudifysource.dsl.context.ServiceContextFactory
+import org.cloudifysource.utilitydomain.context.ServiceContextFactory
 import org.hyperic.sigar.OperatingSystem
+import static Shell.*
 
 /**
  * the scripts set the hostname and hosts file entries for the VM. 
@@ -45,8 +46,9 @@ context.attributes.thisInstance["mgmtPort"] = config.mgmtPort
 println "rabbitmq_install.groovy: hostEntries is ${hostEntries}"
 
 // Set hostname and update hosts file if it is not on local cloud
+sudo("echo -e \"${hostEntries}\" >> ${config.hostsFile}")
 
-def hostsFile = new File(config.hostsFile)
-hostsFile.append("\n" + hostEntries)
+//def hostsFile = new File(config.hostsFile)
+//hostsFile.append("\n" + hostEntries)
 
 println "rabbitmq_preInstall.groovy: End"

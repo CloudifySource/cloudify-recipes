@@ -14,7 +14,7 @@
 * limitations under the License.
 *******************************************************************************/
 import org.hyperic.sigar.OperatingSystem
-import org.cloudifysource.dsl.context.ServiceContextFactory
+import org.cloudifysource.utilitydomain.context.ServiceContextFactory
 
 context = ServiceContextFactory.getServiceContext()
 config = new ConfigSlurper().parse(new File("apacheLB-service.properties").toURL())

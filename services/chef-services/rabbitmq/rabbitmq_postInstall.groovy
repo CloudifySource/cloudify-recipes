@@ -1,4 +1,4 @@
-import org.cloudifysource.dsl.context.ServiceContextFactory
+import org.cloudifysource.utilitydomain.context.ServiceContextFactory
 import java.util.concurrent.TimeUnit
 
 /**
@@ -29,8 +29,8 @@ println "numberOfActualInstances: ${numberOfActualInstances}"
 if (numberOfActualInstances > 0){
 	def rabbitmqInstances = rabbitmqService.waitForInstances(numberOfActualInstances, 180, TimeUnit.SECONDS)
 	for (i in rabbitmqInstances){
-		if (myInstanceID != i.getInstanceID()){
-			println "Invoking addHostFileEntry to add ${hostsFileEntry} to instance ${i.getInstanceID()}'s hosts file"
+		if (myInstanceID != i.getInstanceId()){
+			println "Invoking addHostFileEntry to add ${hostsFileEntry} to instance ${i.getInstanceId()}'s hosts file"
 			i.invoke("addHostFileEntry", ipAddress as String, hostname as String)
 		}
 	}
