@@ -5,8 +5,8 @@ println "  -  \"${zook.hostAddress}\""
 } %>
 # 
 nimbus.host: "${nimbus}"
-
-
+#
+storm.local.hostname: "${hostName}"
 # workers. add ports for more workers
 
 supervisor.slots.ports:

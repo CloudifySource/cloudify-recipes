@@ -8,7 +8,7 @@ def static getThisService(context){
 	assert (instances != null)
 	def instanceID = context.getInstanceId()			                       
 	for( it in instances){
-	   if ( instanceID == it.instanceID ) {
+	   if ( instanceID == it.instanceId ) {
 			return it
 		}
 	}

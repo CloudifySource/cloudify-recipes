@@ -1,11 +1,17 @@
 import org.cloudifysource.utilitydomain.context.ServiceContextFactory
 
+//----------------------------------------------------------------------------------
+// Deploys a "xapstream" topology.  This is not much different from deploying
+// a "normal" storm topology, except a xapstream topology requires a stream name
+// and a XAP host to connect to as argument.
+//----------------------------------------------------------------------------------
+
 println "deploy.groovy: Starting..."
 
 context = ServiceContextFactory.getServiceContext()
 config  = new ConfigSlurper().parse(new File("${context.serviceDirectory}/storm-service.properties").toURL())
 
-def instanceID = context.getInstanceId()
+instanceID = context.getInstanceId()
 installDir = System.properties["user.home"]+ "/.cloudify/${config.serviceName}" + instanceID
 
 topoName=context.attributes.thisService["topoName"]
@@ -29,12 +35,12 @@ line="jar ${topoFile} ${className} ${topoName} ${xapHost} ${args}"
 new AntBuilder().sequential {
 	
 	echo(message:"deploy.groovy: Getting ${topoUrl} ...")
-	exec(executable: "wget", osfamily: "unix"){
+	exec(executable: "wget", osfamily: "unix", failonerror:true){
 		arg(line:"-N --no-check-certificate ${topoUrl}")
 	}
 	
 	echo(message:"deploy.groovy: deploying ... ${line}")
-	exec(executable:"${config.script}", osfamily:"unix") {
+	exec(executable:"${config.script}", osfamily:"unix",failonerror:true) {
 		arg(line:"${line}")
 	}
 }

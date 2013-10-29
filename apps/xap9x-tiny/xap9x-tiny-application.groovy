@@ -13,11 +13,16 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 *******************************************************************************/
-version = "3.4.3"
-name = "zookeeper-${version}"
-zipName = "${name}.tar.gz"
-installDir = "install"
-downloadPath = "http://www.motorlogy.com/apache/zookeeper/zookeeper-3.4.3/${zipName}"
-script = "${installDir}/${name}/bin/zkServer"
-clientPort=2181
+application {
+	name="xap9x-tiny"
+	
+	service {
+		name = "xap-management"		
+	}
+	
+	service {
+		name = "xap-container"
+		dependsOn = ["xap-management"]
+	}
 
+}

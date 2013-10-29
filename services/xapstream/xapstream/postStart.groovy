@@ -18,7 +18,7 @@ import org.openspaces.admin.AdminFactory
 import org.openspaces.admin.gsa.GridServiceAgents
 import org.openspaces.admin.application.config.ApplicationConfig
 import org.openspaces.admin.pu.config.ProcessingUnitConfig
-import org.cloudifysource.utilitydomain.context.ServiceContextFactory
+import org.cloudifysource.dsl.context.ServiceContextFactory
 import org.cloudifysource.dsl.utils.ServiceUtils
 
 def context = ServiceContextFactory.getServiceContext()
@@ -37,10 +37,39 @@ admin=new AdminFactory().addLocators("127.0.0.1").create()
 mgr=admin.getGridServiceManagers().waitForAtLeastOne()
 
 pu=new ProcessingUnitConfig()
-pu.setProcessingUnit("lib/streamspace-pu-1.0-SNAPSHOT.jar")
+pu.setProcessingUnit("lib/${config.streamspaceName}")
 
 ac=new ApplicationConfig()
 ac.setName("streamspace")
 ac.addProcessingUnit(pu)
 mgr.deploy(ac)
+
+//DEPLOY REST API
+
+new AntBuilder().sequential {	
+	get(src:"${config.restapiUrl}", dest:"lib", skipexisting:true)
+}
+
+pu=new ProcessingUnitConfig()
+pu.setProcessingUnit("lib/${config.restapiName}")
+
+ac=new ApplicationConfig()
+ac.setName("RESTData")
+ac.addProcessingUnit(pu)
+mgr.deploy(ac)
+
+//DEPLOY WORDCOUNT UI
+
+new AntBuilder().sequential {	
+	get(src:"${config.wcuiUrl}", dest:"lib", skipexisting:true)
+}
+
+pu=new ProcessingUnitConfig()
+pu.setProcessingUnit("lib/${config.wcuiName}")
+
+ac=new ApplicationConfig()
+ac.setName("wordcount-ui")
+ac.addProcessingUnit(pu)
+mgr.deploy(ac)
+
 admin.close()

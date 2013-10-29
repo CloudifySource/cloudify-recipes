@@ -1,4 +1,4 @@
-import org.cloudifysource.utilitydomain.context.*
+import org.cloudifysource.dsl.context.* 
 import com.gigaspaces.streaming.client.*
 
 //list available streams

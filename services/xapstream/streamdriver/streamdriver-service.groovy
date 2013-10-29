@@ -1,5 +1,5 @@
 /******************************************************************************
-* Copyright (c) 2013 GigaSpaces Technologies Ltd. All rights reserved
+* Copyright (c) 2011 GigaSpaces Technologies Ltd. All rights reserved
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -19,10 +19,10 @@ import util
 service {
 
 	name "streamdriver"
-	type "APP_SERVER"
-	//icon "icon.jpg"
+	type "WEB_SERVER"
+	elastic true
 	numInstances 1 
-	maxAllowedInstances 99       //currently only 1 instance supported
+	maxAllowedInstances 99
 	minAllowedInstances 1
 
 	lifecycle{
@@ -34,6 +34,11 @@ service {
 
 	customCommands ([
 
+"wcdemo": { streamname, numsecs, rate ->
+		xapinstance=util.getServiceInstances(context,"xapstream",1)[0]
+		util.invokeLocal(context,"_wcdemo", [ locator:xapinstance.getHostAddress(),streamname:streamname,space:"streamspace",numsecs:numsecs, rate:rate])
+		return true
+	},
 		"help":{
 			"""
 
@@ -101,6 +106,7 @@ write-random count stream-name
 
 		"_write-random": "commands/write-random.groovy",
 		"_write-sentences": "commands/write-sentences.groovy",
+		"_wcdemo":"commands/wordcount-demo.groovy"
 
 	])
 }
