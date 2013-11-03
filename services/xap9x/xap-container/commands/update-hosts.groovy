@@ -13,6 +13,7 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 *******************************************************************************/
+import static Shell.*
 import java.util.concurrent.TimeUnit
 import org.cloudifysource.dsl.utils.ServiceUtils
 import org.cloudifysource.dsl.context.ServiceContextFactory
@@ -51,10 +52,12 @@ new File("/etc/hosts").eachLine{ line->
 	}
 	lines.add(toks.join(" "))
 }
-new File("/etc/hosts").withWriter{out->
+new File("/tmp/hosts").withWriter{out->
 	lines.each{ line->
 		out.writeLine(line)
 	}
 	if(!found)out.writeLine(hostsline.join(" "))
 }
+
+sudo("mv /tmp/hosts /etc/hosts")
 
