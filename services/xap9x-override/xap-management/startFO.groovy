@@ -58,7 +58,7 @@ Thread.start{
     println "Breaking 1!"
 }
 
-killingThread = Thread.start {
+Thread.start {
     stopped = getIsStopped(context)
     println "inside thread " + stopped
     try {
@@ -73,8 +73,7 @@ killingThread = Thread.start {
             }
             println "found agent service ${agentService}, find agentHostInstances"
             agentHostInstances = agentService.waitForInstances(agentService.numberOfPlannedInstances, 30, TimeUnit.SECONDS)
-            println "before"
-            println "${agentHostInstances}"
+
             println "find agents machines ${agentService.numberOfPlannedInstances}"
             admin.machines.waitFor(agentService.numberOfPlannedInstances, 30, TimeUnit.SECONDS)
             println "Iam here!"
@@ -111,5 +110,3 @@ killingThread = Thread.start {
     }
     println "Breaking 2!"
 }
-
-context.attributes.thisService["killingThread"] = killingThread;

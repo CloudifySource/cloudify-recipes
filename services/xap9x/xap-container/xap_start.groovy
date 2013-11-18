@@ -18,7 +18,7 @@ import java.io.BufferedReader
 import java.util.Arrays
 import java.util.concurrent.TimeUnit
 import groovy.util.ConfigSlurper
-import org.cloudifysource.dsl.context.ServiceContextFactory
+import org.cloudifysource.utilitydomain.context.ServiceContextFactory
 import util
 
 context=ServiceContextFactory.serviceContext

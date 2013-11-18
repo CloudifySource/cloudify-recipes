@@ -55,6 +55,7 @@ new AntBuilder().sequential {
 		error:"runxap.${System.currentTimeMillis()}.err"
 	){
 		env(key:"XAPDIR", value:"${config.installDir}\\${config.xapDir}")
+        env(key:"GSA_JAVA_OPTIONS",value:"${config.gsm_jvm_options} -Dcom.sun.jini.reggie.initialUnicastDiscoveryPort=${config.lusPort} -Dcom.gs.multicast.enabled=false -DUUID=${uuid}")
 		env(key:"GSC_JAVA_OPTIONS",value:"${config.gsc_jvm_options} -DUUID=${uuid} -Dcom.gs.multicast.enabled=false")
 		env(key:"LOOKUPLOCATORS",value:locators)
 		env(key:"NIC_ADDR",value:"${ip}")
@@ -67,6 +68,7 @@ new AntBuilder().sequential {
 		output:"runxap.${System.currentTimeMillis()}.out",
 		error:"runxap.${System.currentTimeMillis()}.err"
 	){
+        env(key:"GSA_JAVA_OPTIONS",value:"${config.gsm_jvm_options} -Dcom.sun.jini.reggie.initialUnicastDiscoveryPort=${config.lusPort} -Dcom.gs.multicast.enabled=false -DUUID=${uuid}")
 		env(key:"GSC_JAVA_OPTIONS",value:"${config.gsc_jvm_options} -DUUID=${uuid} -Dcom.gs.multicast.enabled=false")
 		env(key:"XAPDIR", value:"${context.serviceDirectory}/${config.installDir}/${config.xapDir}")
 		env(key:"LOOKUPLOCATORS",value:"${locators}")

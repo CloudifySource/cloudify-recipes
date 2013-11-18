@@ -31,7 +31,7 @@ import util
 import org.cloudifysource.utilitydomain.context.ServiceContextFactory
 
 service {
-    extend "../../xap9x-27/xap-management"
+    extend "../../xap9x/xap-management"
     numInstances (context.isLocalCloud()?1:2 )
     minAllowedInstances 1
     maxAllowedInstances 2
@@ -40,11 +40,9 @@ service {
         postStart {
             util.setIsStopped(context, true)
         }
-        startDetectionTimeoutSecs 400
     }
 
 	customCommands ([
-//Public entry points
             "startFO": { foTimeInMin ->
                 util.setIsStopped(context,false)
                 Thread.start {
@@ -55,12 +53,8 @@ service {
                 return "Fail over started!"
             },
             "_startFO"	: "startFO.groovy",
-            "stopFO": {
+            "stopFO": { // Need to fix this
                 util.setIsStopped(context,true)
-                Thread thread = context.attributes.thisService["killingThread"];
-                if (thread!=null)
-                    thread.interrupt();
-
                 return "Fail over stopped"
             }])
 }

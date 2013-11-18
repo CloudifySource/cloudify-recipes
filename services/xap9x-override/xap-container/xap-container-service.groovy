@@ -28,19 +28,18 @@ import org.openspaces.admin.AdminFactory
 
 
 service {
-	extend "../../xap9x-27/xap-container"
+	extend "../../xap9x/xap-container"
 
     def maxinstances=context.isLocalCloud()?1:200
     numInstances 2
     minAllowedInstances 1
-    maxAllowedInstances 3
+    maxAllowedInstances 2
 
     lifecycle{
         start "xap_start.groovy"
         postStart {
             locators = context.attributes.thisApplication["locators"]
             admin = new AdminFactory().addLocator(locators).create()
-            println "isLocalCloud? ${context.isLocalCloud()}"
         }
     }
 
