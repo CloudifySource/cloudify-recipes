@@ -27,7 +27,7 @@ context=ServiceContextFactory.serviceContext
 config = new ConfigSlurper().parse(new File(context.serviceName+"-service.properties").toURL())
 
 puurl=context.attributes.thisInstance["deploy-pu-puurl"]
-puname=context.attributes.thisInstance["deploy-pu-name"]
+puname=context.attributes.thisInstance["deploy-pu-puname"]
 schema=context.attributes.thisInstance["deploy-pu-schema"]
 partitions=context.attributes.thisInstance["deploy-pu-partitions"]
 backups=context.attributes.thisInstance["deploy-pu-backups"]
@@ -44,7 +44,8 @@ mgmt_service.instances.each{locators+="${it.hostAddress},"}
 
 
 // find gsm
-admin=new AdminFactory().useDaemonThreads(true).addLocators("127.0.0.1:${config.lusPort}").createAdmin();
+ip=InetAddress.getLocalHost().getHostAddress()
+admin=new AdminFactory().useDaemonThreads(true).addLocators("${ip}:${config.lusPort}").createAdmin();
 gsm=admin.gridServiceManagers.waitForAtLeastOne(1,TimeUnit.MINUTES)
 assert gsm!=null
 
@@ -58,10 +59,10 @@ pu=new ProcessingUnitConfig()
 pu.setProcessingUnit("lib/${new File(puurl).name}")
 pu.setName(puname)
 pu.setClusterSchema(schema)
-pu.setNumberOfInstances(partitions)
-pu.setNumberOfBackups(backups)
-pu.setMaxInstancesPerVM(maxpervm)
-pu.setMaxInstancesPerMachine(maxpermachine)
+pu.setNumberOfInstances(partitions.toInteger())
+pu.setNumberOfBackups(backups.toInteger())
+pu.setMaxInstancesPerVM(maxpervm.toInteger())
+pu.setMaxInstancesPerMachine(maxpermachine.toInteger())
 
 ac=new ApplicationConfig()
 ac.setName("${puname}")

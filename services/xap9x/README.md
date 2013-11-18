@@ -32,13 +32,13 @@ The recipe provides several custom commands:
 <dt>deploy-pu</dt>
 <dd> Deploys a stateful/grid processing unit.  Usage: <i>deploy-pu puurl schema partitions backups max-per-vm max-per-machine name</i>.  Arguments (all args are required):
 <ul>
+<li><i>name</i>: The deployd name for the processing unit.  Defaults to the pu file name unless overridden.</li>
 <li><i>puurl</i>: A URL where the processing unit jar can be found</li>
 <li><i>schema</i>: The cluster schema (e.g. partitioned-sync2backup)</li>
 <li><i>partitions</i>: The number of partitions. Ignored if not partitioned.</li>
 <li><i>backups</i>: The number of backups per partition. Ignored if not partitioned.</li>
 <li><i>max-per-vm</i>: Maximum instances per JVM/container.  See <a href="http://wiki.gigaspaces.com/wiki/display/XAP96/Configuring+the+Processing+Unit+SLA">here</a> for details</li>
 <li><i>max-per-machine</i>: Maximum instances per physical machine/cloud vm.   See <a href="http://wiki.gigaspaces.com/wiki/display/XAP96/Configuring+the+Processing+Unit+SLA">here</a> for details</li>
-<li><i>name</i>: The deployd name for the processing unit.  Defaults to the pu file name unless overridden.</li>
 </dd>
 <dt>deploy-pu-basic</dt>
 <dd>A convenience command that provides defaults to deploy-pu for a basic installation. Arguments (all args are required):
