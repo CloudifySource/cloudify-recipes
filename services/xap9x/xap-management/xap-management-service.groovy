@@ -141,7 +141,7 @@ service {
 		"deploy-pu-basic": {puurl->
 			util.invokeLocal(context,"_deploy-pu", [
 				"deploy-pu-puurl":puurl,
-				"deploy-pu-schema":"none",
+				"deploy-pu-schema":"partitioned-sync2backup",
 				"deploy-pu-partitions":1,
 				"deploy-pu-backups":0,
 				"deploy-pu-maxpervm":1,
