@@ -9,14 +9,13 @@ service {
 		template "SMALL_LINUX"
 	}
 		
-	lifecycle {
-                def fulladdress= context.getPrivateAddress()
-                def privateIP = fulladdress.split("/")[0]
-
+	lifecycle {              
 		install "master_install.groovy"
 		preStart "master_start.groovy" 		
 /*		postStart ******Use this to add additional BigInsights services to the master node****
 		{
+			def fulladdress= context.getPrivateAddress()
+            def privateIP = fulladdress.split("/")[0]
 			println "dataOnDemand-service.groovy: master Post-start ..."
 			def instanceID = context.instanceId	
 			println "master-service.groovy: privateIP is ${privateIP} ..."
@@ -33,6 +32,8 @@ service {
 				return false;
 			}
 			println ":master-service.groovy: start detection: start detection checking port " + nameNodePort;						
+			def fulladdress= context.getPrivateAddress()
+            def privateIP = fulladdress.split("/")[0]
 			ServiceUtils.isPortOccupied(privateIP, nameNodePort)
 		}
 		locator {			
@@ -61,6 +62,8 @@ service {
 			return JmxMonitors.getJmxMetrics("127.0.0.1",nameNodeJmxPort,jmxCredsPath,nameNodeJmxBeans)
 		}        
 		stopDetection {
+			def fulladdress= context.getPrivateAddress()
+            def privateIP = fulladdress.split("/")[0]
 		   	if(!(ServiceUtils.isPortOccupied(privateIP, nameNodePort)))
 		   	{
 				if(!((new File(context.serviceDirectory + "/installationRunning")).exists()))
