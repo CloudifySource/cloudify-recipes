@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /bin/bash -x
 
 bucket="yoram-biginsights"
 HTTP_REPO=http://s3.amazonaws.com/BigInsights/
@@ -77,7 +77,7 @@ if [[ $EUID -ne 0 ]]; then
 	sudo mkdir /mnt/hadoop && sudo ln -s /mnt/hadoop $2/hadoop
 	sudo mkdir /mnt/ibm && sudo mkdir $2/var && sudo ln -s /mnt/ibm $2/var/ibm
 
-	sudo ulimit -n 16384
+	ulimit -n 16384
 	echo "root hard nofile 16384" | sudo tee -a /etc/security/limits.conf
 	echo "root soft nofile 16384" | sudo tee -a /etc/security/limits.conf
 	sudo sed -i 's/^Defaults.*requiretty/#&/g' /etc/sudoers

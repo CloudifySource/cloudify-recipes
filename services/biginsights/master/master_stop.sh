@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /bin/bash -x
 
 
 echo "master_stop.sh: BigInsights is about to be stopped!!!!!"
