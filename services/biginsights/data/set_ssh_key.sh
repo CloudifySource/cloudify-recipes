@@ -6,7 +6,7 @@ if [[ $EUID -ne 0 ]]; then
 		sudo mkdir ~root/.ssh
 	fi		
 	sudo /etc/init.d/iptables stop
-	sudo sed -i 's/^PermitRootLogin.*no/PermitRootLogin yes/g' /etc/ssh/sshd_config
+	sudo sed -i 's/^PermitRootLogin.*/PermitRootLogin yes/g' /etc/ssh/sshd_config
 	sudo cp ./id_rsa ~root/.ssh/id_rsa
 	sudo sudo chmod 600 ~root/.ssh/id_rsa
 	echo "StrictHostKeyChecking no" | sudo tee ~root/.ssh/config
@@ -23,8 +23,9 @@ if [[ $EUID -ne 0 ]]; then
 	sudo useradd -g biadmin -d /home/biadmin biadmin
 	sudo echo $1 | passwd --stdin biadmin
 	echo 'biadmin ALL=(ALL) NOPASSWD:ALL' | sudo tee -a /etc/sudoers
-	ssh-keygen -y -f ~root/.ssh/id_rsa | sudo tee ~root/.ssh/id_rsa.pub
-	cat ~root/.ssh/id_rsa.pub | sudo tee -a ~root/.ssh/authorized_keys
+	sudo ssh-keygen -y -f ~root/.ssh/id_rsa | sudo tee ~root/.ssh/id_rsa.pub
+	sudo cat ~root/.ssh/id_rsa.pub | sudo tee  ~root/.ssh/authorized_keys
+	sudo service sshd restart
 	sudo cp -R ~root/.ssh ~biadmin/
 	sudo chown -R biadmin.biadmin ~biadmin/.ssh
 #	cp ~biadmin/.ssh/authorized_keys ~biadmin/.ssh/id_rsa.pub
@@ -41,7 +42,7 @@ else
 		mkdir ~/.ssh
 	fi	
 	/etc/init.d/iptables stop
-	sed -i 's/^PermitRootLogin.*no/PermitRootLogin yes/g' /etc/ssh/sshd_config
+	sed -i 's/^PermitRootLogin.*/PermitRootLogin yes/g' /etc/ssh/sshd_config
 	echo about to create passwordless SSH access
 	cp ./id_rsa ~root/.ssh/id_rsa
 	chmod 600 ~root/.ssh/id_rsa
@@ -60,7 +61,8 @@ else
 	echo $1 | passwd --stdin biadmin
 	echo 'biadmin ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 	ssh-keygen -y -f ~root/.ssh/id_rsa > ~root/.ssh/id_rsa.pub
-	cat ~root/.ssh/id_rsa.pub >> ~root/.ssh/authorized_keys
+	cat ~root/.ssh/id_rsa.pub > ~root/.ssh/authorized_keys
+	service sshd restart
 	cp -R ~root/.ssh ~biadmin/
 	chown -R biadmin.biadmin ~biadmin/.ssh
 
