@@ -11,9 +11,12 @@ service {
     }
 
     lifecycle {
-        startDetectionTimeoutSecs 240
+        startDetectionTimeoutSecs 900
         startDetection {
-            ServiceUtils.isPortOccupied(System.getenv()["CLOUDIFY_AGENT_ENV_PRIVATE_IP"], 3306)
+            ServiceUtils.isPortOccupied(3306)
+        }
+		locator {
+           NO_PROCESS_LOCATORS
         }
         start {
             // Couldn't find a way to read the port and scheme from PU properties
