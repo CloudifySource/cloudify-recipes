@@ -26,5 +26,5 @@ SET startParm=
 SET launchTarget=
 SET options=
 
-start /b %XAPDIR%\bin\gsm.bat
+start /b %XAPDIR%\bin\gs-agent.bat gsa.global.lus=1 gsa.global.gsm=1 gsa.gsc=0
 cmd /c %XAPDIR%\bin\gs-webui.bat
