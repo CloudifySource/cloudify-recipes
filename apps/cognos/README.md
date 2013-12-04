@@ -19,6 +19,6 @@ Tested on:
 Synopsis
 --------
 
-This folder contains a services recipes for Cognos 10.2.1.
+This folder contains a recipe for Cognos 10.2.1.
 
 
