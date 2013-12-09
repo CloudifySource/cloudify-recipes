@@ -16,10 +16,11 @@
 service {
 	name "cognos"
 	type "DATABASE"
-	icon "cognos.gif"	
+	icon "cognos.gif"
+	elastic true	
   	numInstances 1
 	minAllowedInstances 1
-	maxAllowedInstances 3
+	maxAllowedInstances 4
 	
 	compute {
 		template "SMALL_LINUX"
