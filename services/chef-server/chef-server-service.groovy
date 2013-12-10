@@ -104,15 +104,15 @@ service {
             chef_loader.invokeKnife(["client", "delete", node_name, "-y"])
             return "${node_name} cleaned up"
         },
-		"createNode": { String node_name ->
+        "createNode": { String node_name ->
             chef_loader = ChefLoader.get_loader()
 								
-			def jsonFileContent = "{ \"name\": \"${node_name}\", \"chef_environment\": \"_default\", \"json_class\": \"Chef::Node\", \"automatic\": { }, \"normal\": { }, \"chef_type\": \"node\", \"default\": { }, \"override\": { }, \"run_list\": [ ] }"
-			def currentNodeJsonFile = "/tmp/currentNode.json"
-			sudoWriteFile( "${currentNodeJsonFile}" ,jsonFileContent)
+            def jsonFileContent = "{ \"name\": \"${node_name}\", \"chef_environment\": \"_default\", \"json_class\": \"Chef::Node\", \"automatic\": { }, \"normal\": { }, \"chef_type\": \"node\", \"default\": { }, \"override\": { }, \"run_list\": [ ] }"
+            def currentNodeJsonFile = "/tmp/currentNode.json"
+            sudoWriteFile( "${currentNodeJsonFile}" ,jsonFileContent)
 				
-			def createNodeArgs = [ "node" , "from", "file", "${currentNodeJsonFile}" ]
-			println "creating Node ${node_name} : knife node from file ${currentNodeJsonFile} ..."
+            def createNodeArgs = [ "node" , "from", "file", "${currentNodeJsonFile}" ]
+            println "creating Node ${node_name} : knife node from file ${currentNodeJsonFile} ..."
             return chef_loader.invokeKnife(createNodeArgs)
         },
         "knife": { String... args=[] ->
