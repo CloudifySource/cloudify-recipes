@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.openspaces.bigdata</groupId>
 		<artifactId>rt-analytics</artifactId>
-		<version>XAP-9.5</version>
+		<version>XAP-9.7</version>
 	</parent>
 	<artifactId>rt-feeder</artifactId>
 	<name>${project.artifactId}</name>
