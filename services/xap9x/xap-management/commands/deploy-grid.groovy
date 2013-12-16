@@ -44,7 +44,7 @@ if(maxpermachine==null||maxpermachine.toInteger()<=0)maxpermachine="1"
 //DEPLOY
 
 // find gsm
-admin=new AdminFactory().useDaemonThreads(true).addLocators("127.0.0.1:${config.lusPort}").createAdmin();
+admin=new AdminFactory().useDaemonThreads(true).addLocators("${InetAddress.getLocalHost().getHostAddress()}:${config.lusPort}").createAdmin();
 gsm=admin.gridServiceManagers.waitForAtLeastOne(1,TimeUnit.MINUTES)
 assert gsm!=null
 

@@ -103,7 +103,7 @@ service {
 			if(admin==null){
 				admin = new AdminFactory()
 				.useDaemonThreads(true)
-				.addLocators("127.0.0.1:"+lusPort)
+				.addLocators("${InetAddress.getLocalHost().getHostAddress()}:"+lusPort)
 				.create();
 			}
 
