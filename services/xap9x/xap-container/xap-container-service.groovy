@@ -18,12 +18,13 @@ import util
 
 service {
 	def maxinstances=context.isLocalCloud()?1:200
+	println maxinstances
 
 	name "xap-container"
 	type "APP_SERVER"
 	icon "xap.png"
 	elastic true
-	numInstances 1
+	numInstances containerCount
 	minAllowedInstances 1
 	maxAllowedInstances maxinstances
 
