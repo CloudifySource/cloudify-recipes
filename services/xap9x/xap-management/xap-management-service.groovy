@@ -104,7 +104,7 @@ service {
                 ip=InetAddress.getLocalHost().getHostAddress()
 				admin = new AdminFactory()
 				.useDaemonThreads(true)
-				.addLocators("${ip}:"+lusPort)
+				.addLocators("${InetAddress.getLocalHost().getHostAddress()}:"+lusPort)
 				.create();
 			}
 
