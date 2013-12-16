@@ -48,7 +48,7 @@ service {
 
 		start "xap_start.groovy"
 
-	        startDetectionTimeoutSecs 60
+	        startDetectionTimeoutSecs 180
         	startDetection {
             		ServiceUtils.isPortOccupied(uiPort)
         	}
