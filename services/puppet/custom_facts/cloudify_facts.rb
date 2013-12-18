@@ -22,6 +22,7 @@ attributes = {}
 }.each do |category, resource|
     attributes.merge!({category => get_json(resource)})
 end
+attributes.merge!("cloudify" => @metadata)
 
 class Hash
     def flatten_to_hash(current_prefix="", separator="_")

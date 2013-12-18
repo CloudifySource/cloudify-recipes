@@ -19,6 +19,15 @@ import PuppetBootstrap
 import groovy.json.JsonSlurper
 import static Shell.*
 
+/*
+import org.cloudifysource.utilitydomain.context.ServiceImpl
+
+def waitForGlobalService(puppetApplicationName, puppetMasterServiceName, timeout, unit) {
+   puName = ServiceUtils.getAbsolutePUName(puppetApplicationName, puppetMasterServiceName)
+   ServiceImpl(context.admin.getProcessingUnits().waitFor(puName, timeout, unit))
+}
+*/
+
 service { 
     extend "../groovy-utils"
     name "puppet"
@@ -26,24 +35,50 @@ service {
 
     lifecycle {
       install {
-        bootstrap = PuppetBootstrap.getBootstrap(context:context)
+        puppetEnvironment = context.attributes.application["puppet_environment"] ?: binding.variables.get("puppetEnvironment") ?: context.applicationName
+        puppetMasterIp = context.attributes.global["puppet_master_ip"] ?: binding.variables.get("puppetMasterIp")
+        puppetNodePrefix = binding.variables.get("puppetNodePrefix") ?: context.attributes.global["puppetNodePrefix"]
+        domainName = binding.variables.get("domainName") ?: context.attributes.global["domainName"]
+        bootstrap = PuppetBootstrap.getBootstrap(context:context, server:puppetMasterIp, environment:puppetEnvironment,
+      puppetNodePrefix:puppetNodePrefix, domainName:domainName)
         bootstrap.install()
+/*
+        if (binding.variables["puppetMode"] && !puppetApplicationName.is(null) && !puppetMasterServiceName.is(null)) {
+            puppetMasterPU = waitForGlobalService(puppetApplicationName, puppetMasterServiceName, 600, TimeUnit.SECONDS)
+            puppetMasterPU.invoke("puppetCertSign", [context.hostName])
+        }
+*/
       }
       start {
-        bootstrap = PuppetBootstrap.getBootstrap(context:context)
-        if (binding.variables["puppetRepo"]) {
-            bootstrap.loadManifest(puppetRepo.repoType, puppetRepo.repoUrl)
-            if (puppetRepo.manifestPath) {
-                bootstrap.applyManifest(puppetRepo.manifestPath)
-            } else if (puppetRepo.classes) {
-                bootstrap.applyClasses(puppetRepo.classes)
-            } else {
-                println "Puppet repository loaded but nothing was applied."
-            }
+        puppetEnvironment = context.attributes.application["puppet_environment"] ?: binding.variables.get("puppetEnvironment") ?: context.applicationName
+        puppetMasterIp = context.attributes.global["puppet_master_ip"] ?: binding.variables.get("puppetMasterIp")
+        puppetNodePrefix = binding.variables.get("puppetNodePrefix") ?: context.attributes.global["puppetNodePrefix"]
+        domainName = binding.variables.get("domainName") ?: context.attributes.global["domainName"]
+        bootstrap = PuppetBootstrap.getBootstrap(context:context, server:puppetMasterIp, environment:puppetEnvironment, 
+      puppetNodePrefix:puppetNodePrefix, domainName:domainName)
+        bootstrap.configure() // ensure server address is current
+
+        if (binding.variables["puppetMode"] == "agent" && !puppetMasterIp.is(null)) {
+            tags = binding.variables.get("puppetTags") ?: []
+            println "Running puppet agent with server ${puppetMasterIp} and environment ${puppetEnvironment} HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH"
+			println "Tags = ${tags.join(", ")}"
+            bootstrap.puppetAgent(tags)
         } else {
-            println "Puppet repository is undefined in the properties file."
+            if (binding.variables["puppetRepo"]) {
+                bootstrap.loadManifest(puppetRepo.repoType, puppetRepo.repoUrl)
+                if (puppetRepo.manifestPath) {
+                    bootstrap.applyManifest(puppetRepo.manifestPath)
+                } else if (puppetRepo.classes) {
+                    bootstrap.applyClasses(puppetRepo.classes)
+                } else {
+                    println "Puppet repository loaded but nothing was applied."
+                }
+            } else {
+                println "Puppet repository is undefined in the properties file."
+            }
         }
       }
+      return true // refrain from returning a number, GSC might think it's a pid
     }
 
     customCommands([
