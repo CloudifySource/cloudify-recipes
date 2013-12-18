@@ -41,6 +41,7 @@ service {
             if (!externallyRoutableHostname) { // see properties file
                 chefServerConfig["bookshelf"] = ["url": serverUrl ]
                 chefServerConfig["nginx"]     = ["url": serverUrl ]
+                chefServerConfig["erchef"]    = ["s3_url_ttl": "21600"]
             }
 
             bootstrap.runSolo([
