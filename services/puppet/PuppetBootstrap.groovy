@@ -25,7 +25,7 @@ class PuppetBootstrap {
     def osConfig
     def os
     ServiceContext context = null
-    def puppetPackages = ["puppet"]
+    def extraPuppetPackages = []
     String local_repo_dir = underHomeDir("cloudify/puppet")
     String local_custom_facts = "/opt/cloudify/puppet/facts"
     String cloudify_module_dir = "/opt/cloudify/puppet/modules/cloudify"
@@ -69,18 +69,7 @@ class PuppetBootstrap {
     }
 
     def install(options) { 
-        def templatesDir = pathJoin(context.getServiceDirectory(),"templates")
-        def templateEngine = new groovy.text.SimpleTemplateEngine()
-        def puppetConfTemplate = new File(templatesDir, "puppet.conf").getText()
-        def puppetConf = templateEngine.createTemplate(puppetConfTemplate).make(
-                            [environment: puppetConfig.environment,
-                            server: puppetConfig.server,
-                            cloudify_module_path:pathJoin(local_repo_dir, "modules")]
-                        )
-        sudoWriteFile("/etc/puppet/puppet.conf", puppetConf.toString())
-
         sh("mkdir -p '${local_repo_dir}'")
-
         //import facter plugin
         sudo("mkdir -p ${local_custom_facts} ${cloudify_module_dir}")
         def custom_facts_dir = pathJoin(context.getServiceDirectory(),"custom_facts")
@@ -98,6 +87,23 @@ class PuppetBootstrap {
         def tmp_file = File.createTempFile("metadata", "json")
         tmp_file.withWriter() { it.write(JsonOutput.toJson(metadata)) }
         sudo("mv '${tmp_file}' '${metadata_file}'")
+        configure()
+    }
+
+    def configure() {
+        def templatesDir = pathJoin(context.getServiceDirectory(),"templates")
+        def templateEngine = new groovy.text.SimpleTemplateEngine()
+        def puppetConfTemplate = new File(templatesDir, "puppet.conf").getText()
+        def puppetConf = templateEngine.createTemplate(puppetConfTemplate).make(
+                            [environment: sanitizeEnvironment(puppetConfig.environment),
+                            server: puppetConfig.server,
+                            //nodeName: "pcha-" + context.getServiceName() + context.instanceId + ".pcha-prod.cloud.dc4.local",
+                            nodeName: puppetConfig.puppetNodePrefix + "-" + context.getServiceName() + 
+                    //context.instanceId + "." + System.getenv("TENANT") + puppetConfig.domainName,
+                    context.instanceId + ".pcha-prod" + "." + puppetConfig.domainName,
+                            cloudify_module_path:pathJoin(local_repo_dir, "modules")]
+                        )
+        sudoWriteFile("/etc/puppet/puppet.conf", puppetConf.toString())
     }
 
     def loadManifest(repoType, repoUrl) {
@@ -160,6 +166,8 @@ class PuppetBootstrap {
         "\"${expr}\""
     }
 
+    // Apply puppet classes. classes argument is a map of classes -> parameters
+    // classes must be available within modules in the modulepath
     def applyClasses(Map classes) {
         puppetExecute(
             classes.collect() { kls, params ->
@@ -169,18 +177,42 @@ class PuppetBootstrap {
         )
     }
 
-    def puppetExecute(puppetCode) {
+    def puppetAgent(tags=[]) { 
+		println "tags is null " + (tags==null)
+        def tagArgs = tags.any() ? ["--tags", tags.join(",")] : []
+		println "After join XXXXXXXXXXXXXX"
+        def args = ["puppet", "agent",
+            "--onetime", "--no-daemonize",
+            "--logdest", "console",
+            "--logdest", "syslog"]
+        args += tagArgs
+		println "Inside puppetAgent before the sudo args = ${args}"
+        sudo(args)
+		println "Finish sudo in puppetAgent "
+    }
+
+    // Execute arbitrary puppet code
+    def puppetExecute(String puppetCode) {
         File tmp_file = File.createTempFile("apply_manifest", ".pp")
         tmp_file.withWriter { it.write(puppetCode)}
         puppetApply(tmp_file)
     }
 
+    // Apply a puppet manifest
     def puppetApply(filepath) {
         sudo("puppet apply ${filepath}")
     }
 
     def cleanup_local_repo() {
         sh("rm -rf '${pathJoin(local_repo_dir,"*")}'")
+    }
+
+    def sanitizeEnvironment(environment) { 
+        def environ = environment.tr("- .", "_")    
+        if (!(environment =~ /[A-Za-z0-9_]+/).matches()) {
+            throw new Exception("puppet environment must contain only alphanumeric characters or underscores, you gave \"${environment}\"")
+        }
+        return environ
     }
 }
 
@@ -189,7 +221,8 @@ class DebianBootstrap extends PuppetBootstrap {
 
     def install(options) {
         installPuppetlabsRepo()
-        installPkgs(puppetPackages)
+        installPkg("puppet", puppetConfig.version)
+        if (extraPuppetPackages.any()) { installPkgs(extraPuppetPackages) }
         return super.install(options)
     }
 
@@ -205,19 +238,28 @@ class DebianBootstrap extends PuppetBootstrap {
         sudo("apt-get update")
     }
 
+    def installPkg(String pkg, version=null) {
+        if (version.is(null) || version.isEmpty()) {
+            sudo("apt-get install -y ${pkg}")
+        } else {
+            sudo("apt-get install -y ${pkg}=${version}")
+        }
+    }
+
     def installPkgs(List pkgs) {
         sudo("apt-get install -y ${pkgs.join(" ")}")
     }
 }
 
 class RHELBootstrap extends PuppetBootstrap {
-    def puppetPackages = super.puppetPackages + ["rubygem-json"]
+    def extraPuppetPackages = super.extraPuppetPackages + ["rubygem-json"]
 
     def RHELBootstrap(options) { super(options) }
 
     def install(options) {
         installPuppetlabsRepo()
-        installPkgs(puppetPackages)
+        installPkg("puppet", puppetConfig.version)
+        installPkgs(extraPuppetPackages)
         return super.install(options)
     }
 
@@ -230,19 +272,36 @@ class RHELBootstrap extends PuppetBootstrap {
         sudo("rpm -ivh ${repo}")    
     }
 
+    def installPkg(String pkg, version=null) {
+        if (version.is(null) || version.isEmpty()) {
+            sudo("yum install -y ${pkg}")
+        } else {
+            sudo("yum install -y ${pkg}-${version}")
+        }
+    }
+
     def installPkgs(List pkgs) {
         sudo("yum install -y ${pkgs.join(" ")}")
     }
 }
 
 class AmazonBootstrap extends PuppetBootstrap {
-    def puppetPackages = super.puppetPackages + ["rubygem-json"]
+    def extraPuppetPackages = super.extraPuppetPackages + ["rubygem-json"]
 
     def AmazonBootstrap(options) { super(options) }
 
     def install(options) {
-        installPkgs(puppetPackages)
+        installPkg("puppet", puppetConfig.version)
+        installPkgs(extraPuppetPackages)
         return super.install(options)
+    }
+
+    def installPkg(String pkg, version=null) {
+        if (version.is(null) || version.isEmpty()) {
+            sudo("yum install -y ${pkg}")
+        } else {
+            sudo("yum install -y ${pkg}-${version}")
+        }
     }
 
     def installPkgs(List pkgs) {
@@ -257,7 +316,7 @@ class SuSEBootstrap extends PuppetBootstrap {
 
     def install(options) {
         installPuppetlabsRepo()
-        installPkgs(puppetPackages)
+        if (extraPuppetPackages.any()) { installPkgs(extraPuppetPackages) }
         return super.install(options)
     }
 
