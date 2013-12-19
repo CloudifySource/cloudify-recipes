@@ -2,7 +2,7 @@
 //If the stream doesn't exist, it is created with a default
 //tuple ("f1","f2)
 
-import org.cloudifysource.dsl.context.* 
+import org.cloudifysource.utilitydomain.context.ServiceContextFactory
 import com.gigaspaces.streaming.client.*
 
 //the sentences

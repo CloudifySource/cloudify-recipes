@@ -1,8 +1,8 @@
 import com.gigaspaces.log.LogEntries
 import com.gigaspaces.log.LogEntry
 import com.gigaspaces.log.LogEntryMatcher
-import org.cloudifysource.dsl.context.Service
-import org.cloudifysource.dsl.context.ServiceInstance
+import org.cloudifysource.domain.context.Service
+import org.cloudifysource.domain.context.ServiceInstance
 import org.openspaces.admin.Admin
 import org.openspaces.admin.AdminFactory
 import org.openspaces.admin.pu.ProcessingUnit
