@@ -16,7 +16,7 @@
 import groovy.text.SimpleTemplateEngine
 import groovy.util.ConfigSlurper;
 import org.cloudifysource.dsl.utils.ServiceUtils
-import org.cloudifysource.dsl.context.ServiceContextFactory
+import org.cloudifysource.utilitydomain.context.ServiceContextFactory
 
 
 context=ServiceContextFactory.serviceContext
