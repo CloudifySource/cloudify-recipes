@@ -1,5 +1,5 @@
 import java.net.InetAddress;
-import org.cloudifysource.dsl.context.ServiceContextFactory
+import org.cloudifysource.utilitydomain.context.ServiceContextFactory
 import java.util.concurrent.TimeUnit
 import util
 

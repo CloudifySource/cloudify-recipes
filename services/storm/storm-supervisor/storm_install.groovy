@@ -121,7 +121,7 @@ import java.util.concurrent.TimeUnit
 import groovy.text.SimpleTemplateEngine
 import groovy.util.ConfigSlurper;
 import java.net.InetAddress;
-import org.cloudifysource.dsl.context.ServiceContextFactory
+import org.cloudifysource.utilitydomain.context.ServiceContextFactory
 
 
 context=ServiceContextFactory.serviceContext

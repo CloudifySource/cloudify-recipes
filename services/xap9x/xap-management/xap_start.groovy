@@ -19,7 +19,7 @@ import java.io.BufferedReader
 import java.util.Arrays
 import groovy.util.ConfigSlurper;
 import org.cloudifysource.utilitydomain.context.ServiceContextFactory
-//import org.cloudifysource.dsl.context.ServiceContextFactory
+
 
 context=ServiceContextFactory.serviceContext
 config = new ConfigSlurper().parse(new File(context.serviceName+"-service.properties").toURL())
