@@ -48,7 +48,7 @@ service {
 
 		start "xap_start.groovy"
 
-	        startDetectionTimeoutSecs 60
+	        startDetectionTimeoutSecs 180
         	startDetection {
             		ServiceUtils.isPortOccupied(uiPort)
         	}
@@ -101,9 +101,10 @@ service {
 		
 		monitors {
 			if(admin==null){
+                ip=InetAddress.getLocalHost().getHostAddress()
 				admin = new AdminFactory()
 				.useDaemonThreads(true)
-				.addLocators("127.0.0.1:"+lusPort)
+				.addLocators("${ip}:"+lusPort)
 				.create();
 			}
 

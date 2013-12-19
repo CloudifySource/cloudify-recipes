@@ -26,5 +26,4 @@ SET startParm=
 SET launchTarget=
 SET options=
 
-
-cmd /c %XAPDIR%\bin\gsc.bat
+cmd /c %XAPDIR%\bin\gs-agent.bat gsa.global.lus=0 gsa.global.gsm=0 gsa.gsc=1

@@ -29,6 +29,4 @@ options=
 ulimit -n 32000
 ulimit -u 32000
 
-echo "GSC_JAVA_OPTIONS=${GSC_JAVA_OPTIONS}"
-
-$XAPDIR/bin/gsc.sh
+$XAPDIR/bin/gs-agent.sh gsa.global.lus=0 gsa.global.gsm=0 gsa.gsc=1

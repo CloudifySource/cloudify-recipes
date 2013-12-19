@@ -18,16 +18,18 @@ import java.io.BufferedReader
 import java.util.Arrays
 import java.util.concurrent.TimeUnit
 import groovy.util.ConfigSlurper
-import org.cloudifysource.dsl.context.ServiceContextFactory
+import org.cloudifysource.utilitydomain.context.ServiceContextFactory
 import util
 
 context=ServiceContextFactory.serviceContext
 config = new ConfigSlurper().parse(new File(context.serviceName+"-service.properties").toURL())
 ip=InetAddress.getLocalHost().getHostAddress()
+lusPort=config.lusPort
+
 uuid=context.attributes.thisInstance.uuid
 if(uuid==null){
-	uuid=UUID.randomUUID().toString()
-	context.attributes.thisInstance.uuid=uuid
+    uuid=UUID.randomUUID().toString()
+    context.attributes.thisInstance.uuid=uuid
 }
 
 thisService=util.getThisService(context)
@@ -39,35 +41,37 @@ locators=""
 lusnum=0
 
 mgmt.instances.each{
-	def lusname="lus${it.instanceId}"
-println "invoking update-hosts with ${it.hostAddress} ${lusname}"
-	thisService.invoke("update-hosts",it.hostAddress,lusname as String)
-	locators+="${lusname}:${config.lusPort},"
+    def lusname="lus${it.instanceId}"
+    println "invoking update-hosts with ${it.hostAddress} ${lusname}"
+    thisService.invoke("update-hosts",it.hostAddress,lusname as String)
+    locators+="${lusname}:${config.lusPort},"
 }
 println "locators = ${locators}"
 
 new AntBuilder().sequential {
-	exec(executable:"runxap.bat", osfamily:"windows",
-		output:"runxap.${System.currentTimeMillis()}.out",
-		error:"runxap.${System.currentTimeMillis()}.err"
-	){
-		env(key:"XAPDIR", value:"${config.installDir}\\${config.xapDir}")
-		env(key:"GSC_JAVA_OPTIONS",value:"${config.gsc_jvm_options} -DUUID=${uuid} -Dcom.gs.multicast.enabled=false")
-		env(key:"LOOKUPLOCATORS",value:locators)
-		env(key:"NIC_ADDR",value:"${ip}")
-	} 
+    exec(executable:"runxap.bat", osfamily:"windows",
+            output:"runxap.${System.currentTimeMillis()}.out",
+            error:"runxap.${System.currentTimeMillis()}.err"
+    ){
+        env(key:"XAPDIR", value:"${config.installDir}\\${config.xapDir}")
+        env(key:"GSA_JAVA_OPTIONS",value:"${config.gsa_jvm_options}  -Dcom.gs.multicast.enabled=false -DUUID=${uuid}")
+        env(key:"GSC_JAVA_OPTIONS",value:"${config.gsc_jvm_options} -Dcom.sun.jini.reggie.initialUnicastDiscoveryPort=${config.lusPort} -DUUID=${uuid} -Dcom.gs.multicast.enabled=false")
+        env(key:"LOOKUPLOCATORS",value:locators)
+        env(key:"NIC_ADDR",value:"${ip}")
+    }
 
-	chmod(dir:"${context.serviceDirectory}",perm:"+x",includes:"*.sh")
-	chmod(dir:"${config.installDir}/${config.xapDir}",perm:"+x",includes:"*.sh")
-	exec(executable:"./runxap.sh", osfamily:"unix",
-		output:"runxap.${System.currentTimeMillis()}.out",
-		error:"runxap.${System.currentTimeMillis()}.err"
-	){
-		env(key:"GSC_JAVA_OPTIONS",value:"${config.gsc_jvm_options} -DUUID=${uuid} -Dcom.gs.multicast.enabled=false")
-		env(key:"XAPDIR", value:"${context.serviceDirectory}/${config.installDir}/${config.xapDir}")
-		env(key:"LOOKUPLOCATORS",value:"${locators}")
-		env(key:"NIC_ADDR",value:"${ip}")
-	}
+    chmod(dir:"${context.serviceDirectory}",perm:"+x",includes:"*.sh")
+    chmod(dir:"${config.installDir}/${config.xapDir}",perm:"+x",includes:"*.sh")
+    exec(executable:"./runxap.sh", osfamily:"unix",
+            output:"runxap.${System.currentTimeMillis()}.out",
+            error:"runxap.${System.currentTimeMillis()}.err"
+    ){
+        env(key:"GSA_JAVA_OPTIONS",value:"${config.gsa_jvm_options} -Dcom.sun.jini.reggie.initialUnicastDiscoveryPort=${config.lusPort} -Dcom.gs.multicast.enabled=false -DUUID=${uuid}")
+        env(key:"GSC_JAVA_OPTIONS",value:"${config.gsc_jvm_options} -Dcom.sun.jini.reggie.initialUnicastDiscoveryPort=${config.lusPort} -DUUID=${uuid} -Dcom.gs.multicast.enabled=false")
+        env(key:"XAPDIR", value:"${context.serviceDirectory}/${config.installDir}/${config.xapDir}")
+        env(key:"LOOKUPLOCATORS",value:"${locators}")
+        env(key:"NIC_ADDR",value:"${ip}")
+    }
 }
 
-
+println "XAP-Container started"
