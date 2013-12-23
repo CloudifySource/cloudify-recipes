@@ -14,9 +14,6 @@
 * limitations under the License.
 *******************************************************************************/
 import java.util.concurrent.TimeUnit
-import java.io.InputStream
-import java.io.BufferedReader
-import java.util.Arrays
 import groovy.util.ConfigSlurper;
 import org.cloudifysource.utilitydomain.context.ServiceContextFactory
 
