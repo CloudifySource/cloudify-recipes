@@ -109,7 +109,7 @@ class ChefBootstrap {
     protected def configureClient() {
 		if ("serverURL" in chefConfig) {
 			if (chefConfig.serverURL == null) {
-				throw new RuntimeException("Cannot find a chef server URL in global attribute 'chef_server_url', chefConfig.serverURL is null")
+				throw new RuntimeException("Cannot find a chef server URL in thisApplication nor in global attribute 'chef_server_url', chefConfig.serverURL is null")
 			}
 		}
 		else {

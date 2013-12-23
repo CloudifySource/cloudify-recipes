@@ -37,8 +37,8 @@ service {
             ChefBootstrap.getBootstrap(context: context).install() // default installation method defined in chef-service.properties
         }
         start {
-            def chefServerURL = context.attributes.global["chef_server_url"]
-            def validationCert = context.attributes.global["chef_validation.pem"]
+            def chefServerURL = context.attributes.thisApplication["chef_server_url"]
+            def validationCert = context.attributes.thisApplication["chef_validation.pem"]
 
             if (chefServerURL == null) {
                 def chefConfig = context.attributes.thisInstance["chefConfig"]
@@ -47,7 +47,11 @@ service {
 			}
 
             if (chefServerURL == null) {
-                throw new RuntimeException("Cannot find a chef server URL in global attribute 'chef_server_url'")
+				chefServerURL = context.attributes.global["chef_server_url"]
+				validationCert = context.attributes.global["chef_validation.pem"]
+				if (chefServerURL == null) {
+					throw new RuntimeException("Cannot find a chef server URL in thisApplication nor in global attribute 'chef_server_url'")
+				}							
             }
 
             println "Using Chef server URL: ${chefServerURL}"

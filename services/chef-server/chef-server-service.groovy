@@ -52,9 +52,9 @@ service {
                 "run_list": ["recipe[chef-server]"]
             ])
 
-            //setting the global attributes to be available for all chef clients
-            context.attributes.global["chef_validation.pem"] = sudoReadFile("/etc/chef-server/chef-validator.pem")
-            context.attributes.global["chef_server_url"] = serverUrl
+            //setting the thisApplication attributes to be available for all chef clients in this application
+            context.attributes.thisApplication["chef_validation.pem"] = sudoReadFile("/etc/chef-server/chef-validator.pem")
+            context.attributes.thisApplication["chef_server_url"] = serverUrl
         }
 
 		startDetectionTimeoutSecs 600
