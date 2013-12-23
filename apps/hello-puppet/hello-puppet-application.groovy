@@ -15,7 +15,7 @@
 *******************************************************************************/
 
 application {
-    name = "hello-puppet"
+    name = "hello_puppet"
     
     service {
         name = "tar"

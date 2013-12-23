@@ -36,11 +36,16 @@ service {
     lifecycle {
       install {
         puppetEnvironment = context.attributes.application["puppet_environment"] ?: binding.variables.get("puppetEnvironment") ?: context.applicationName
+		println "puppet-service.groovy.install: puppetEnvironment is ${puppetEnvironment}"
         puppetMasterIp = context.attributes.global["puppet_master_ip"] ?: binding.variables.get("puppetMasterIp")
+		println "puppet-service.groovy.install: puppetMasterIp is ${puppetMasterIp}"
         puppetNodePrefix = binding.variables.get("puppetNodePrefix") ?: context.attributes.global["puppetNodePrefix"]
+		println "puppet-service.groovy.install: puppetNodePrefix is ${puppetNodePrefix}"
         domainName = binding.variables.get("domainName") ?: context.attributes.global["domainName"]
+		println "puppet-service.groovy.install: domainName is ${domainName}"
         bootstrap = PuppetBootstrap.getBootstrap(context:context, server:puppetMasterIp, environment:puppetEnvironment,
       puppetNodePrefix:puppetNodePrefix, domainName:domainName)
+		println "puppet-service.groovy.install: Running bootstrap.install() ..."
         bootstrap.install()
 /*
         if (binding.variables["puppetMode"] && !puppetApplicationName.is(null) && !puppetMasterServiceName.is(null)) {
@@ -51,17 +56,22 @@ service {
       }
       start {
         puppetEnvironment = context.attributes.application["puppet_environment"] ?: binding.variables.get("puppetEnvironment") ?: context.applicationName
+		println "puppet-service.groovy.start: puppetEnvironment is ${puppetEnvironment}"
         puppetMasterIp = context.attributes.global["puppet_master_ip"] ?: binding.variables.get("puppetMasterIp")
+		println "puppet-service.groovy.start: puppetMasterIp is ${puppetMasterIp}"
         puppetNodePrefix = binding.variables.get("puppetNodePrefix") ?: context.attributes.global["puppetNodePrefix"]
+		println "puppet-service.groovy.start: puppetNodePrefix is ${puppetNodePrefix}"
         domainName = binding.variables.get("domainName") ?: context.attributes.global["domainName"]
+		println "puppet-service.groovy.start: domainName is ${domainName}"
         bootstrap = PuppetBootstrap.getBootstrap(context:context, server:puppetMasterIp, environment:puppetEnvironment, 
       puppetNodePrefix:puppetNodePrefix, domainName:domainName)
+		println "puppet-service.groovy.start: Running bootstrap.start() ..."
         bootstrap.configure() // ensure server address is current
 
         if (binding.variables["puppetMode"] == "agent" && !puppetMasterIp.is(null)) {
             tags = binding.variables.get("puppetTags") ?: []
-            println "Running puppet agent with server ${puppetMasterIp} and environment ${puppetEnvironment} HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH"
-			println "Tags = ${tags.join(", ")}"
+            println "puppet-service.groovy.start: Running puppet agent with server ${puppetMasterIp} and environment ${puppetEnvironment} HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH"
+			println "puppet-service.groovy.start: Tags = ${tags.join(", ")}"
             bootstrap.puppetAgent(tags)
         } else {
             if (binding.variables["puppetRepo"]) {
@@ -71,10 +81,10 @@ service {
                 } else if (puppetRepo.classes) {
                     bootstrap.applyClasses(puppetRepo.classes)
                 } else {
-                    println "Puppet repository loaded but nothing was applied."
+                    println "puppet-service.groovy.start: Puppet repository loaded but nothing was applied."
                 }
             } else {
-                println "Puppet repository is undefined in the properties file."
+                println "puppet-service.groovy.start: Puppet repository is undefined in the properties file."
             }
         }
       }

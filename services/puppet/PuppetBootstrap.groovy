@@ -69,7 +69,8 @@ class PuppetBootstrap {
     }
 
     def install(options) { 
-        sh("mkdir -p '${local_repo_dir}'")
+		println "In PuppetBootstrap.groovy.install"
+        sh("mkdir -p '${local_repo_dir}'" )
         //import facter plugin
         sudo("mkdir -p ${local_custom_facts} ${cloudify_module_dir}")
         def custom_facts_dir = pathJoin(context.getServiceDirectory(),"custom_facts")
@@ -87,6 +88,7 @@ class PuppetBootstrap {
         def tmp_file = File.createTempFile("metadata", "json")
         tmp_file.withWriter() { it.write(JsonOutput.toJson(metadata)) }
         sudo("mv '${tmp_file}' '${metadata_file}'")
+		println "End of PuppetBootstrap.groovy.install"
         configure()
     }
 
