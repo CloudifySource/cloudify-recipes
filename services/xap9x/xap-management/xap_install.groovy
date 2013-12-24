@@ -28,15 +28,19 @@ new AntBuilder().sequential {
 	unzip(src:"${config.installDir}/${config.zipName}", dest:config.installDir, overwrite:true)
 }
 
+webuiPort=8099
+if (context.isLocalCloud()) {
+    webuiPort=9099
+}
 // Update gs ui port
 if(ServiceUtils.isWindows()){
   new AntBuilder().sequential {
-   replace(file:"${context.serviceDirectory}/${config.installDir}/${config.xapDir}/tools/gs-webui/gs-webui.sh",token:"8099",value:"${config.uiPort}")
+   replace(file:"${context.serviceDirectory}/${config.installDir}/${config.xapDir}/tools/gs-webui/gs-webui.sh",token:"8099",value:webuiPort)
   }
 }
 else{
   new AntBuilder().sequential {
-   replace(file:"${context.serviceDirectory}/${config.installDir}/${config.xapDir}/tools/gs-webui/gs-webui.sh",token:"8099",value:"${config.uiPort}")
+   replace(file:"${context.serviceDirectory}/${config.installDir}/${config.xapDir}/tools/gs-webui/gs-webui.sh",token:"8099",value:webuiPort)
    chmod(dir:"${context.serviceDirectory}/${config.installDir}/${config.xapDir}/bin", perm:"+x", includes:"*.sh")
    chmod(dir:"${context.serviceDirectory}/${config.installDir}/${config.xapDir}/tools/gs-webui", perm:"+x", includes:"*.sh")
   }

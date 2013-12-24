@@ -21,6 +21,7 @@ The only requirement for installation is that the management recipe be installed
 The <i>xap-management</i> recipe launches the XAP management processes: the GSM and LUS, as well as the Web UI.  The LUS port is configurable in the recipe properties, and effectively identifies the cluster.  All clusters (including Cloudify itself) must have unique LUS ports.  
 
 <i>xap-management</i> can support up to 2 instances.  Containers (GSCs) are deployed via the <i>xap-container</i> recipe.  <i>xap-management</i>, on starting, updates the hosts table on the containers (if any) via a custom command.  Containers likewise update their hosts tables on startup to avoid static IP configuration in the recipes.
+Note that in localcloud mode the webui url is http://localcloud:9099
 
 The recipe provides a link to the XAP Web UI in the details section of the Cloudify UI.
 
