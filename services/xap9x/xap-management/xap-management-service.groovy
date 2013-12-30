@@ -83,17 +83,17 @@ service {
 		}
 
 		details {
-			def currPublicIP
-			
+			def currPublicIP = context.getPublicAddress()
+
 			if (  context.isLocalCloud()  ) {
-				currPublicIP = InetAddress.localHost.hostAddress
+				currPort = 9099
 			}
 			else {
-				currPublicIP =context.getPublicAddress()
+                currPort = 8099
 			}
-	
-			def applicationURL = "http://${currPublicIP}:${uiPort}"
-		
+
+			def applicationURL = "http://${currPublicIP}:${currPort}"
+
 				return [
 					"Management UI":"<a href=\"${applicationURL}\" target=\"_blank\">${applicationURL}</a>"
 				]
