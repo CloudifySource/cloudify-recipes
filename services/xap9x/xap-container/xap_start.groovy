@@ -53,7 +53,7 @@ new AntBuilder().sequential {
             output:"runxap.${System.currentTimeMillis()}.out",
             error:"runxap.${System.currentTimeMillis()}.err"
     ){
-        env(key:"XAPDIR", value:"${config.installDir}\\${config.xapDir}")
+        env(key:"XAPDIR", value:"${config.installDir}/${config.xapDir}")
         env(key:"GSA_JAVA_OPTIONS",value:"${config.gsa_jvm_options}  -Dcom.gs.multicast.enabled=false -DUUID=${uuid}")
         env(key:"GSC_JAVA_OPTIONS",value:"${config.gsc_jvm_options} -Dcom.sun.jini.reggie.initialUnicastDiscoveryPort=${config.lusPort} -DUUID=${uuid} -Dcom.gs.multicast.enabled=false")
         env(key:"LOOKUPLOCATORS",value:locators)
