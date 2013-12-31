@@ -13,20 +13,6 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 *******************************************************************************/
-application {
-	name="xap9x-tiny"
-	
-	service {
-		name = "xap-management"		
-	}
-	
-	service {
-		name = "xap-container"
-		dependsOn = ["xap-management"]
-	}
-
-    service {
-        name = "tty.js"
-        dependsOn = ["xap-management"]
-    }
+service {
+	extend "../../../services/xap9x/tty.js-centos/tty.js"
 }
