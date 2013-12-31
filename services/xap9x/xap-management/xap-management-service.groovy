@@ -48,6 +48,8 @@ service {
 
 		start "xap_start.groovy"
 
+        postStart "xap_postStart.groovy"
+
 	        startDetectionTimeoutSecs 180
         	startDetection {
             		ServiceUtils.isPortOccupied(uiPort)
@@ -150,7 +152,9 @@ service {
 				"deploy-pu-puname":(new File(puurl).name)
 			])
 		},
-					
+		//usage examples:
+        //invoke xap-management  deploy-grid myIMDG partitioned-sync2backup 1 0 0 0 - deploy single space without backup
+        //invoke xap-management  deploy-grid myIMDG partitioned-sync2backup 1 1 0 0 - deploy primary backup space
 		"deploy-grid"	: {name,schema,partitions,backups,maxpervm,maxpermachine->
 			util.invokeLocal(context,"_deploy-grid", [
 				"deploy-grid-name":name,
@@ -161,16 +165,20 @@ service {
 				"deploy-grid-maxpermachine":maxpermachine
 			])
 		},
-            "deploy-grid"	: {name->
-                util.invokeLocal(context,"_deploy-grid", [
-                        "deploy-grid-name":name,
-                        "deploy-grid-schema":"partitioned-sync2backup",
-                        "deploy-grid-partitions":1,
-                        "deploy-grid-backups":1,
-                        "deploy-grid-maxpervm":0,
-                        "deploy-grid-maxpermachine":0
-                ])
-            },
+        //usage examples:
+        //invoke xap-management  deploy-grid myIMDG - deploy primary backup space
+        "deploy-grid"	: {name->
+            util.invokeLocal(context,"_deploy-grid", [
+                "deploy-grid-name":name,
+                "deploy-grid-schema":"partitioned-sync2backup",
+                "deploy-grid-partitions":1,
+                "deploy-grid-backups":1,
+                "deploy-grid-maxpervm":0,
+                "deploy-grid-maxpermachine":0
+            ])
+        },
+        //usage examples:
+        //invoke xap-management  undeploy-grid myIMDG - undeploy space
 		"undeploy-grid" : { name ->
 			util.invokeLocal(context,"_undeploy-grid", [
 				"undeploy-grid-name":name
