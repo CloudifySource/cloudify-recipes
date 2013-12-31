@@ -31,8 +31,9 @@ service {
 
 	lifecycle{
         start {
-            def privateIp = System.getenv()["CLOUDIFY_AGENT_ENV_PRIVATE_IP"]
-            def serverUrl = "https://${privateIp}:443" as String
+            def ipAddress = context.privateAddress
+            if (ipAddress == null || ipAddress.trim() == "") ipAddress = context.publicAddress
+            def serverUrl = "https://${ipAddress}:443" as String
             def bootstrap = ChefBootstrap.getBootstrap(installFlavor:"fatBinary", context:context)
 
             def chefServerConfig = [:]
