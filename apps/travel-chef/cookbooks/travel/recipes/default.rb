@@ -34,8 +34,8 @@ remote_file tarball  do
 end
 
 #mysql_host = search(:node, 'run_list:recipe\[mysql\:\:server\]').first.ipaddress
-#mysql_host = search(:node, 'run_list:recipe\[mysql\:\:server\]').first.IP
-mysql_host = search(:node, 'run_list:recipe\[mysql\:\:server\]').first.macaddress
+mysql_host = search(:node, 'run_list:recipe\[mysql\:\:server\]').first.ip
+#mysql_host = search(:node, 'run_list:recipe\[mysql\:\:server\]').first.macaddress
 template ::File.join(webapp_dir, "WEB-INF", "classes", "jdbc.properties") do
   mode "0644"
   variables :mysql_host => mysql_host,
