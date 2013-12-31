@@ -4,7 +4,6 @@ import org.cloudifysource.utilitydomain.context.ServiceContextFactory
 context=ServiceContextFactory.serviceContext
 config = new ConfigSlurper().parse(new File(context.serviceName+"-service.properties").toURL())
 
-chmod(dir:"${context.serviceDirectory}/tty.js",perm:"+x",includes:"*.sh")
 new AntBuilder().sequential {
     exec(executable:"${context.serviceDirectory}/init.sh", osfamily:"unix",
             output:"init.${System.currentTimeMillis()}.out",
