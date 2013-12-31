@@ -63,9 +63,10 @@ service {
     	def instanceID = context.instanceId
     	
     	postStart {			
-			def apacheService = context.waitForService("apacheLB", 180, TimeUnit.SECONDS)						
-			def privateIP = System.getenv()["CLOUDIFY_AGENT_ENV_PRIVATE_IP"]
-			def currURL="http://${privateIP}:8080/${context.applicationName}"
+			def apacheService = context.waitForService("apacheLB", 180, TimeUnit.SECONDS)
+			def ipAddress = context.privateAddress
+            if (ipAddress == null || ipAddress.trim() == "") ipAddress = context.publicAddress
+			def currURL="http://${ipAddress}:8080/${context.applicationName}"
 			apacheService.invoke("addNode", currURL as String, instanceID as String)			                 
 		}
 		
@@ -73,8 +74,9 @@ service {
 			try { 	
 				def apacheService = context.waitForService("apacheLB", 180, TimeUnit.SECONDS)
 				if ( apacheService != null ) { 					
-					def	privateIP =System.getenv()["CLOUDIFY_AGENT_ENV_PRIVATE_IP"]
-					def currURL="http://${privateIP}:8080/${context.applicationName}"
+					def ipAddress = context.privateAddress
+					if (ipAddress == null || ipAddress.trim() == "") ipAddress = context.publicAddress
+					def currURL="http://${ipAddress}:8080/${context.applicationName}"
 					apacheService.invoke("removeNode", currURL as String, instanceID as String)
 				}
 			}
