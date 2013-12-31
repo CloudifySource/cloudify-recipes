@@ -15,7 +15,7 @@
 *******************************************************************************/
 
 application {
-    name = "redmine-puppet"
+    name = "redmine_puppet"
 
     service {
         name = "mysql"
