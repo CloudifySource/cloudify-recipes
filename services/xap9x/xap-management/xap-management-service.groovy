@@ -161,6 +161,16 @@ service {
 				"deploy-grid-maxpermachine":maxpermachine
 			])
 		},
+            "deploy-grid"	: {name->
+                util.invokeLocal(context,"_deploy-grid", [
+                        "deploy-grid-name":name,
+                        "deploy-grid-schema":"partitioned-sync2backup",
+                        "deploy-grid-partitions":1,
+                        "deploy-grid-backups":1,
+                        "deploy-grid-maxpervm":0,
+                        "deploy-grid-maxpermachine":0
+                ])
+            },
 		"undeploy-grid" : { name ->
 			util.invokeLocal(context,"_undeploy-grid", [
 				"undeploy-grid-name":name

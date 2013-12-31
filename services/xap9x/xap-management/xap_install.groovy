@@ -56,5 +56,8 @@ if(config.license!=null && config.license.size()>0){
 	new File("${config.installDir}/${config.xapDir}/gslicense.xml").withWriter{ out->
   		out.write(template.toString())
 	}
+}else{
+    new AntBuilder().sequential {
+        delete(file:"${context.serviceDirectory}/${config.installDir}/${config.xapDir}/gslicense.xml")
+    }
 }
-

@@ -36,10 +36,10 @@ maxpermachine=context.attributes.thisInstance["deploy-grid-maxpermachine"]
 
 assert (name!=null),"name must not be null"
 if(partitions==null||partitions.toInteger()<=0)partitions ="1"
-if(backups==null||backups.toInteger()<0)backups="0"
+if(backups==null||backups.toInteger()<0)backups="1"
 if(schema==null||schema=="")schema="partitioned-sync2backup"
-if(maxpervm==null||maxpervm.toInteger()<=0)maxpervm="1"
-if(maxpermachine==null||maxpermachine.toInteger()<=0)maxpermachine="1"
+if(maxpervm==null||maxpervm.toInteger()<=0)maxpervm="0"
+if(maxpermachine==null||maxpermachine.toInteger()<=0)maxpermachine="0"
 
 //DEPLOY
 
