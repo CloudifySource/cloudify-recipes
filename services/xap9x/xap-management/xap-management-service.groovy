@@ -175,6 +175,8 @@ service {
                 "deploy-grid-maxpermachine":0
             ])
         },
+        //usage examples:
+        //invoke xap-management  undeploy-grid myIMDG - undeploy space
 		"undeploy-grid" : { name ->
 			util.invokeLocal(context,"_undeploy-grid", [
 				"undeploy-grid-name":name
