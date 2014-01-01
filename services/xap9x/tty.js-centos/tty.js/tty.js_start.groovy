@@ -2,7 +2,7 @@ import groovy.text.SimpleTemplateEngine
 import groovy.util.ConfigSlurper;
 import org.cloudifysource.dsl.utils.ServiceUtils
 import org.cloudifysource.utilitydomain.context.ServiceContextFactory
-
+import java.util.concurrent.TimeUnit
 
 context=ServiceContextFactory.serviceContext
 config = new ConfigSlurper().parse(new File(context.serviceName+"-service.properties").toURL())
