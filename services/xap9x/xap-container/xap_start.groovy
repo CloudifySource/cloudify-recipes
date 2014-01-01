@@ -48,7 +48,7 @@ mgmt.instances.each{
 }
 println "locators = ${locators}"
 
-serviceContext.attributes.thisApplication["locators"] = "${locators}"
+context.attributes.thisApplication["locators"] = "${locators}"
 
 new AntBuilder().sequential {
     exec(executable:"runxap.bat", osfamily:"windows",
