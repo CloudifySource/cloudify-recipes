@@ -9,7 +9,7 @@ context=ServiceContextFactory.serviceContext
 config = new ConfigSlurper().parse(new File("tty.js-service.properties").toURL())
 
 //Get locator(s)
-mgmt=context.waitForService(config.managementService,1,TimeUnit.MINUTES)
+mgmt=context.waitForService("xap9x-tiny.xap-management",1,TimeUnit.MINUTES)
 assert (mgmt!=null && mgmt.instances.size()),"No management services found"
 locators=""
 lusnum=0
