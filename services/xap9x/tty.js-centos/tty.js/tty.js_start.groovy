@@ -23,7 +23,7 @@ println "locators = ${locators}"
 
 new AntBuilder().sequential {
     chmod(dir:"${context.serviceDirectory}",perm:"+x",includes:"*.sh")
-    chmod(dir:"${config.installDir}/${config.xapDir}/tools/benchmark/bin",perm:"+x",includes:"*.sh")
+    chmod(dir:"${context.serviceDirectory}/${config.installDir}/${config.xapDir}/tools/benchmark/bin",perm:"+x",includes:"*.sh")
     exec(executable:"./start.sh", osfamily:"unix",
             output:"start.${System.currentTimeMillis()}.out",
             error:"start.${System.currentTimeMillis()}.err"
