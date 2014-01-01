@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit
 import util
 
 context=ServiceContextFactory.serviceContext
-config = new ConfigSlurper().parse(new File(context.serviceName+"-service.properties").toURL())
+config = new ConfigSlurper().parse(new File("tty.js-service.properties").toURL())
 
 //Get locator(s)
 mgmt=context.waitForService(config.managementService,1,TimeUnit.MINUTES)
