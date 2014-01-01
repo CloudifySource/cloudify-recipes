@@ -21,6 +21,13 @@ mgmt.instances.each{
 }
 println "locators = ${locators}"
 
+
+new AntBuilder().sequential {
+    mkdir(dir:"${config.installDir}")
+    get(src:config.downloadPath, dest:"${config.installDir}/${config.zipName}", skipexisting:true)
+    unzip(src:"${config.installDir}/${config.zipName}", dest:config.installDir, overwrite:true)
+}
+
 new AntBuilder().sequential {
     chmod(dir:"${context.serviceDirectory}",perm:"+x",includes:"*.sh")
     chmod(dir:"${context.serviceDirectory}/${config.installDir}/${config.xapDir}/tools/benchmark/bin",perm:"+x",includes:"*.sh")
