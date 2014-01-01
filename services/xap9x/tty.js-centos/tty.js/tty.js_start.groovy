@@ -8,22 +8,7 @@ import util
 context=ServiceContextFactory.serviceContext
 config = new ConfigSlurper().parse(new File("tty.js-service.properties").toURL())
 
-//Get locator(s)
-mgmt=context.waitForService("xap9x-tiny.xap-management",1,TimeUnit.MINUTES)
-assert (mgmt!=null && mgmt.instances.size()),"No management services found"
-locators=""
-lusnum=0
-
-thisService=util.getThisService(context)
-
-mgmt.instances.each{
-    def lusname="lus${it.instanceId}"
-    println "invoking update-hosts with ${it.hostAddress} ${lusname}"
-    thisService.invoke("update-hosts",it.hostAddress,lusname as String)
-    locators+="${lusname}:${config.lusPort},"
-}
-println "locators = ${locators}"
-
+locators = context.attributes.thisApplication["locators"]
 
 new AntBuilder().sequential {
     mkdir(dir:"${config.installDir}")
