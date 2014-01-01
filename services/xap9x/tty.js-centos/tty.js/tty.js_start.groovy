@@ -3,6 +3,7 @@ import groovy.util.ConfigSlurper;
 import org.cloudifysource.dsl.utils.ServiceUtils
 import org.cloudifysource.utilitydomain.context.ServiceContextFactory
 import java.util.concurrent.TimeUnit
+import util
 
 context=ServiceContextFactory.serviceContext
 config = new ConfigSlurper().parse(new File(context.serviceName+"-service.properties").toURL())
@@ -12,6 +13,8 @@ mgmt=context.waitForService(config.managementService,1,TimeUnit.MINUTES)
 assert (mgmt!=null && mgmt.instances.size()),"No management services found"
 locators=""
 lusnum=0
+
+thisService=util.getThisService(context)
 
 mgmt.instances.each{
     def lusname="lus${it.instanceId}"
