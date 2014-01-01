@@ -1,6 +1,6 @@
 #!/bin/bash
 set -x -e
 
-tty.js --port 8080 --deamonize
+tty.js --config my-config.json --deamonize
 
 
