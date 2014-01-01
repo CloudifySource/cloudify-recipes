@@ -48,8 +48,6 @@ mgmt.instances.each{
 }
 println "locators = ${locators}"
 
-context.attributes.thisApplication["locators"] = "${locators}"
-
 new AntBuilder().sequential {
     exec(executable:"runxap.bat", osfamily:"windows",
             output:"runxap.${System.currentTimeMillis()}.out",
