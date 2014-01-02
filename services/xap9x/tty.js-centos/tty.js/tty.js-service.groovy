@@ -8,7 +8,7 @@ service {
 
             def shellURL = "\"http://${currPublicIP}:8080"
             return [
-                    "Shell":"<a href=\"${applicationURL}\" target=\"_blank\">${applicationURL}</a>"
+                    "Shell":"<a href=\"${shellURL}\" target=\"_blank\">${shellURL}</a>"
             ]
         }
     }
