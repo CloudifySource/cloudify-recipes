@@ -1,6 +1,6 @@
 #!/bin/bash
 
-${XAP_BIN}/gs.sh
+<XAP_BIN>/gs.sh
 
 
 
