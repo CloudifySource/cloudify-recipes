@@ -13,3 +13,12 @@ new AntBuilder().sequential {
     get(src:config.downloadPath, dest:"${config.installDir}/${config.zipName}", skipexisting:true)
     unzip(src:"${config.installDir}/${config.zipName}", dest:config.installDir, overwrite:true)
 }
+
+new AntBuilder().sequential {
+    chmod(dir:"${context.serviceDirectory}",perm:"+x",includes:"*.sh")
+    chmod(dir:"${context.serviceDirectory}/${config.installDir}/${config.xapDir}/bin",perm:"+x",includes:"*.sh")
+    exec(executable:"./install.sh", osfamily:"unix",
+            output:"install.${System.currentTimeMillis()}.out",
+            error:"install.${System.currentTimeMillis()}.err"
+    )
+}
