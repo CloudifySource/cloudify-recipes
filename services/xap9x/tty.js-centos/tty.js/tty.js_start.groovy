@@ -3,7 +3,6 @@ import groovy.util.ConfigSlurper;
 import org.cloudifysource.dsl.utils.ServiceUtils
 import org.cloudifysource.utilitydomain.context.ServiceContextFactory
 import java.util.concurrent.TimeUnit
-import util
 
 context=ServiceContextFactory.serviceContext
 config = new ConfigSlurper().parse(new File("tty.js-service.properties").toURL())
@@ -11,7 +10,6 @@ config = new ConfigSlurper().parse(new File("tty.js-service.properties").toURL()
 
 new AntBuilder().sequential {
     replace(file:"${context.serviceDirectory}/my-config.json",token:"<XAP_BIN>",value:"${context.serviceDirectory}/${config.installDir}/${config.xapDir}/bin")
-    //replace(file:"${context.serviceDirectory}/gs.sh",token:"<XAP_BIN>",value:"${context.serviceDirectory}/${config.installDir}/${config.xapDir}/bin")
 }
 
 new AntBuilder().sequential {
