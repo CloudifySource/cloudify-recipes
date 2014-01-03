@@ -12,7 +12,7 @@ service {
             def applicationURL = "http://${currPublicIP}:8080"
 
             return [
-                    "Management UI":"<a href=\"${applicationURL}\" target=\"_blank\">${applicationURL}</a>"
+                    "Shell URL":"<a href=\"${applicationURL}\" target=\"_blank\">${applicationURL}</a>"
             ]
         }
     }
