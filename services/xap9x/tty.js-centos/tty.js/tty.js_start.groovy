@@ -20,5 +20,8 @@ new AntBuilder().sequential {
     exec(executable:"./start.sh", osfamily:"unix",
             output:"start.${System.currentTimeMillis()}.out",
             error:"start.${System.currentTimeMillis()}.err"
-    )
+    ){
+        env(key:"XAP_BIN", value:"${context.serviceDirectory}/${config.installDir}/${config.xapDir}/bin")
+    }
+
 }
