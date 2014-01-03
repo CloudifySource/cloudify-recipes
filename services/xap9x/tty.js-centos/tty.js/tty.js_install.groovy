@@ -3,7 +3,7 @@ import groovy.util.ConfigSlurper;
 import org.cloudifysource.dsl.utils.ServiceUtils
 import org.cloudifysource.utilitydomain.context.ServiceContextFactory
 import java.util.concurrent.TimeUnit
-import util
+
 
 context=ServiceContextFactory.serviceContext
 config = new ConfigSlurper().parse(new File("tty.js-service.properties").toURL())
