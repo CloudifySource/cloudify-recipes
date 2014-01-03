@@ -4,6 +4,7 @@ This folder contains common files and a base service recipe for Puppet based ser
 > *Important*: Currently the chef recipes have only been tested on an Ubuntu environment on Amazon EC2. Please make sure to use the [EC2 ubuntu cloud driver](https://github.com/CloudifySource/cloudify-cloud-drivers/tree/master/ec2-ubuntu) when installing services or applications that are based on this recipe
 
 To use this integration, in a service recipe, one might use:
+
     service {
         extend "../services/puppet"
     }
@@ -50,13 +51,14 @@ Note that the facts are cached and not updated during the puppet run.
 The `get_cloudify_attribute` custom function performs fetching of cloudify attributes during recipe application and allows interaction with other instance, services and application.
 The arguments to the function are:
 
-1. name - name of the attribute (no default)
-2. type - global/application/service/instance (defaults to global)
-3. application - application name (defaults to current application)
-4. service - service name (defaults to service service)
-5. instance_id - instance id (defaults to current instance)
+1. `name` - name of the attribute (no default)
+2. `type` - global/application/service/instance (defaults to global)
+3. `application` - application name (defaults to current application)
+4. `service` - service name (defaults to service service)
+5. `instance_id` - instance id (defaults to current instance)
 
 example (the following will write the myname attribute of the `hello-puppet` application):
+
     file {'my-name':
       path    => '/tmp/myname',
       ensure  => present,
@@ -67,14 +69,15 @@ example (the following will write the myname attribute of the `hello-puppet` app
 <strong>Custom type</strong>
 The `cloudify_attribute` custom type allows setting a cloudify attributes of any type. The arguments are similar to those of the `get_cloudify_attribute` function:
 
-1. name - name of the attribute (no default)
-2. value - the new value (no default)
-3. type - global/application/service/instance (defaults to global)
-4. application - application name (defaults to current application)
-5. service - service name (defaults to service service)
-6. instance_id - instance id (defaults to current instance)
+1. `name` - name of the attribute (no default)
+2. `value` - the new value (no default)
+3. `type` - global/application/service/instance (defaults to global)
+4. `application` - application name (defaults to current application)
+5. `service` - service name (defaults to service service)
+6. `instance_id` - instance id (defaults to current instance)
 
 example (the following will set/change the myname attribute of the `hello-puppet` application):
+
     cloudify_attribute { 'myname':
         value => 'Inigo Montoya',
         type => 'application',
