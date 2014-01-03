@@ -8,10 +8,11 @@ import util
 context=ServiceContextFactory.serviceContext
 config = new ConfigSlurper().parse(new File("tty.js-service.properties").toURL())
 
+println "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
 new AntBuilder().sequential {
     replace(file:"${context.serviceDirectory}/my-config.json",token:"<XAP_BIN>",value:"${context.serviceDirectory}/${config.installDir}/${config.xapDir}/bin")
 }
-
+println "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
 new AntBuilder().sequential {
     chmod(dir:"${context.serviceDirectory}",perm:"+x",includes:"*.sh")
     chmod(dir:"${context.serviceDirectory}/${config.installDir}/${config.xapDir}/bin",perm:"+x",includes:"*.sh")
@@ -22,3 +23,4 @@ new AntBuilder().sequential {
         env(key:"XAP_BIN", value:"${context.serviceDirectory}/${config.installDir}/${config.xapDir}/bin")
     }
 }
+println "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCc"
