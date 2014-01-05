@@ -53,7 +53,6 @@ Notes: deploys a non-partitioned, single instance cluster.  Useful for simple ap
 <dd>Notes: see <i>deploy-pu</i> for argument meanings.</dd>
 <dt>deploy-grid-basic</dt>
 <dd>Deploys a space with one primary and one backup instances.  Usage: <i>deploy-grid-basic spaceName</i>.
-<dd>Notes: see <i>deploy-pu</i> for argument meanings.</dd>
 <dt>undeploy-grid</dt>
 <dd>Undeploys a grid by name.  Usage: <i>undeploy-grid name.</i>  Args:</dd>
 <ul>
