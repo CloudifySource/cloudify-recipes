@@ -9,12 +9,15 @@ service {
         details {
             def currPublicIP = context.getPublicAddress()
 
-            def applicationURL = "http://${currPublicIP}"
+            def interactiveShellURL = "http://${currPublicIP}:8080"
+            def benchmarkShellURL = "http://${currPublicIP}:8081"
+            def shellURL = "http://${currPublicIP}:8082"
+
 
             return [
-                    "GigaSpaces Interactive Shell URL":"<a href=\"${applicationURL}\" target=\"_blank\">${applicationURL}:8080</a>",
-                    "Benchmark URL":"<a href=\"${applicationURL}\" target=\"_blank\">${applicationURL}:8081</a>",
-                    "GigaSpaces URL":"<a href=\"${applicationURL}\" target=\"_blank\">${applicationURL}:8082</a>"
+                    "GigaSpaces Interactive Shell URL":"<a href=\"${applicationURL}\" target=\"_blank\">${interactiveShellURL}</a>",
+                    "Benchmark URL":"<a href=\"${applicationURL}\" target=\"_blank\">${benchmarkShellURL}</a>",
+                    "GigaSpaces URL":"<a href=\"${applicationURL}\" target=\"_blank\">${shellURL}</a>"
             ]
         }
     }
