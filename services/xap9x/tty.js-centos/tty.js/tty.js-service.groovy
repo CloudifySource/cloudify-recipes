@@ -15,9 +15,9 @@ service {
 
 
             return [
-                    "GigaSpaces Interactive Shell URL":"<a href=\"${applicationURL}\" target=\"_blank\">${interactiveShellURL}</a>",
-                    "Benchmark URL":"<a href=\"${applicationURL}\" target=\"_blank\">${benchmarkShellURL}</a>",
-                    "GigaSpaces URL":"<a href=\"${applicationURL}\" target=\"_blank\">${shellURL}</a>"
+                    "GigaSpaces Interactive Shell URL":"<a href=\"${interactiveShellURL}\" target=\"_blank\">${interactiveShellURL}</a>",
+                    "Benchmark URL":"<a href=\"${benchmarkShellURL}\" target=\"_blank\">${benchmarkShellURL}</a>",
+                    "GigaSpaces URL":"<a href=\"${shellURL}\" target=\"_blank\">${shellURL}</a>"
             ]
         }
     }
