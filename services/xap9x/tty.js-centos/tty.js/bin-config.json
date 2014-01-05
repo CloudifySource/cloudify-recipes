@@ -1,5 +1,4 @@
 {
     "port": 8082,
-    "shell": "bash",
     "cwd" : "<XAP_BIN>"
 }
