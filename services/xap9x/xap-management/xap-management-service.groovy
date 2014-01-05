@@ -164,8 +164,8 @@ service {
 			])
 		},
         //usage examples:
-        //invoke xap-management  deploy-grid myIMDG - deploy primary backup space
-        "deploy-grid"	: {name->
+        //invoke xap-management  deploy-grid-basic myIMDG - deploy primary backup space
+        "deploy-grid-basic"	: {name->
             util.invokeLocal(context,"_deploy-grid", [
                 "deploy-grid-name":name,
                 "deploy-grid-schema":"partitioned-sync2backup",
