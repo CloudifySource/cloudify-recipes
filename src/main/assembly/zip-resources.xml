@@ -28,6 +28,7 @@
                                 <include>**/services/chef-services/**</include>
                                 <include>**/services/chef-server/**</include>
                                 <include>**/services/puppet/**</include>
+                                <include>**/services/groovy-utils/**</include>
                         </includes>
                         <outputDirectory>/</outputDirectory>
                 </fileSet>
