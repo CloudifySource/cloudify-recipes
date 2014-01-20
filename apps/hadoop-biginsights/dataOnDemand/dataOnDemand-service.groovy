@@ -26,13 +26,46 @@ service {
 		def instanceID = context.instanceId	
 		postStart {
 			println "dataOnDemand-service.groovy: dataOnDemand Post-start ..."
-			def masterService = context.waitForService("master", 180, TimeUnit.SECONDS)			
-			sleep(30000)
+			def masterFound=false;
+			def masterService = null;
+			while(!masterFound){
+				try{
+					 masterService = context.waitForService("master", 180000, TimeUnit.SECONDS)			
+					} catch(Exception e){
+						println("Master is still launching");
+					}
+					if(masterService != null)
+					{
+						masterFound=true;
+						println("Master was found successfully");
+					}
+			}
 			def fulladdress= context.getPrivateAddress()
 			def privateIP = fulladdress.split("/")[0]	
 			println "dataOnDemand-service.groovy: privateIP is ${privateIP} ..."
-			masterService.invoke("addNode", privateIP as String, "hadoop", instanceID as String)
-			masterService.invoke("addNode", privateIP as String, "hbase", instanceID as String)
+			def objParamsHadoop = new Object[3] 
+			objParamsHadoop[0] = privateIP as String
+			objParamsHadoop[1] = "hadoop"
+			objParamsHadoop[2] = instanceID as String
+			
+			def objParamsHbase = new Object[3] 
+			objParamsHbase[0] = privateIP as String
+			objParamsHbase[1] = "hbase"
+			objParamsHbase[2] = instanceID as String
+			masterService.invoke("addNode",objParamsHadoop ,2000, TimeUnit.SECONDS)
+			masterService.invoke("addNode",objParamsHbase,2000, TimeUnit.SECONDS)
+			
+			def pathToInstallFile = context.serviceDirectory + "/installationRunning"
+			def installRunFile = new File(pathToInstallFile)
+			if ( installRunFile.exists()) {
+				println "dataOnDemand-service.groovy: About to delete ${pathToInstallFile} ..."
+				def successInDel = installRunFile.delete()
+				println "dataOnDemand-service.groovy: Deleted ${pathToInstallFile} - success = ${successInDel}"
+			}
+			else {
+				println "dataOnDemand-service.groovy: ${pathToInstallFile} does not exist. Skipping its deletion"
+			}
+										
 			println "dataOnDemand-service.groovy: dataOnDemand Post-start ended"						
 		}		
 

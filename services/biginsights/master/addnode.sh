@@ -9,7 +9,8 @@ do
 	echo "addNode.sh: Waiting for the master installation to complete"
     sleep 30
 done
-
+touch `dirname $0`/installationRunning
 echo addnode.sh sudo -i -u biadmin $BIGINSIGHTS_HOME/bin/addnode.sh $2 $1 >> /tmp/addnode.log
 sudo -i -u biadmin $BIGINSIGHTS_HOME/bin/addnode.sh $2 $1,123456 >> /tmp/addnode.log
+rm `dirname $0`/installationRunning
 echo addnode.sh completed

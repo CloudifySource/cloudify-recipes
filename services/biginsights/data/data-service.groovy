@@ -1,6 +1,7 @@
 service {
 	name "data"
 	icon "biginsights.png"
+	type "NOSQL_DB"
 	numInstances 1
 	
 	compute {
