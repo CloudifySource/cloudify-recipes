@@ -19,7 +19,7 @@ import org.cloudifysource.dsl.utils.ServiceUtils
 println "updateWarFile.groovy: Starting..."
 
 def context = ServiceContextFactory.getServiceContext()
-def config  = new ConfigSlurper().parse(new File("${context.serviceDirectory}/tomcat-service.properties").toURL())
+def config  = new ConfigSlurper().parse(new File("${context.serviceDirectory}/app-service.properties").toURL())
 def instanceId = context.instanceId
 
 def warUrl=context.attributes.thisService["warUrl"] 
