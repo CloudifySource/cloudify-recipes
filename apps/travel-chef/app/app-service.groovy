@@ -86,6 +86,24 @@ service {
 		}
     	
     }
+	
+	customCommands ([
+		"updateWar" : {warUrl -> 
+			println "app-service.groovy(updateWar custom command): warUrl is ${warUrl}..."
+			if (! warUrl) return "warUrl is null. So we do nothing."
+			context.attributes.thisService["warUrl"] = "${warUrl}"
+			
+			println "app-service.groovy(updateWar customCommand): invoking updateWarFile custom command ..."
+			def service = context.waitForService(context.serviceName, 60, TimeUnit.SECONDS)
+			def currentInstance = service.getInstances().find{ it.instanceId == context.instanceId }
+			currentInstance.invoke("updateWarFile")
+			
+			println "app-service.groovy(updateWar customCommand): End"
+			return true
+		} ,
+		 
+		"updateWarFile" : "updateWarFile.groovy"
+	])
 
 	
 	userInterface {
