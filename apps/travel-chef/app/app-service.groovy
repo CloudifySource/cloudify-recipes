@@ -200,7 +200,7 @@ service {
 	}
 	
 	
-	scaleCooldownInSeconds 180
+	scaleCooldownInSeconds 300
 	samplingPeriodInSeconds 1
 
 	// Defines an automatic scaling rule based on "Active Sessions" metric value
@@ -208,22 +208,20 @@ service {
 		scalingRule {
 
 			serviceStatistics {
-				metric "Active Sessions" 
-				statistics Statistics.averageOfAverages
+				metric "Current Http Threads Busy"
+				statistics Statistics.maximumOfMaximums
 				movingTimeRangeInSeconds 20
 			}
 
 			highThreshold {
-				value 2
+				value 10
 				instancesIncrease 1
 			}
 
-			/*
 			lowThreshold {
-				value 0
+				value 1
 				instancesDecrease 1
 			}
-			*/
 		}
 	])
 	
