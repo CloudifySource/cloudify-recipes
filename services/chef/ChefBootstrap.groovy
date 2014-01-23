@@ -155,7 +155,7 @@ Chef::Log::Formatter.show_time = true
         initJson["cloudify"] = context.attributes.thisService["chef"]
         def jsonFile = new File(pathJoin(context.getServiceDirectory(), "chef_client.json"))
         jsonFile.withWriter() { it.write(JsonOutput.toJson(initJson)) }
-        sudo("chef-client -j ${jsonFile.getPath()}")
+        sudo("chef-client -l debug -j ${jsonFile.getPath()}")
     }
     public def runApply(String inlineRecipe) {
         if (chefConfig.version.tokenize('.')[0].toInteger() < 11 ) {
