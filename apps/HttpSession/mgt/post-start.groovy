@@ -22,6 +22,7 @@ println "start post-start"
 
 context = ServiceContextFactory.getServiceContext()
 locators = context.attributes.thisApplication["locators"]
+context.attributes.thisApplication["SPACE_URL"] = "jini://*/*/mySpace1?locators=" + locators
 gsHome = context.attributes.thisApplication["home"]
 excelOutputDir = new File(gsHome +"/logs/excel");
 excelOutputDir.mkdirs();

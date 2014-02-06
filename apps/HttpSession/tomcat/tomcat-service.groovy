@@ -21,27 +21,6 @@ service {
 	maxAllowedInstances 3
 	
 	lifecycle {
-		postInstall {
-			def home = context.attributes.thisInstance["catalinaHome"]
-			def installDir = System.properties["user.home"]+ "/.cloudify/${serviceName}" + context.instanceId
-			def applicationWar = "${installDir}/${warName? warName : new File(applicationWarUrl).name}"
-			builder = new AntBuilder()
-			 def proc = "mv ${context.serviceDirectory}/HttpSession ${applicationWar}".execute()
-			 proc.waitFor()
-			def iniFile = new File("${applicationWar}/WEB-INF/shiro.ini") 
-			def iniFileText = iniFile.text	
-			def replacementStr = "%GS_LOCATOR%"
-			def newStr = "" + context.attributes.thisApplication["locators"]
-			iniFileText = iniFileText.replace(replacementStr,newStr) 
-			iniFile.write(iniFileText)
-/*
-			iniFile = new File("${applicationWar}/WEB-INF/web.xml") 
-			iniFileText = iniFile.text	
-			replacementStr = "%JVMROUTE%"
-			newStr = ".jvm" + context.instanceId
-			iniFileText = iniFileText.replace(replacementStr,newStr) 
-			iniFile.write(iniFileText)		
-			*/
-		}	
+		postInstall "tomcat_postInstall.groovy"
 	}
 }

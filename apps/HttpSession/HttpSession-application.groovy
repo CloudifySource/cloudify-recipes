@@ -1,7 +1,7 @@
 application {
 	name="HttpSession"
 	
-	service {
+/*	service {
 		name = "mgt"	
 	}
 	service {
@@ -13,7 +13,7 @@ application {
 		name = "webui"
 		dependsOn = ["mgt"]
 	}	
-
+*/
 	service {
 		name = "apacheLB"		
 	}
@@ -21,7 +21,8 @@ application {
 	
 	service {
 		name = "tomcat"
-		dependsOn = ["pu","apacheLB"]
+		dependsOn = ["apacheLB"]
+		//dependsOn = [/*"pu",*/apacheLB"]
 	}
 
 }
