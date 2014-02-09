@@ -40,6 +40,7 @@ You can test the high availability by taking down the tomcat which was serving t
 In parallel, Cloudify will make sure a new tomcat server is added in order to get back to the sla of 2 tomcats per the deploymet.
 
 Demo script:
+
 1. Install-Application HttpSession
 
 2. Once deployed, goto to the ApacheLB service in the UI and click the two URLs (one will show the app, another will show the balancer management).
