@@ -1,0 +1,34 @@
+########### These MUST be filled in for a storm configuration
+storm.zookeeper.servers:
+<% zooks.each { zook ->
+println "  -  \"${zook.hostAddress}\""
+} %>
+# 
+nimbus.host: "${nimbus}"
+#
+storm.local.hostname: "${hostName}"
+# workers. add ports for more workers
+
+supervisor.slots.ports:
+ - 6700
+ - 6701
+ - 6702
+ - 6703
+# 
+# 
+# ##### These may optionally be filled in:
+#    
+## List of custom serializations
+# topology.kryo.register:
+#     - org.mycompany.MyType
+#     - org.mycompany.MyType2: org.mycompany.MyType2Serializer
+#
+## List of custom kryo decorators
+# topology.kryo.decorators:
+#     - org.mycompany.MyDecorator
+#
+## Locations of the drpc servers
+# drpc.servers:
+#     - "server1"
+#     - "server2"
+
