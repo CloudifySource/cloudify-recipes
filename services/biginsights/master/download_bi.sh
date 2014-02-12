@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /bin/bash -x
 
 bucket="yoram-biginsights"
 HTTP_REPO=http://s3.amazonaws.com/BigInsights/
