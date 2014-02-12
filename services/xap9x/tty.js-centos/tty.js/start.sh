@@ -5,6 +5,6 @@ XAB_BIN=$1
 
 export XAP_BIN
 
-tty.js --config my-config.json --deamonize
+tty.js --config gs-config.json --deamonize
 
 

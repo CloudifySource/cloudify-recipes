@@ -40,16 +40,16 @@ service {
             def chefServerURL = context.attributes.thisApplication["chef_server_url"]
             def validationCert = context.attributes.thisApplication["chef_validation.pem"]
 
-            if (chefServerURL == null) {
+            if (!chefServerURL) {
                 def chefConfig = context.attributes.thisInstance["chefConfig"]
                 chefServerURL = chefConfig.serverURL
                 validationCert = chefConfig.validationCert
 			}
 
-            if (chefServerURL == null) {
+            if (!chefServerURL) {
 				chefServerURL = context.attributes.global["chef_server_url"]
 				validationCert = context.attributes.global["chef_validation.pem"]
-				if (chefServerURL == null) {
+				if (!chefServerURL) {
 					throw new RuntimeException("Cannot find a chef server URL in thisApplication nor in global attribute 'chef_server_url'")
 				}							
             }
@@ -63,6 +63,7 @@ service {
                     validationCert: validationCert,
                     context: context
             ).runClient(runParamsLocal)
+            println "End of service start"
             return null
         }
 

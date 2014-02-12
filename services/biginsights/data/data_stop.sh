@@ -1,4 +1,4 @@
-#! /bin/bash -x
+#! /bin/bash
 
 echo "data_stop.sh: BigInsights is about to be stopped!!!!!"
 rm -Rf /BI/

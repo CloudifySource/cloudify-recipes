@@ -16,6 +16,7 @@ new AntBuilder().sequential {
 new AntBuilder().sequential {
     chmod(dir:"${context.serviceDirectory}",perm:"+x",includes:"*.sh")
     chmod(dir:"${context.serviceDirectory}/${config.installDir}/${config.xapDir}/bin",perm:"+x",includes:"*.sh")
+    chmod(dir:"${context.serviceDirectory}/${config.installDir}/${config.xapDir}/tools/benchmark/bin",perm:"+x",includes:"*.sh")
     exec(executable:"./install.sh", osfamily:"unix",
             output:"install.${System.currentTimeMillis()}.out",
             error:"install.${System.currentTimeMillis()}.err"

@@ -1,4 +1,4 @@
-#! /bin/bash -x
+#! /bin/bash
 while [ -f `dirname $0`/installationRunning ] ;
 do
         echo "data node: Waiting for the installation to complete"

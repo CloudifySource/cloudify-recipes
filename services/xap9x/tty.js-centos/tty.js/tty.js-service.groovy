@@ -9,10 +9,11 @@ service {
         details {
             def currPublicIP = context.getPublicAddress()
 
-            def applicationURL = "http://${currPublicIP}:8080"
+            def interactiveShellURL = "http://${currPublicIP}:8080"
+
 
             return [
-                    "Shell URL":"<a href=\"${applicationURL}\" target=\"_blank\">${applicationURL}</a>"
+                    "GigaSpaces Interactive Shell URL":"<a href=\"${interactiveShellURL}\" target=\"_blank\">${interactiveShellURL}</a>"
             ]
         }
     }

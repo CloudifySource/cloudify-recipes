@@ -3,6 +3,7 @@ import java.util.concurrent.TimeUnit;
 service {
 	name "master"
 	icon "biginsights.png"
+	type "NOSQL_DB"
 	numInstances 1
 	
 	compute {
@@ -66,8 +67,10 @@ service {
             def privateIP = fulladdress.split("/")[0]
 		   	if(!(ServiceUtils.isPortOccupied(privateIP, nameNodePort)))
 		   	{
-				if(!((new File(context.serviceDirectory + "/installationRunning")).exists()))
+		if(!((new File(context.serviceDirectory + "/installationRunning")).exists())){
+					println("Stop detection has occured");
 					return true;
+				}
 		   	}
 			return false;
 		}

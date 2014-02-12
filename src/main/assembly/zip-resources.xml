@@ -16,7 +16,8 @@
                                 <include>**/apps/travel/**</include>
                                 <include>**/apps/travel-chef/**</include>
 								<include>**/apps/helloworld/**</include>
-				<include>**/services/apacheLB/**</include>
+								<include>**/apps/hello-puppet/**</include>
+								<include>**/services/apacheLB/**</include>
                                 <include>**/services/activemq/**</include>
                                 <include>**/services/cassandra/**</include>
                                 <include>**/services/hsqldb/**</include>
@@ -26,6 +27,8 @@
                                 <include>**/services/chef/**</include>
                                 <include>**/services/chef-services/**</include>
                                 <include>**/services/chef-server/**</include>
+                                <include>**/services/puppet/**</include>
+                                <include>**/services/groovy-utils/**</include>
                         </includes>
                         <outputDirectory>/</outputDirectory>
                 </fileSet>

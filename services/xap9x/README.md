@@ -49,10 +49,12 @@ The recipe provides several custom commands:
 Notes: deploys a non-partitioned, single instance cluster.  Useful for simple applications or testing.
 </dd>
 <dt>deploy-grid</dt>
-<dd>Deploys a space.  Usage: <i>deploy-space name schema partitions backups max-per-vm max-per-machine</i>.
+<dd>Deploys a space.  Usage: <i>deploy-grid spaceName schema partitions backups max-per-vm max-per-machine</i>.
 <dd>Notes: see <i>deploy-pu</i> for argument meanings.</dd>
+<dt>deploy-grid-basic</dt>
+<dd>Deploys a space with one primary and one backup instances.  Usage: <i>deploy-grid-basic spaceName</i>.
 <dt>undeploy-grid</dt>
-<dd>Undeploys a grid by name.  Usage: <i>undeploy-grid name.</i>.  Args:</dd>
+<dd>Undeploys a grid by name.  Usage: <i>undeploy-grid name.</i>  Args:</dd>
 <ul>
 <li><i>name</i>: The name of the grid as assigned in the <i>deploy-grid</i> command.</li>
 </ul>

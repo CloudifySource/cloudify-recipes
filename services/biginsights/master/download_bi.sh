@@ -1,4 +1,4 @@
-#! /bin/bash -x
+#! /bin/bash
 
 bucket="yoram-biginsights"
 HTTP_REPO=http://s3.amazonaws.com/BigInsights/
@@ -88,12 +88,17 @@ if [[ $EUID -ne 0 ]]; then
 	sudo echo biadmin:$1 | sudo chpasswd
 	echo 'biadmin ALL=(ALL) NOPASSWD:ALL' | sudo tee -a /etc/sudoers
 	sudo chown -R biadmin.biadmin $2
-        sudo rpm -ihv ${BIDIR}/artifacts/expect-5.42.1-1.x86_64.rpm	
-#	if ! type "yum" > /dev/null; then
-# 		sudo apt-get -q -y install expect
-# 	else
-#		sudo yum -y -q install expect
-#	fi	
+    sudo rpm -ihv ${BIDIR}/artifacts/expect-5.42.1-1.x86_64.rpm	
+    if [[ $? -ne 0 ]]
+	then
+		if ! type "yum" > /dev/null; then
+			echo sudo apt-get -q -y install expect
+			sudo apt-get -q -y install expect
+		else
+			echo sudo yum -y -q install expect
+			sudo yum -y -q install expect
+			fi
+	fi	
 	sudo groupadd bi-sysadmin
 	sudo groupadd bi-dataadmin
 	sudo groupadd bi-appadmin
@@ -115,12 +120,17 @@ else
 	echo biadmin:$1 | chpasswd
 	echo 'biadmin ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 	chown -R biadmin.biadmin $2
-        rpm -ihv ${BIDIR}/artifacts/expect-5.42.1-1.x86_64.rpm
-#	if ! type "yum" > /dev/null; then
-#		apt-get -y -q install expect
-#	else
-#		yum -y -q install expect
-#	fi	
+    rpm -ihv ${BIDIR}/artifacts/expect-5.42.1-1.x86_64.rpm
+    if [[ $? -ne 0 ]]
+	then
+		if ! type "yum" > /dev/null; then
+			echo apt-get -q -y install expect
+			apt-get -q -y install expect
+		else
+			echo yum -y -q install expect
+			yum -y -q install expect
+			fi
+	fi	
 	groupadd bi-sysadmin
 	groupadd bi-dataadmin
 	groupadd bi-appadmin

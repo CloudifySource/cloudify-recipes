@@ -86,6 +86,24 @@ service {
 		}
     	
     }
+	
+	customCommands ([
+		"updateWar" : {warUrl -> 
+			println "app-service.groovy(updateWar custom command): warUrl is ${warUrl}..."
+			if (! warUrl) return "warUrl is null. So we do nothing."
+			context.attributes.thisService["warUrl"] = "${warUrl}"
+			
+			println "app-service.groovy(updateWar customCommand): invoking updateWarFile custom command ..."
+			def service = context.waitForService(context.serviceName, 60, TimeUnit.SECONDS)
+			def currentInstance = service.getInstances().find{ it.instanceId == context.instanceId }
+			currentInstance.invoke("updateWarFile")
+			
+			println "app-service.groovy(updateWar customCommand): End"
+			return true
+		} ,
+		 
+		"updateWarFile" : "updateWarFile.groovy"
+	])
 
 	
 	userInterface {
@@ -200,7 +218,7 @@ service {
 	}
 	
 	
-	scaleCooldownInSeconds 180
+	scaleCooldownInSeconds 300
 	samplingPeriodInSeconds 1
 
 	// Defines an automatic scaling rule based on "Active Sessions" metric value
@@ -208,22 +226,20 @@ service {
 		scalingRule {
 
 			serviceStatistics {
-				metric "Active Sessions" 
-				statistics Statistics.averageOfAverages
+				metric "Current Http Threads Busy"
+				statistics Statistics.maximumOfMaximums
 				movingTimeRangeInSeconds 20
 			}
 
 			highThreshold {
-				value 2
+				value 10
 				instancesIncrease 1
 			}
 
-			/*
 			lowThreshold {
-				value 0
+				value 1
 				instancesDecrease 1
 			}
-			*/
 		}
 	])
 	

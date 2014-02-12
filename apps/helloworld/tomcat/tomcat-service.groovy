@@ -62,4 +62,19 @@ service {
 			return getJmxMetrics("127.0.0.1",currJmxPort,metricNamesToMBeansNames)
 		}
 	}
+	
+	network {
+		port = currHttpPort
+		protocolDescription = "HTTP"
+		template "APPLICATION_NET"
+		accessRules {
+			incoming ([
+				accessRule {
+					type "PUBLIC"
+					portRange currHttpPort
+					target "0.0.0.0/0"
+				}
+			])
+		}
+	}
 }

@@ -36,3 +36,6 @@ Cloudify Users Forums:
 If you use the Cloudify 2.5* Ga version, please use the following recipes version:
 * https://github.com/CloudifySource/cloudify-recipes/archive/2.5.0_ga_build4010_04_10_2013.zip
 
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/CloudifySource/cloudify-recipes/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
