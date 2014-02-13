@@ -13,9 +13,6 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 *******************************************************************************/
-import java.io.InputStream
-import java.io.BufferedReader
-import java.util.Arrays
 import java.util.concurrent.TimeUnit
 import groovy.util.ConfigSlurper
 import org.cloudifysource.utilitydomain.context.ServiceContextFactory
@@ -47,6 +44,7 @@ mgmt.instances.each{
     thisService.invoke("update-hosts",it.hostAddress,lusname as String)
     locators+="${lusname}:${config.lusPort},"
 }
+context.attributes.thisInstance["xaplocators"] = locators
 println "locators = ${locators}"
 
 new AntBuilder().sequential {

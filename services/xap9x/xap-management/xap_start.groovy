@@ -20,7 +20,7 @@ import org.openspaces.admin.AdminFactory
 
 context=ServiceContextFactory.serviceContext
 config = new ConfigSlurper().parse(new File(context.serviceName+"-service.properties").toURL())
-ip=context.getPrivateAddress() //Inet4Address.getLocalHost().getHostAddress()
+ip=context.getPrivateAddress()
 println "Private IP: "+ip
 uuid=context.attributes.thisInstance.uuid
 if(uuid==null){

@@ -43,6 +43,8 @@ service {
 
         postStart "xap_postStart.groovy"
 
+        preStop "xap_preStop.groovy"
+
         postStop "xap_postStop.groovy"
 
 		locator {
