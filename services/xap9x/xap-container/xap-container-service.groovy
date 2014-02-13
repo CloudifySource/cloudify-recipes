@@ -42,8 +42,6 @@ service {
 
 		start "xap_start.groovy"
 
-        postStart "xap_postStart.groovy"
-
 		locator {
 			uuid=context.attributes.thisInstance.uuid
 			i=0
