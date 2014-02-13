@@ -34,7 +34,7 @@ assert (name!=null),"name must not be null"
 //UNDEPLOY
 
 // find gsm
-ip=InetAddress.getLocalHost().getHostAddress()
+ip=context.getPrivateAddress()
 admin=new AdminFactory().useDaemonThreads(true).addLocators("${ip}:${config.lusPort}").createAdmin();
 gsm=admin.gridServiceManagers.waitForAtLeastOne(10,TimeUnit.SECONDS)
 assert gsm!=null

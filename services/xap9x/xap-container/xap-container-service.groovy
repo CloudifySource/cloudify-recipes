@@ -43,6 +43,8 @@ service {
 
         postStart "xap_postStart.groovy"
 
+        postStop "xap_postStop.groovy"
+
 		locator {
 			uuid=context.attributes.thisInstance.uuid
 			i=0
@@ -98,6 +100,22 @@ service {
 		]
 		)
 	}
+
+    network {
+        template "APPLICATION_NET"
+        accessRules {
+            incoming ([
+                    accessRule {
+                        type "APPLICATION"
+                        portRange "4242-4342"
+                    },
+                    accessRule {
+                        type "PUBLIC"
+                        portRange 22
+                    }
+            ])
+        }
+    }
 }
 
 
