@@ -28,7 +28,6 @@ context = org.cloudifysource.utilitydomain.context.ServiceContextFactory.getServ
 }
 
 
-
 config = new ConfigSlurper().parse(new File("storm-service.properties").toURL())
 
 def service = null

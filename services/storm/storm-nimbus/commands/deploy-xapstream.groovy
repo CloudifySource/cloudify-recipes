@@ -1,5 +1,3 @@
-import org.cloudifysource.utilitydomain.context.ServiceContextFactory
-
 //----------------------------------------------------------------------------------
 // Deploys a "xapstream" topology.  This is not much different from deploying
 // a "normal" storm topology, except a xapstream topology requires a stream name
@@ -8,7 +6,14 @@ import org.cloudifysource.utilitydomain.context.ServiceContextFactory
 
 println "deploy.groovy: Starting..."
 
-context = ServiceContextFactory.getServiceContext()
+def context=null
+try{
+context = org.cloudifysource.dsl.context.ServiceContextFactory.getServiceContext()
+}
+catch(e){
+context = org.cloudifysource.utilitydomain.context.ServiceContextFactory.getServiceContext()
+}
+
 config  = new ConfigSlurper().parse(new File("${context.serviceDirectory}/storm-service.properties").toURL())
 
 instanceID = context.getInstanceId()
