@@ -1,5 +1,5 @@
 import java.util.concurrent.TimeUnit
-import java.util.regex.*
+import java.util.regex.Pattern
 
 // Find this service instance
 
@@ -42,3 +42,22 @@ def static quoteAlnum(unquoted){
 	def m=p.matcher(unquoted)
 	return m.replaceAll("\"\$1\"")
 }
+
+// Sudo command appending supplied env to environment
+def static sudoPlusEnv(String cmd,Map env){
+	def program=[cmd]
+	if(System.getProperty("user.name")!="root")program=["sudo","-E"]+program
+	def pb=new ProcessBuilder(program)
+
+	def stdout=""
+	def stderr=""
+	if(env!=null)env.each{key,value -> pb.environment().put("${key}","${value}")}
+
+	println "running ${cmd} with env->${pb.environment()}"
+
+	def p=pb.start()
+	p.inputStream.eachLine { println "STDOUT: ${it}";  stdout += "${it}\n" }
+	p.errorStream.eachLine { println "STDERR: ${it}";  stderr += "${it}\n" }
+	p.waitFor()
+}
+

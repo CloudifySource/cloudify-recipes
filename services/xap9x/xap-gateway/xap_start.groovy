@@ -14,11 +14,12 @@
 * limitations under the License.
 *******************************************************************************/
 import java.io.InputStream
+import org.cloudifysource.dsl.utils.ServiceUtils
 import java.io.BufferedReader
 import java.util.Arrays
 import java.util.concurrent.TimeUnit
 import groovy.util.ConfigSlurper
-import org.cloudifysource.dsl.context.ServiceContextFactory
+import org.cloudifysource.utilitydomain.context.ServiceContextFactory
 import util
 
 context=ServiceContextFactory.serviceContext
@@ -46,28 +47,28 @@ println "invoking update-hosts with ${it.hostAddress} ${lusname}"
 }
 println "locators = ${locators}"
 
+if(ServiceUtils.isWindows()){
 new AntBuilder().sequential {
 	exec(executable:"runxap.bat", osfamily:"windows",
 		output:"runxap.${System.currentTimeMillis()}.out",
 		error:"runxap.${System.currentTimeMillis()}.err"
 	){
 		env(key:"XAPDIR", value:"${config.installDir}\\${config.xapDir}")
-		env(key:"GSC_JAVA_OPTIONS",value:"${config.gsc_jvm_options} -DUUID=${uuid} -Dcom.gs.multicast.enabled=false -Dcom.gs.zones=${context.applicationName}.${context.serviceName}.GATEWAY -Dcom.gs.transport_protocol.lrmi.bind-port=${config.lrmiBindPort} -Dcom.sun.jini.reggie.initialUnicastDiscoveryPort=${config.initialDiscoveryPort} -Dcom.gs.jini_lus.locators=${locators}")
+		env(key:"GSC_JAVA_OPTIONS",value:"${config.gsc_jvm_options} -DUUID=${uuid} -Dcom.gs.multicast.enabled=false -Dcom.gs.zones=${context.applicationName}.${context.serviceName}.gateway -Dcom.gs.transport_protocol.lrmi.bind-port=${config.lrmiBindPort} -Dcom.sun.jini.reggie.initialUnicastDiscoveryPort=${config.initialDiscoveryPort} -Dcom.gs.jini_lus.locators=${locators}")
 		env(key:"LOOKUPLOCATORS",value:"${locators}")
 		env(key:"NIC_ADDR",value:"${ip}")
 	} 
+}
+}
+else{
 
-	chmod(dir:"${context.serviceDirectory}",perm:"+x",includes:"*.sh")
-	chmod(dir:"${config.installDir}/${config.xapDir}",perm:"+x",includes:"*.sh")
-	exec(executable:"./runxap.sh", osfamily:"unix",
-		output:"runxap.${System.currentTimeMillis()}.out",
-		error:"runxap.${System.currentTimeMillis()}.err"
-	){
-		env(key:"XAPDIR", value:"${context.serviceDirectory}/${config.installDir}/${config.xapDir}")
-		env(key:"GSC_JAVA_OPTIONS",value:"${config.gsc_jvm_options} -DUUID=${uuid} -Dcom.gs.multicast.enabled=false -Dcom.gs.zones=${context.applicationName}.${context.serviceName}.GATEWAY -Dcom.gs.transport_protocol.lrmi.bind-port=${config.lrmiBindPort} -Dcom.sun.jini.reggie.initialUnicastDiscoveryPort=${config.initialDiscoveryPort} -Dcom.gs.jini_lus.locators=${locators}")
-		env(key:"LOOKUPLOCATORS",value:"${locators}")
-		env(key:"NIC_ADDR",value:"${ip}")
+	new AntBuilder().sequential{
+		chmod(dir:"${context.serviceDirectory}",perm:"+x",includes:"*.sh")
+		chmod(dir:"${config.installDir}/${config.xapDir}",perm:"+x",includes:"*.sh")
 	}
+
+	def env=["GSC_JAVA_OPTIONS":"${config.gsc_jvm_options} -DUUID=${uuid} -Dcom.gs.multicast.enabled=false -Dcom.gs.zones=${context.applicationName}.${context.serviceName}.gateway -Dcom.gs.transport_protocol.lrmi.bind-port=${config.lrmiBindPort} -Dcom.sun.jini.reggie.initialUnicastDiscoveryPort=${config.initialDiscoveryPort} -Dcom.gs.jini_lus.locators=${locators}","XAPDIR":"${context.serviceDirectory}/${config.installDir}/${config.xapDir}","LOOKUPLOCATORS":"${locators}","NIC_ADDR":"${ip}"]
+	util.sudoPlusEnv("./runxap.sh",env)
 }
 
 

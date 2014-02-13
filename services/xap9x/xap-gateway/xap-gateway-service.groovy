@@ -25,6 +25,11 @@ service {
 	minAllowedInstances 1
 	maxAllowedInstances 1
 
+	lifecycle{
+		preInstall "preInstall.sh"
+		postInstall "postInstall.groovy"
+	}
+
 
 	customCommands ([
 //Public entry points
