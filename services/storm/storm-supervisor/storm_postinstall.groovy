@@ -1,9 +1,15 @@
 import java.net.InetAddress;
-import org.cloudifysource.utilitydomain.context.ServiceContextFactory
 import java.util.concurrent.TimeUnit
 import util
 
-context=ServiceContextFactory.serviceContext
+def context=null
+try{
+context = org.cloudifysource.dsl.context.ServiceContextFactory.getServiceContext()
+}
+catch(e){
+context = org.cloudifysource.utilitydomain.context.ServiceContextFactory.getServiceContext()
+}
+
 
 //Force other supervisors to add me to hosts file
 
