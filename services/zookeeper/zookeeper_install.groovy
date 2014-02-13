@@ -16,11 +16,17 @@
 import java.util.concurrent.TimeUnit
 import groovy.text.SimpleTemplateEngine
 import groovy.util.ConfigSlurper;
-import org.cloudifysource.utilitydomain.context.ServiceContextFactory
 
 
 def config = new ConfigSlurper().parse(new File("zookeeper-service.properties").toURL())
-def context=ServiceContextFactory.serviceContext
+def context=null
+try{
+context = org.cloudifysource.dsl.context.ServiceContextFactory.getServiceContext()
+}
+catch(e){
+context = org.cloudifysource.utilitydomain.context.ServiceContextFactory.getServiceContext()
+}
+
 def service = null
 
 while (service == null)
