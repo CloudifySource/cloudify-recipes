@@ -48,8 +48,6 @@ service {
 
 		start "xap_start.groovy"
 
-        postStop "xap_postStop.groovy"
-
 	        startDetectionTimeoutSecs 180
         	startDetection {
             		ServiceUtils.isPortOccupied(uiPort)
@@ -103,11 +101,10 @@ service {
 		
 		monitors {
 			if(admin==null){
-
-                ip=context.getPrivateAddress()
+                ip=InetAddress.getLocalHost().getHostAddress()
 				admin = new AdminFactory()
 				.useDaemonThreads(true)
-				.addLocators("${ip}:"+lusPort)
+				.addLocators("${InetAddress.getLocalHost().getHostAddress()}:"+lusPort)
 				.create();
 			}
 
@@ -277,28 +274,7 @@ service {
 				])
 			}
 		])
-    }
-    network {
-        template "APPLICATION_NET"
-        accessRules {
-            incoming ([
-                    accessRule {
-                        type "PUBLIC"
-                        portRange 8099
-                    },
-                    accessRule {
-                        type "PUBLIC"
-                        portRange 9099
-                    },
-                    accessRule {
-                        type "APPLICATION"
-                        portRange "4242-4342"
-                    },
-                    accessRule {
-                        type "PUBLIC"
-                        portRange 22
-                    }
-            ])
-        }
-    }
+	}
 }
+
+
