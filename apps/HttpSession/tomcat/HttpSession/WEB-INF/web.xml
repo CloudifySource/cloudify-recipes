@@ -9,6 +9,7 @@
     <display-name>UpdateSessionServlet</display-name>
     <servlet-name>UpdateSessionServlet</servlet-name>
     <servlet-class>com.gigaspaces.examples.web.UpdateSessionServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
   </servlet>
   <servlet-mapping>
     <servlet-name>UpdateSessionServlet</servlet-name>
