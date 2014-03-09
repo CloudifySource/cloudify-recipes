@@ -42,17 +42,19 @@ if(maxpervm==null||maxpervm.toInteger()<=0)maxpervm="0"
 if(maxpermachine==null||maxpermachine.toInteger()<=0)maxpermachine="0"
 
 //DEPLOY
-
+println "DEPLOYING GRID"
 // find gsm
-admin=new AdminFactory().useDaemonThreads(true).addLocators("${InetAddress.getLocalHost().getHostAddress()}:${config.lusPort}").createAdmin();
-gsm=admin.gridServiceManagers.waitForAtLeastOne(1,TimeUnit.MINUTES)
+ip=context.getPrivateAddress()
+admin=new AdminFactory().useDaemonThreads(true).addLocators("${ip}:${config.lusPort}").createAdmin();
+print "will wait 2 minute for finding gsm..."
+gsm=admin.gridServiceManagers.waitForAtLeastOne(3,TimeUnit.MINUTES)
 assert gsm!=null
 
 // make sure there are GSCs
+print "will wait 1 minute for finding gsc..."
 gscs=admin.gridServiceContainers
-gscs.waitFor(1,5,TimeUnit.SECONDS)
+gscs.waitFor(1,1,TimeUnit.MINUTES)
 assert (gscs.size!=0),"no containers found"
-
 //deploy
 sd=new SpaceDeployment(name)
 sd.clusterSchema(schema)
@@ -61,7 +63,6 @@ sd.numberOfBackups(backups.toInteger())
 sd.maxInstancesPerMachine(maxpermachine.toInteger())
 sd.maxInstancesPerVM(maxpervm.toInteger())
 pu=gsm.deploy(sd)
-assert (pu.waitFor(1,30,TimeUnit.SECONDS)),"deployment failed"
-
+assert (pu.waitFor(1,3,TimeUnit.MINUTES)),"deployment failed"
 admin.close()
 return true

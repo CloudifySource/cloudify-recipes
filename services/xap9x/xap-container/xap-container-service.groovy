@@ -18,7 +18,6 @@ import util
 
 service {
 	def maxinstances=context.isLocalCloud()?1:200
-	println maxinstances
 
 	name "xap-container"
 	type "APP_SERVER"
@@ -41,6 +40,12 @@ service {
 		install "xap_install.groovy"
 
 		start "xap_start.groovy"
+
+        postStart "xap_postStart.groovy"
+
+        preStop "xap_preStop.groovy"
+
+        postStop "xap_postStop.groovy"
 
 		locator {
 			uuid=context.attributes.thisInstance.uuid
@@ -97,6 +102,22 @@ service {
 		]
 		)
 	}
+
+    network {
+        template "APPLICATION_NET"
+        accessRules {
+            incoming ([
+                    accessRule {
+                        type "APPLICATION"
+                        portRange "4242-4342"
+                    },
+                    accessRule {
+                        type "PUBLIC"
+                        portRange 22
+                    }
+            ])
+        }
+    }
 }
 
 
