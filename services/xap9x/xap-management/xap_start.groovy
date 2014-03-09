@@ -53,7 +53,6 @@ new AntBuilder().sequential {
         env(key:"WEBUI_JAVA_OPTIONS",value:"${config.webui_jvm_options} -Dcom.gs.multicast.enabled=false -DUUID=${uuid}")
         env(key:"LOOKUPLOCATORS",value:"${ip}:${config.lusPort}")
         env(key:"NIC_ADDR",value:"${ip}")
-        env(key:"WEBUI_PORT",value:"${config.uiPort}")
     }
 
     chmod(dir:"${context.serviceDirectory}",perm:"+x",includes:"*.sh")
@@ -71,7 +70,6 @@ new AntBuilder().sequential {
         env(key:"WEBUI_JAVA_OPTIONS",value:"${config.webui_jvm_options} -Dcom.gs.multicast.enabled=false -DUUID=${uuid}")
         env(key:"LOOKUPLOCATORS",value:"${ip}:${config.lusPort}")
         env(key:"NIC_ADDR",value:"${ip}")
-        env(key:"WEBUI_PORT",value:"${config.uiPort}")
     }
 
 

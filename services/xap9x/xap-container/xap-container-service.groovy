@@ -110,10 +110,6 @@ service {
                     accessRule {
                         type "APPLICATION"
                         portRange "4242-4342"
-                    },
-                    accessRule {
-                        type "PUBLIC"
-                        portRange 22
                     }
             ])
         }
