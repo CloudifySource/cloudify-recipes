@@ -27,7 +27,7 @@ service {
 				},
 				accessRule {
 					type "APPLICATION"
-                    portRange "1-40000"
+					portRange "1-40000"
 					target "0.0.0.0/0"
                 }				
 			]),
@@ -39,7 +39,7 @@ service {
 				},
 				accessRule {
 					type "APPLICATION"
-                    portRange "1-40000"
+					portRange "1-40000"
 					target "0.0.0.0/0"
                 }				
 			])
