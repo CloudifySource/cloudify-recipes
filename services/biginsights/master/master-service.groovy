@@ -37,6 +37,9 @@ service {
             def privateIP = fulladdress.split("/")[0]
 			ServiceUtils.isPortOccupied(privateIP, nameNodePort)
 		}
+		start {
+			println ":master-service.groovy: starting ..."
+		}
 		locator {			
 			def myPids = ServiceUtils.ProcessUtils.getPidsWithQuery("State.Name.eq=java,Args.*.ew=${nameNodeJmxPort}")
 			println ":master-service.groovy: current PIDs: ${myPids}"
@@ -61,7 +64,7 @@ service {
 			]
 	
 			return JmxMonitors.getJmxMetrics("127.0.0.1",nameNodeJmxPort,jmxCredsPath,nameNodeJmxBeans)
-		}        
+		}      
 		stopDetection {
 			def fulladdress= context.getPrivateAddress()
             def privateIP = fulladdress.split("/")[0]
@@ -94,7 +97,7 @@ service {
 	])
 
 
-	userInterface {
+	/* userInterface {
 
 		metricGroups = ([
 		metricGroup {
@@ -184,7 +187,7 @@ service {
 		} ,
 		]
 		)
-		}
+		} */
     
     network {
 		println ":master-service.groovy: nameNode Http port: ${nameNodePort}"
