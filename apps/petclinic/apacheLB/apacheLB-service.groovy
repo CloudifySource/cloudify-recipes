@@ -22,24 +22,24 @@ service {
 			incoming ([
 				accessRule {
 					type "PUBLIC"
-                    portRange "1-40000"
+					portRange "1-40000"
 					target "0.0.0.0/0"
 				},
 				accessRule {
 					type "APPLICATION"
-                    portRange "1-40000"
+					portRange "1-40000"
 					target "0.0.0.0/0"
                 }				
 			]),
 			outgoing ([
 				accessRule {
 					type "PUBLIC"
-                    portRange "1-40000"
+					portRange "1-40000"
 					target "0.0.0.0/0"
 				},
 				accessRule {
 					type "APPLICATION"
-                    portRange "1-40000"
+					portRange "1-40000"
 					target "0.0.0.0/0"
                 }				
 			])
