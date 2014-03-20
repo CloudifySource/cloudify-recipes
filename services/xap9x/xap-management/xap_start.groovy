@@ -39,8 +39,19 @@ else{
     println "no service ${config.containerServiceName} found"
 }
 
+//Run butterfly if enabled
+if (config.butterflyEnabled) {
+    new AntBuilder().sequential {
+        exec(executable:"./butterfly_start.sh", osfamily:"unix",
+                output:"butterfly_start.${System.currentTimeMillis()}.out",
+                error:"butterfly_start.${System.currentTimeMillis()}.err"
+        ) {
+            env(key:"JSHOMEDIR", value:"${context.serviceDirectory}/${config.installDir}/${config.xapDir}")
+            env(key:"LOOKUPLOCATORS",value:"${ip}:${config.lusPort}")
+        }
+    }
+}
 //Run the start script
-
 new AntBuilder().sequential {
     exec(executable:"runxap.bat", osfamily:"windows",
             output:"runxap.${System.currentTimeMillis()}.out",
@@ -75,11 +86,5 @@ new AntBuilder().sequential {
 
 
 }
-
-admin=new AdminFactory().useDaemonThreads(true).addLocators("${ip}:${config.lusPort}").createAdmin();
-gsm=admin.gridServiceManagers.waitForAtLeastOne(2,TimeUnit.MINUTES)
-lus=admin.getLookupServices.waitFor(1,2,TimeUnit.MINUTES)
-assert (gsm!=null && gsa!=null && lus!=null), "Failed to detect XAP components(GSA,GSM,LUS)"
-
 
 println "XAPSTART EXITING"

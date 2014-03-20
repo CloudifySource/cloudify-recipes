@@ -43,6 +43,7 @@ else{
    replace(file:"${context.serviceDirectory}/${config.installDir}/${config.xapDir}/tools/gs-webui/gs-webui.sh",token:"8099",value:webuiPort)
    chmod(dir:"${context.serviceDirectory}/${config.installDir}/${config.xapDir}/bin", perm:"+x", includes:"*.sh")
    chmod(dir:"${context.serviceDirectory}/${config.installDir}/${config.xapDir}/tools/gs-webui", perm:"+x", includes:"*.sh")
+   chmod(dir:"${context.serviceDirectory}/${config.installDir}/${config.xapDir}/tools/groovy/bin", perm:"+x", excludes:"*.bat")
   }
 }
 
@@ -59,5 +60,16 @@ if(config.license!=null && config.license.size()>0){
 }else{
     new AntBuilder().sequential {
         delete(file:"${context.serviceDirectory}/${config.installDir}/${config.xapDir}/gslicense.xml")
+    }
+}
+
+//install butterfly if enabled
+if (config.butterflyEnabled) {
+    new AntBuilder().sequential {
+        chmod(dir:"${context.serviceDirectory}",perm:"+x",includes:"*.sh")
+        exec(executable:"./butterfly_install.sh", osfamily:"unix",
+                output:"butterfly_install.${System.currentTimeMillis()}.out",
+                error:"butterfly_install.${System.currentTimeMillis()}.err"
+        )
     }
 }

@@ -95,10 +95,20 @@ service {
 			}
 
 			def applicationURL = "http://${currPublicIP}:${currPort}"
-
-				return [
-					"Management UI":"<a href=\"${applicationURL}\" target=\"_blank\">${applicationURL}</a>"
-				]
+            def xapInstallationDir = "${context.serviceDirectory}/${installDir}/${name}/"
+            def interactiveShellURL = "http://${currPublicIP}:8080/wd/${xapInstallationDir}/bin"
+            def xapShellURL = "http://${currPublicIP}:8080/wd/${xapInstallationDir}/tools/groovy/bin"
+            if (butterflyEnabled) {
+                return [
+                        "Management UI":"<a href=\"${applicationURL}\" target=\"_blank\">${applicationURL}</a>",
+                        "GigaSpaces Interactive Shell URL":"<a href=\"${interactiveShellURL}\" target=\"_blank\">${interactiveShellURL}</a>",
+                        "Groovy Interactive Shell URL":"<a href=\"${xapShellURL}\" target=\"_blank\">${xapShellURL}</a>"
+                ]
+            } else {
+                return [
+                        "Management UI":"<a href=\"${applicationURL}\" target=\"_blank\">${applicationURL}</a>"
+                ]
+            }
 		}
 		
 		monitors {
@@ -297,6 +307,10 @@ service {
                     accessRule {
                         type "PUBLIC"
                         portRange 22
+                    },
+                    accessRule {
+                        type "PUBLIC"
+                        portRange 8080
                     }
             ])
         }

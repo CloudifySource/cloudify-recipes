@@ -33,7 +33,7 @@ if(uuid==null){
 thisService=util.getThisService(context)
 
 //Get locator(s)
-mgmt=context.waitForService(config.managementService,1,TimeUnit.MINUTES)
+mgmt=context.waitForService(config.managementService,5,TimeUnit.MINUTES)
 assert (mgmt!=null && mgmt.instances.size()),"No management services found"
 locators=""
 lusnum=0
@@ -71,11 +71,6 @@ new AntBuilder().sequential {
         env(key:"LOOKUPLOCATORS",value:"${locators}")
         env(key:"NIC_ADDR",value:"${ip}")
     }
-
 }
 
-admin=new AdminFactory().useDaemonThreads(true).addLocators(locators).createAdmin();
-gsm=admin.gridServiceManagers.waitForAtLeastOne(2,TimeUnit.MINUTES)
-gsc=admin.gridServiceContainers.waitFor(1,2,TimeUnit.MINUTES)
-assert (gsm!=null && gsa!=null && gsc!=null), "Failed to detect XAP components(GSA,GSM,LUS)"
 println "XAP-Container started"
