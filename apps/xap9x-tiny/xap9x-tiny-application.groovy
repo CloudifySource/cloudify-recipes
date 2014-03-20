@@ -26,7 +26,7 @@ application {
 	}
 
     service {
-        name = "tty.js"
-        dependsOn = ["xap-container"]
+        name = "butterfly"
+        dependsOn = ["xap-management"]
     }
 }

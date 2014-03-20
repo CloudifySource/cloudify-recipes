@@ -13,11 +13,6 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 *******************************************************************************/
-computeTemplate = "SMALL_UBUNTU"
-initScript = ""
-installScript = ""
-startScript = ""
-useSudo = false
-env {
-    SERVICE_NAME = serviceName
+service {
+	extend "../../../services/xap9x/butterfly"
 }
