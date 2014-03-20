@@ -1,5 +1,0 @@
-{
-    "port": 8080,
-    "shell": "./gs.sh",
-    "cwd" : "<XAP_BIN>"
-}
