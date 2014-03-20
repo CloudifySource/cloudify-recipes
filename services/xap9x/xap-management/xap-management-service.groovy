@@ -96,8 +96,8 @@ service {
 
 			def applicationURL = "http://${currPublicIP}:${currPort}"
             def xapInstallationDir = "${context.serviceDirectory}/${installDir}/${name}/"
-            def interactiveShellURL = "http://${currPublicIP}:8080/wd/${xapInstallationDir}/bin"
-            def xapShellURL = "http://${currPublicIP}:8080/wd/${xapInstallationDir}/tools/groovy/bin"
+            def interactiveShellURL = "http://${currPublicIP}:8081/wd/${xapInstallationDir}/bin"
+            def xapShellURL = "http://${currPublicIP}:8081/wd/${xapInstallationDir}/tools/groovy/bin"
             if (butterflyEnabled) {
                 return [
                         "Management UI":"<a href=\"${applicationURL}\" target=\"_blank\">${applicationURL}</a>",

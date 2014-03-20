@@ -11,5 +11,5 @@ function error_exit {
 	exit ${1}
 }
 source virtenv/bin/activate
-python `pwd`/butterfly/butterfly.server.py --host="0.0.0.0" --port="8080" --unsecure --prompt_login=false &
+python `pwd`/butterfly/butterfly.server.py --host="0.0.0.0" --port="8081" --unsecure --prompt_login=false &
 deactivate
