@@ -27,6 +27,6 @@ application {
 
     service {
         name = "butterfly"
-        dependsOn = ["xap-management"]
+        dependsOn = ["xap-container"]
     }
 }
