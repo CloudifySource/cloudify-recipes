@@ -29,7 +29,7 @@ The application itself is a basic one which was developed for the only purpose o
 This recipe is comprised of three services:
 * <strong>xap-management</strong>
 * <strong>xap-container</strong>
-* <strong>tty.js</strong>
+* <strong>butterfly</strong>
 
 As it explained here:
  [xap9x](../../services/xap9x/README.md)  
