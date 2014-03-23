@@ -75,3 +75,4 @@ The <i>xap-container</i> recipe starts a single GSC.  When it starts it locates 
 #####Recipe #3: butterfly
 The <i>butterfly</i> recipe starts a web terminal based on websocket and tornado (butterfly).
 Url: <a href="http://localcloud:8080">http://localcloud:8080</a>
+<br/>Works only on Linux.
