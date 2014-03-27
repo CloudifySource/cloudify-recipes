@@ -306,10 +306,6 @@ service {
                     },
                     accessRule {
                         type "PUBLIC"
-                        portRange 22
-                    },
-                    accessRule {
-                        type "PUBLIC"
                         portRange 8080
                     }
             ])

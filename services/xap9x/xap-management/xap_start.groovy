@@ -46,8 +46,8 @@ if (config.butterflyEnabled) {
                 output:"butterfly_start.${System.currentTimeMillis()}.out",
                 error:"butterfly_start.${System.currentTimeMillis()}.err"
         ) {
-            env(key:"JSHOMEDIR", value:"${context.serviceDirectory}/${config.installDir}/${config.xapDir}")
             env(key:"LOOKUPLOCATORS",value:"${ip}:${config.lusPort}")
+            env(key:"NIC_ADDR",value:"${ip}")
         }
     }
 }

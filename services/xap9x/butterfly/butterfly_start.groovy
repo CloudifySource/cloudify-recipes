@@ -4,6 +4,7 @@ import java.util.concurrent.TimeUnit
 
 context=ServiceContextFactory.serviceContext
 config = new ConfigSlurper().parse(new File(context.serviceName+"-service.properties").toURL())
+ip=context.getPrivateAddress()
 
 locators=""
 mgmt=context.waitForService(config.managementService,5,TimeUnit.MINUTES)
@@ -23,7 +24,7 @@ new AntBuilder().sequential {
             output:"start.${System.currentTimeMillis()}.out",
             error:"start.${System.currentTimeMillis()}.err"
     ) {
-        env(key:"JSHOMEDIR", value:"${context.serviceDirectory}/${config.installDir}/${config.xapDir}")
         env(key:"LOOKUPLOCATORS",value:"${locators}")
+        env(key:"NIC_ADDR",value:"${ip}")
     }
 }
