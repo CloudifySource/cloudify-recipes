@@ -41,6 +41,12 @@ else{
 
 //Run butterfly if enabled
 if (config.butterflyEnabled) {
+    if (!context.isLocalCloud()) {
+        FileWriter out = new FileWriter("${System.getenv('HOME')}/.bashrc",true);
+        out.write("${System.getProperty("line.separator")}");
+        out.write("export JAVA_HOME=${System.getenv('HOME')}/java");
+        out.close();
+    }
     new AntBuilder().sequential {
         exec(executable:"./butterfly_start.sh", osfamily:"unix",
                 output:"butterfly_start.${System.currentTimeMillis()}.out",

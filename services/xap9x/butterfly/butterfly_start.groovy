@@ -7,8 +7,9 @@ config = new ConfigSlurper().parse(new File(context.serviceName+"-service.proper
 ip=context.getPrivateAddress()
 
 locators=""
+println "Waiting (max) 5 minutes for ${config.managementService}"
 mgmt=context.waitForService(config.managementService,5,TimeUnit.MINUTES)
-if (!(mgmt!=null && mgmt.instances.size())) {
+if (mgmt == null || mgmt.instances.size() == 0) {
     println "No management services found"
 } else {
     lusnum=0
@@ -17,6 +18,13 @@ if (!(mgmt!=null && mgmt.instances.size())) {
         locators+="${it.hostAddress}:${config.lusPort},"
     }
     println "LOOKUPLOCATORS = ${locators}"
+}
+
+if (!context.isLocalCloud()) {
+    FileWriter out = new FileWriter("${System.getenv('HOME')}/.bashrc",true);
+    out.write("${System.getProperty("line.separator")}");
+    out.write("export JAVA_HOME=${System.getenv('HOME')}/java");
+    out.close();
 }
 
 new AntBuilder().sequential {

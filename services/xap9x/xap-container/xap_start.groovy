@@ -33,6 +33,7 @@ if(uuid==null){
 thisService=util.getThisService(context)
 
 //Get locator(s)
+println "Waiting (max) 5 minutes for ${config.managementService}"
 mgmt=context.waitForService(config.managementService,5,TimeUnit.MINUTES)
 assert (mgmt!=null && mgmt.instances.size()),"No management services found"
 locators=""
