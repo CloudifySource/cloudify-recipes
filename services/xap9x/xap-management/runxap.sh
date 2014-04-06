@@ -30,7 +30,7 @@ options=
 ulimit -n 32000
 ulimit -u 32000
 
-$XAPDIR/bin/gs-agent.sh gsa.global.lus=1 gsa.global.gsm=1 gsa.gsc=1 &
+$XAPDIR/bin/gs-agent.sh gsa.global.lus=1 gsa.global.gsm=1 gsa.gsc=0 &
 $XAPDIR/bin/gs-webui.sh &
 
 sleep 10000d
