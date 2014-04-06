@@ -24,7 +24,7 @@ Tested on:
 Synopsis
 --------
 
-This recipe show a highly available web service example using 2 tomcat servers behind an apache loadbalancer with distributed session manager.
+This recipe shows a highly available web service example using 2 tomcat servers behind an apache loadbalancer with a distributed session manager.
 
 The default behavior is that the session managment will be done by the internal Cloudify in memory attribute store as the session store.
 
@@ -47,12 +47,12 @@ Demo script:
 
 3. In the applicaiton URL you opened, you can set key value pairs (for example Joe:Doe, John: Key ...). Show that the key value pairs are maintained and the IP of the backend server that is deiplayed stays the same (sticky session)
 
-4. Got to the AWS EC2 cosole and kill the tomcat server which its IP we saw in #3
+4. Go to the AWS EC2 cosole and kill the tomcat server which its IP we saw in #3
 
 5. Try to add another key value pair to the open applicaiton page we used in #3. Expect it to wait for 30 seconds (the time the load balancer takes to find out that the server is no longer available).
 
 6. The application page should come back with a new IP and the key pairs we previously entered. This shows the session was maintaned even after the tomcat server went down.
 
-7. show that Cloudify is recovering from the SLA breach by launching a new tomcat instance (from the Cloudify UI)
+7. Show that Cloudify is recovering from the SLA breach by launching a new tomcat instance (from the Cloudify UI)
 
 
