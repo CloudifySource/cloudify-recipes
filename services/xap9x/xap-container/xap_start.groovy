@@ -35,7 +35,11 @@ thisService=util.getThisService(context)
 //Get locator(s)
 println "Waiting (max) 5 minutes for ${config.managementService}"
 mgmt=context.waitForService(config.managementService,5,TimeUnit.MINUTES)
-assert (mgmt!=null && mgmt.instances.size()),"No management services found"
+assert (mgmt!=null),"No management services found"
+
+mgmtservices = mgmt.waitForInstances(1, 1, TimeUnit.MINUTES)
+assert (mgmtservices != null), "Unable to find 1 instance of management services"
+
 locators=""
 lusnum=0
 
