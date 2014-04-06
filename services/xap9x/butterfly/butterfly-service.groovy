@@ -24,7 +24,7 @@ service {
     }
     network {
         template "APPLICATION_NET"
-        accessRules {[
+        accessRules {
             incoming ([
                     accessRule {
                         type "PUBLIC"
@@ -33,19 +33,8 @@ service {
                     accessRule {
                         type "APPLICATION"
                         portRange "4242-4342"
-                    },
-                    accessRule {
-                        type "APPLICATION"
-                        portRange "1-65000"
-                    }
-            ]),
-            outgoing ([
-                    accessRule {
-                        type "APPLICATION"
-                        portRange "1-65000"
-                        target "0.0.0.0/0"
                     }
             ])
-        ]}
+        }
     }
 }
