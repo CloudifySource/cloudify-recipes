@@ -21,7 +21,11 @@ import org.openspaces.admin.AdminFactory
 
 context=ServiceContextFactory.serviceContext
 config = new ConfigSlurper().parse(new File(context.serviceName+"-service.properties").toURL())
-ip=context.getPrivateAddress()
+if (context.isLocalCloud()) {
+    ip = "127.0.0.1"
+} else {
+    ip = context.getPrivateAddress()
+}
 lusPort=config.lusPort
 
 uuid=context.attributes.thisInstance.uuid
@@ -40,17 +44,9 @@ assert (mgmt!=null),"No management services found"
 mgmtservices = mgmt.waitForInstances(1, 1, TimeUnit.MINUTES)
 assert (mgmtservices != null), "Unable to find 1 instance of management services"
 
-locators=""
-lusnum=0
-
-mgmt.instances.each{
-    def lusname="lus${it.instanceId}"
-    println "invoking update-hosts with ${it.hostAddress} ${lusname}"
-    thisService.invoke("update-hosts",it.hostAddress,lusname as String)
-    locators+="${lusname}:${config.lusPort},"
-}
-context.attributes.thisInstance["xaplocators"] = locators
-println "locators = ${locators}"
+println "Invoking get-lookuplocators@xap-management"
+locators = mgmt.invoke("get-lookuplocators")[0] as String
+println "Result(locators): ${locators}"
 
 new AntBuilder().sequential {
     exec(executable:"runxap.bat", osfamily:"windows",

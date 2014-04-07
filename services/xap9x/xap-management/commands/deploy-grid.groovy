@@ -44,8 +44,8 @@ if(maxpermachine==null||maxpermachine.toInteger()<=0)maxpermachine="0"
 //DEPLOY
 println "DEPLOYING GRID"
 // find gsm
-ip=context.getPrivateAddress()
-admin=new AdminFactory().useDaemonThreads(true).addLocators("${ip}:${config.lusPort}").createAdmin();
+lookuplocators = context.attributes.thisInstance["xaplookuplocators"]
+admin=new AdminFactory().useDaemonThreads(true).addLocators("${lookuplocators}").createAdmin();
 print "will wait 2 minute for finding gsm..."
 gsm=admin.gridServiceManagers.waitForAtLeastOne(3,TimeUnit.MINUTES)
 assert gsm!=null

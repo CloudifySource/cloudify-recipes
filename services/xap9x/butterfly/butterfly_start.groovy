@@ -4,27 +4,24 @@ import java.util.concurrent.TimeUnit
 
 context=ServiceContextFactory.serviceContext
 config = new ConfigSlurper().parse(new File(context.serviceName+"-service.properties").toURL())
-ip=context.getPrivateAddress()
-println "IP: "+ip
-locators=""
-println "Waiting (max) 3 minutes for ${config.managementService}"
-mgmt=context.waitForService(config.managementService,2,TimeUnit.MINUTES)
-if (mgmt == null) {
-    println "No management services found"
+if (context.isLocalCloud()) {
+    ip = "127.0.0.1"
 } else {
-    println "Found management services, waiting for 1 instance"
-    mgmtservices = mgmt.waitForInstances(1, 1, TimeUnit.MINUTES)
-    if (mgmtservices == null) {
-        println "Unable to find 1 instance of management services"
-    } else {
-        lusnum=0
-        mgmt.instances.each{
-            def lusname="lus${it.instanceId}"
-            locators+="${it.hostAddress}:${config.lusPort},"
-        }
-        println "LOOKUPLOCATORS = ${locators}"
-    }
+    ip = context.getPrivateAddress()
 }
+println "IP: ${ip}"
+
+//Get locator(s)
+println "Waiting (max) 5 minutes for ${config.managementService}"
+mgmt=context.waitForService(config.managementService,5,TimeUnit.MINUTES)
+assert (mgmt!=null),"No management services found"
+
+mgmtservices = mgmt.waitForInstances(1, 1, TimeUnit.MINUTES)
+assert (mgmtservices != null), "Unable to find 1 instance of management services"
+
+println "Invoking get-lookuplocators@xap-management"
+locators = mgmt.invoke("get-lookuplocators")[0] as String
+println "Result(locators): ${locators}"
 
 
 new AntBuilder().sequential {

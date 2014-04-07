@@ -85,11 +85,14 @@ service {
 				"update-hosts-hostsline":line
 			])
 		 },
-
+        "update-lookuplocators": { lookuplocators ->
+            context.attributes.thisInstance["xaplookuplocators"] = lookuplocators
+            println "LOOKUPLOCATORS updated to: ${lookuplocators}"
+            return true;
+        },
 
 		//Actual parameterized calls
 		"_update-hosts"	: "commands/update-hosts.groovy"
-
 	])
 
 

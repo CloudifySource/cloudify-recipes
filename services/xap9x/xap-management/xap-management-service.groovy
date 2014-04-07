@@ -114,10 +114,15 @@ service {
 		monitors {
 			if(admin==null){
 
-                ip=context.getPrivateAddress()
+                if (context.isLocalCloud()) {
+                    ip = "127.0.0.1"
+                } else {
+                    ip = context.getPrivateAddress()
+                }
+
 				admin = new AdminFactory()
 				.useDaemonThreads(true)
-				.addLocators("${ip}:"+lusPort)
+				.addLocators("${ip}:${lusPort}")
 				.create();
 			}
 
@@ -195,12 +200,17 @@ service {
 				"undeploy-grid-name":name
 			])
 		},
-
+        //update serviceName with xap-management lookuplocators
+        "get-lookuplocators" : {
+            println "Sending ${context.attributes.thisInstance["xaplookuplocators"]} as lookuplocators"
+            return context.attributes.thisInstance["xaplookuplocators"]
+        },
 
 		//Actual parameterized calls
 		"_deploy-pu"	: "commands/deploy-pu.groovy",
 		"_deploy-grid"	: "commands/deploy-grid.groovy",
 		"_undeploy-grid": "commands/undeploy-grid.groovy",
+        "_update-": "commands/update-service-lookuplocators.groovy"
 
 	])
 

@@ -22,6 +22,14 @@ service {
             ]
         }
     }
+    customCommands ([
+        "update-lookuplocators": { lookuplocators ->
+            context.attributes.thisInstance["xaplookuplocators"] = lookuplocators
+            println "LOOKUPLOCATORS updated to: ${lookuplocators}"
+            return true;
+        }
+    ])
+
     network {
         template "APPLICATION_NET"
         accessRules {
