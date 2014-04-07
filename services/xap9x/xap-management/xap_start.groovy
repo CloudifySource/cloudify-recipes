@@ -39,7 +39,7 @@ if(uuid==null){
 //update container nodes if any (restart scenario)
 def containerService=context.waitForService(config.containerServiceName,5,TimeUnit.SECONDS)
 if(containerService!=null){
-    println "invoking update-lookuplocators with: ${lookuplocators}"
+    println "invoking update-lookuplocators@${config.containerServiceName} with: ${lookuplocators}"
     result = containerService.invoke("update-lookuplocators","${lookuplocators}" as String)
     println "Result: ${result}"
 }
@@ -48,9 +48,9 @@ else{
 }
 
 //update butterfly nodes if any (restart scenario)
-def butterflyService=context.waitForService(config.containerServiceName,5,TimeUnit.SECONDS)
+def butterflyService=context.waitForService(config.butterflyServiceName,5,TimeUnit.SECONDS)
 if(butterflyService!=null){
-    println "invoking update-lookuplocators with: ${lookuplocators}"
+    println "invoking update-lookuplocators@${config.butterflyServiceName} with: ${lookuplocators}"
     result = butterflyService.invoke("update-lookuplocators","${lookuplocators}" as String)
     println "Result: ${result}"
 }
