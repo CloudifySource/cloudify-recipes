@@ -31,7 +31,7 @@ new AntBuilder().sequential {
     ) {
         env(key:"LOOKUPLOCATORS",value:"${locators}")
         env(key:"NIC_ADDR",value:"${ip}")
-        env(key:"BF_SCRIPT",value:"${context.serviceDirectory}/${config.installDir}/${config.xapDir}/tools/groovy/bin/groovy ${context.serviceDirectory}/script.groovy")
+        env(key:"BF_SCRIPT",value:"${config.installDir}/${config.xapDir}/tools/groovy/bin/groovy ${context.serviceDirectory}/script.groovy")
         env(key:"EXT_JAVA_OPTIONS", value:"-Dcom.gs.multicast.enabled=false -Dcom.gs.multicast.discoveryPort=${config.lusPort} -Dcom.sun.jini.reggie.initialUnicastDiscoveryPort=${config.lusPort} -Dcom.gigaspaces.start.httpPort=${config.httpPort} -Dcom.gigaspaces.system.registryPort=${config.registryPort} -Dcom.gs.transport_protocol.lrmi.bind-port=${config.bindPort}")
         env(key:"RMI_OPTIONS", value:"-Djava.rmi.server.hostname=${ip}")
     }
