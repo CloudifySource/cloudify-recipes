@@ -40,10 +40,10 @@ if(ServiceUtils.isWindows()){
 }
 else{
   new AntBuilder().sequential {
-   replace(file:"${context.serviceDirectory}/${config.installDir}/${config.xapDir}/tools/gs-webui/gs-webui.sh",token:"8099",value:webuiPort)
-   chmod(dir:"${context.serviceDirectory}/${config.installDir}/${config.xapDir}/bin", perm:"+x", includes:"*.sh")
-   chmod(dir:"${context.serviceDirectory}/${config.installDir}/${config.xapDir}/tools/gs-webui", perm:"+x", includes:"*.sh")
-   chmod(dir:"${context.serviceDirectory}/${config.installDir}/${config.xapDir}/tools/groovy/bin", perm:"+x", excludes:"*.bat")
+   replace(file:"${config.installDir}/${config.xapDir}/tools/gs-webui/gs-webui.sh",token:"8099",value:webuiPort)
+   chmod(dir:"${config.installDir}/${config.xapDir}/bin", perm:"+x", includes:"*.sh")
+   chmod(dir:"${config.installDir}/${config.xapDir}/tools/gs-webui", perm:"+x", includes:"*.sh")
+   chmod(dir:"${config.installDir}/${config.xapDir}/tools/groovy/bin", perm:"+x", excludes:"*.bat")
   }
 }
 
@@ -59,7 +59,7 @@ if(config.license!=null && config.license.size()>0){
 	}
 }else{
     new AntBuilder().sequential {
-        delete(file:"${context.serviceDirectory}/${config.installDir}/${config.xapDir}/gslicense.xml")
+        delete(file:"${config.installDir}/${config.xapDir}/gslicense.xml")
     }
 }
 
