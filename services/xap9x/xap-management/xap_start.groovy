@@ -92,14 +92,14 @@ new AntBuilder().sequential {
     }
 
     chmod(dir:"${context.serviceDirectory}",perm:"+x",includes:"*.sh")
-    chmod(dir:"${config.installDir}/${config.xapDir}",perm:"+x",includes:"*.sh")
-    chmod(dir:"${config.installDir}/${config.xapDir}/tools/gs-webui",perm:"+x",includes:"*.sh")
+    chmod(dir:"${context.serviceDirectory}/${config.installDir}/${config.xapDir}",perm:"+x",includes:"*.sh")
+    chmod(dir:"${context.serviceDirectory}/${config.installDir}/${config.xapDir}/tools/gs-webui",perm:"+x",includes:"*.sh")
 
     exec(executable:"./runxap.sh", osfamily:"unix",
             output:"runxap.${System.currentTimeMillis()}.out",
             error:"runxap.${System.currentTimeMillis()}.err"
     ){
-        env(key:"XAPDIR", value:"${config.installDir}/${config.xapDir}")
+        env(key:"XAPDIR", value:"${context.serviceDirectory}/${config.installDir}/${config.xapDir}")
         env(key:"LUS_JAVA_OPTIONS",value:"${config.lus_jvm_options} -Dcom.gs.multicast.enabled=false -DUUID=${uuid} -Dcom.gs.multicast.discoveryPort=${config.lusPort} -Dcom.sun.jini.reggie.initialUnicastDiscoveryPort=${config.lusPort} -Dcom.gigaspaces.start.httpPort=${config.httpPort} -Dcom.gigaspaces.system.registryPort=${config.registryPort} -Dcom.gs.transport_protocol.lrmi.bind-port=${config.bindPort}")
         env(key:"GSA_JAVA_OPTIONS",value:"${config.gsm_jvm_options} -Dcom.gs.multicast.enabled=false -DUUID=${uuid} -Dcom.gs.multicast.discoveryPort=${config.lusPort} -Dcom.sun.jini.reggie.initialUnicastDiscoveryPort=${config.lusPort} -Dcom.gigaspaces.start.httpPort=${config.httpPort} -Dcom.gigaspaces.system.registryPort=${config.registryPort} -Dcom.gs.transport_protocol.lrmi.bind-port=${config.bindPort}")
         env(key:"GSM_JAVA_OPTIONS",value:"${config.gsm_jvm_options} -Dcom.gs.multicast.enabled=false -DUUID=${uuid} -Dcom.gs.multicast.discoveryPort=${config.lusPort} -Dcom.sun.jini.reggie.initialUnicastDiscoveryPort=${config.lusPort} -Dcom.gigaspaces.start.httpPort=${config.httpPort} -Dcom.gigaspaces.system.registryPort=${config.registryPort} -Dcom.gs.transport_protocol.lrmi.bind-port=${config.bindPort}")
