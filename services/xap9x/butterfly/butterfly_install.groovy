@@ -4,7 +4,7 @@ import org.cloudifysource.utilitydomain.context.ServiceContextFactory
 context=ServiceContextFactory.serviceContext
 config = new ConfigSlurper().parse(new File(context.serviceName+"-service.properties").toURL())
 
-if(!new File(${config.installDir}/${config.zipName}).exists()){
+if(!new File("${config.installDir}/${config.zipName}").exists()){
     new AntBuilder().sequential {
         mkdir(dir:"${config.installDir}")
         get(src:config.downloadPath, dest:"${config.installDir}/${config.zipName}", skipexisting:true)
