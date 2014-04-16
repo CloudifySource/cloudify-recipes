@@ -308,7 +308,7 @@ cookbook_path "${cookbooksPath}"
         // Now, run it to retrieve all other cookbooks
         def gemBinPath = getChefGemBinPath()
         println "Getting cookbooks with berkshelf"
-        sh(["${gemBinPath}/berks", "install", "--path", "${cookbooksPath}"], cwd:context.getServiceDirectory())
+        sh(["${gemBinPath}/berks", "vendor", "${cookbooksPath}"], cwd:context.getServiceDirectory())
     }
     protected gemInstallGem(gem) {
         // TODO: adapt for rvm
