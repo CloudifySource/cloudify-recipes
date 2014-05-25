@@ -55,40 +55,16 @@ print "will wait 2 minute for finding gsm..."
 gsm=admin.gridServiceManagers.waitForAtLeastOne(3,TimeUnit.MINUTES)
 assert gsm!=null, "No management services found"
 
-// make sure there are GSCs
-//print "will wait 1 minute for finding gsc..."
-//gscs=admin.gridServiceContainers
-//gscs.waitFor(1,1,TimeUnit.MINUTES)
-//assert (gscs.size!=0),"no containers found"
-//deploy
-//sd=new SpaceDeployment(name)
-//sd.clusterSchema(schema)
-//sd.numberOfInstances(partitions.toInteger())
-//sd.numberOfBackups(backups.toInteger())
-//sd.maxInstancesPerMachine(maxpermachine.toInteger())
-//sd.maxInstancesPerVM(maxpervm.toInteger())
-//pu=gsm.deploy(sd)
-
 try{
    ProcessingUnit pu = gsm.deploy(
         new ElasticSpaceDeployment(name)
-//           .highlyAvailable(false)
-           .memoryCapacityPerContainer(1,MemoryUnit.GIGABYTES)
-//           .maxMemoryCapacity(10,MemoryUnit.GIGABYTES)
+           .memoryCapacityPerContainer(500, MemoryUnit.MEGABYTES)
            .numberOfPartitions(partitions.toInteger())
            .dedicatedMachineProvisioning(
                         new DiscoveredMachineProvisioningConfigurer()
                            .addGridServiceAgentZone("zone1")
                            .removeGridServiceAgentsWithoutZone()
                            .create())
-//           .maxNumberOfCpuCores(32)
-           // uncomment when working with a single machine agent
-           //.singleMachineDeployment()
-           // set the initial memory and CPU capacity
-  //         .scale(new ManualCapacityScaleConfigurer()
-    //              .memoryCapacity(128,MemoryUnit.GIGABYTES)
-      //            .numberOfCpuCores(8)
-        //          .create())
             .scale(new EagerScaleConfigurer().create())
    );
    assert (pu.waitFor(1,3,TimeUnit.MINUTES)),"deployment failed"
