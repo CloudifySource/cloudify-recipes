@@ -27,7 +27,7 @@ service {
 	minAllowedInstances 1
 	maxAllowedInstances maxinstances
 
-
+    def serviceIP = "127.0.0.1"
     compute {
         template "${template}"
     }
@@ -36,6 +36,12 @@ service {
 
 	lifecycle{
 
+        init {
+            if (!context.isLocalCloud()) {
+                serviceIP = context.getPrivateAddress()
+            }
+            context.attributes.thisInstance.service_ip = serviceIP
+        }
 
 		install "xap_install.groovy"
 
@@ -45,7 +51,6 @@ service {
 
         preStop "xap_preStop.groovy"
 
-        postStop "xap_postStop.groovy"
 
 		locator {
 			uuid=context.attributes.thisInstance.uuid
@@ -53,20 +58,20 @@ service {
 			while (uuid==null){
 				Thread.sleep 1000
 				uuid=context.attributes.thisInstance.uuid
-				if (i>10){
+				if (i>20){
 					println "LOCATOR TIMED OUT"
 					break
 				}
 				i=i+1
 			}
-			if(i>11)return null
+			if(i>21)return null
 
 			i=0
 			def pids=[]
 			while(pids.size()==0){
 				pids=ServiceUtils.ProcessUtils.getPidsWithQuery("Args.*.ct=${uuid}");
 				i++;
-				if(i>10){
+				if(i>20){
 					println "PROCESS NOT DETECTED"
 					break
 				}
@@ -85,11 +90,6 @@ service {
 				"update-hosts-hostsline":line
 			])
 		 },
-        "update-lookuplocators": { lookuplocators ->
-            context.attributes.thisInstance["xaplookuplocators"] = lookuplocators
-            println "LOOKUPLOCATORS updated to: ${lookuplocators}"
-            return true;
-        },
 
 		//Actual parameterized calls
 		"_update-hosts"	: "commands/update-hosts.groovy"
@@ -112,7 +112,7 @@ service {
             incoming ([
                     accessRule {
                         type "APPLICATION"
-                        portRange "14242-14342"
+                        portRange "${bindPort}"
                     }
             ])
         }

@@ -37,7 +37,7 @@ function error_exit {
 	echo "$2 : error code: $1"
 	exit ${1}
 }
-source virtenv/bin/activate
+source /tmp/virtenv_is/bin/activate
 source ~/.bashrc
-python `pwd`/butterfly/butterfly.server.py --host="0.0.0.0" --port="8080" --unsecure --prompt_login=false --load_script="$BF_SCRIPT" || error_exit $? "Failed to start butterfly server"
+python `pwd`/butterfly/butterfly.server.py --host="0.0.0.0" --port="$BF_UI_PORT" --unsecure --prompt_login=false --load_script="$BF_SCRIPT" --wd="$BF_WORKING_DIRECTORY" $UUID || error_exit $? "Failed to start butterfly server"
 deactivate

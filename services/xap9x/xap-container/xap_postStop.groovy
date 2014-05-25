@@ -3,6 +3,7 @@ context=ServiceContextFactory.serviceContext
 
 println "XAPSTOP STARTING"
 
+/*
 new AntBuilder().sequential {
 
     exec(executable:"pkill", osfamily:"unix",
@@ -15,4 +16,5 @@ new AntBuilder().sequential {
     println "XAPSTOP EXITING"
 
 }
+*/
 

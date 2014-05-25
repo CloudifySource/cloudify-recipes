@@ -12,7 +12,7 @@ dataGridPU = admin.getProcessingUnits().waitFor("myDataGrid", 2, TimeUnit.MINUTE
 if (dataGridPU != null) {
     undeployed = dataGridPU.undeployAndWait(1, TimeUnit.MINUTES);
     if (undeployed == false) {
-        println "Failed to undeploy myDataGrid."
+        println "WARNING: Failed to undeploy myDataGrid."
     }
 }
 

@@ -26,7 +26,7 @@ application {
 	}
 
     service {
-        name = "butterfly"
+        name = "interactive-shell"
         dependsOn = ["xap-container"]
     }
 }

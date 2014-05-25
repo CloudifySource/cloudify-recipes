@@ -10,8 +10,8 @@ function error_exit {
 	exit ${1}
 }
 sudo easy_install virtualenv || error_exit $? "Failed on: easy_install virtualenv"
-virtualenv virtenv --no-site-packages || error_exit $? "Failed on: virtualenv virtenv"
-source virtenv/bin/activate
+virtualenv /tmp/virtenv_is --no-site-packages || error_exit $? "Failed on: virtualenv virtenv"
+source /tmp/virtenv_is/bin/activate
 sudo yum -y install git python-pip gcc python-devel openssl-devel || error_exit $? "Failed to install requirements (git python-pip gcc python-devel)"
 pip install pyOpenSSL==0.12 || error_exit $? "Failed to install pyOpenSSL v0.12"
 git clone https://github.com/yohanakh/butterfly.git || error_exit $? "Failed to clone butterfly repository"

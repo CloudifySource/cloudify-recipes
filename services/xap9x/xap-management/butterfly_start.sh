@@ -28,6 +28,6 @@ startParm=
 launchTarget=
 options=
 
-source virtenv/bin/activate
-python `pwd`/butterfly/butterfly.server.py --host="0.0.0.0" --port="8081" --unsecure --prompt_login=false &
+source /tmp/virtenv_xapman/bin/activate
+python `pwd`/butterfly/butterfly.server.py --host="0.0.0.0" --port="$BF_UI_PORT" --unsecure --prompt_login=false $UUID &
 deactivate

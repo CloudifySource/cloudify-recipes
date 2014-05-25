@@ -22,6 +22,7 @@ new AntBuilder().sequential {
     println "XAPSTOP EXITING"
 
 }
+/*
 
 //Stop butterfly if enabled
 if (config.butterflyEnabled) {
@@ -31,8 +32,9 @@ if (config.butterflyEnabled) {
                 output:"pkill.${System.currentTimeMillis()}.out",
                 error:"pkill.${System.currentTimeMillis()}.err"
         ){
-            arg("line":"-f 'butterfly.server.py --host=0.0.0.0 --port=8080'")
+            arg("line":"-f 'butterfly.server.py --host=0.0.0.0 --port=8081'")
         }
     }
 }
 
+*/

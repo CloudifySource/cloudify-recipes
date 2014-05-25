@@ -31,29 +31,41 @@ service {
 	type "APP_SERVER"
 	icon "xap.png"
 	elastic false
-	numInstances (context.isLocalCloud()?1:2 )
+	numInstances 1
 	minAllowedInstances 1
 	maxAllowedInstances 2
 
 	def admin = null
+
+    def webui_Port = 8099
+    def serviceIP = "127.0.0.1"
+
 
 	compute {
        	 	template "${template}"
     	}
 
 	lifecycle{
-
+        init {
+            if (context.isLocalCloud()) {
+                webui_Port = uiPort
+            } else {
+                serviceIP = context.getPrivateAddress()
+            }
+            context.attributes.thisInstance.webui_port = webui_Port
+            context.attributes.thisInstance["service_ip"] = serviceIP
+        }
 
 		install "xap_install.groovy"
 
 		start "xap_start.groovy"
 
-        postStop "xap_postStop.groovy"
 
 	        startDetectionTimeoutSecs 180
         	startDetection {
-            		ServiceUtils.isPortOccupied(uiPort)
+            		ServiceUtils.isPortOccupied(webui_Port)
         	}
+        postStop "xap_postStop.groovy"
 
 		locator {
 			uuid=context.attributes.thisInstance.uuid
@@ -61,20 +73,20 @@ service {
 			while (uuid==null){
 				Thread.sleep 1000
 				uuid=context.attributes.thisInstance.uuid
-				if (i>10){
+				if (i>20){
 					println "LOCATOR TIMED OUT"
 					break
 				}
 				i++
 			}
-			if(i>11)return null
+			if(i>21)return null
 
 			i=0
 			def pids=[]
 			while(pids.size()==0){
 				pids=ServiceUtils.ProcessUtils.getPidsWithQuery("Args.*.ct=${uuid}");
 				i++
-				if(i>10){
+				if(i>20){
 					println "PROCESS NOT DETECTED"
 					break
 				}
@@ -88,14 +100,14 @@ service {
 			def currPublicIP = context.getPublicAddress()
 
 			if (  context.isLocalCloud()  ) {
-				currPort = 9099
+				currPort = uiPort
 			}
 			else {
                 currPort = 8099
 			}
 
 			def applicationURL = "http://${currPublicIP}:${currPort}"
-            def xapInstallationDir = "${context.serviceDirectory}/${installDir}/${name}/"
+            def xapInstallationDir = "${installDir}/${name}/"
             def interactiveShellURL = "http://${currPublicIP}:8081/wd/${xapInstallationDir}/bin"
             def xapShellURL = "http://${currPublicIP}:8081/wd/${xapInstallationDir}/tools/groovy/bin"
             if (butterflyEnabled) {
@@ -200,11 +212,6 @@ service {
 				"undeploy-grid-name":name
 			])
 		},
-        //update serviceName with xap-management lookuplocators
-        "get-lookuplocators" : {
-            println "Sending ${context.attributes.thisInstance["xaplookuplocators"]} as lookuplocators"
-            return context.attributes.thisInstance["xaplookuplocators"]
-        },
 
 		//Actual parameterized calls
 		"_deploy-pu"	: "commands/deploy-pu.groovy",
@@ -304,19 +311,15 @@ service {
             incoming ([
                     accessRule {
                         type "PUBLIC"
-                        portRange 8099
-                    },
-                    accessRule {
-                        type "PUBLIC"
-                        portRange 9099
+                        portRange uiPort
                     },
                     accessRule {
                         type "APPLICATION"
-                        portRange "14242-14342"
+                        portRange bindPort
                     },
                     accessRule {
                         type "PUBLIC"
-                        portRange 8080
+                        portRange 8081
                     }
             ])
         }

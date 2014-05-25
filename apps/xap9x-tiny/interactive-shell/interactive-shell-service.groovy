@@ -14,5 +14,5 @@
 * limitations under the License.
 *******************************************************************************/
 service {
-	extend "../../../services/xap9x/butterfly"
+	extend "../../../services/xap9x/interactive-shell"
 }
