@@ -1,7 +1,9 @@
 [main]
+authc.loginUrl = /login.jsp
+
 # space proxy wraper
 connector = com.gigaspaces.httpsession.SpaceConnector
-connector.url = %SPACE_URL%
+connector.url = jini://*/*/sessionSpace
 # When using secured GigaSpace cluster, pass the credentials here
 # connector.username = gs
 # connector.password = gs
@@ -16,31 +18,34 @@ sessionManager = com.gigaspaces.httpsession.GigaWebSessionManager
 sessionDAO = org.apache.shiro.session.mgt.eis.EnterpriseCacheSessionDAO
 sessionManager.sessionDAO = $sessionDAO
 
-sessionDAO.activeSessionsCacheName = %SPACE_URL%
+sessionDAO.activeSessionsCacheName = jini://*/*/sessionSpace
 # ensure the securityManager uses our native SessionManager:
 securityManager.sessionManager = $sessionManager
 
 # whatever your CacheManager implementation is, for example:
 cacheManager = com.gigaspaces.httpsession.sessions.GigaCacheManager
 
+# Session data TTL/Lease in milliseconds
+# In a multi container non-sticky mode, session should expire from GigaSpaces based on sessions last accessed time
+# Default lease is 30 minutes - 30 * 60 * 1000 = 1800000
+#cacheManager.sessionLease = 1800000
+
 # Compression service
 #compressor = com.gigaspaces.httpsession.serialize.DefaultCompressor
 #cacheManager.compressor = $compressor
 # Model Manager service
 #changePolicy = com.gigaspaces.httpsession.policies.LastWriteWinsPolicy
-modelManager = com.gigaspaces.httpsession.models.FullModelManager
-#modelManager.connector = $connector
+modelManager = com.gigaspaces.httpsession.models.SimpleDeltaModeManager
+modelManager.connector = $connector
 #modelManager.changePolicy = $changePolicy
 
 cacheManager.modelManager = $modelManager
 # Serialization Service
 serializer = com.gigaspaces.httpsession.serialize.KryoSerializerImpl
-serializer.logLevel = 1
-#### classes registation: class1, class2, ...,classN
 #serializer.classes = com.gigaspaces.httpsession.sessions.NestSerial , com.gigaspaces.httpsession.sessions.NestNonSerial
 cacheManager.serializer = $serializer
 # Session Policy Service
-policy = com.gigaspaces.httpsession.policies.SessionPolicyWithoutLogin
+policy = com.gigaspaces.httpsession.policies.SessionPolicyWithLogin
 policy.connector = $connector
 policy.modelManager = $modelManager
 
@@ -71,3 +76,28 @@ sessionValidationScheduler.interval = 1800000
 sessionValidationScheduler.sessionManager = $sessionManager
 
 securityManager.sessionManager.sessionValidationScheduler = $sessionValidationScheduler
+
+[users]
+## format: username = password, role1, role2, ..., roleN
+root = secret,admin
+guest = guest,guest
+presidentskroob = 12345,president
+darkhelmet = ludicrousspeed,darklord,schwartz
+lonestarr = vespa,goodguy,schwartz
+
+[roles]
+## format: roleName = permission1, permission2, ..., permissionN
+admin = *
+schwartz = lightsaber:*
+goodguy = winnebago:drive:eagle5
+
+[urls]
+## The /login.jsp is not restricted to authenticated users (otherwise no one could log in!), but
+## the 'authc' filter must still be specified for it so it can process that url's
+## login submissions. It is 'smart' enough to allow those requests through as specified by the
+## shiro.loginUrl above.
+/login.jsp = authc
+/** = authc
+##/logout = logout
+##/account/** = authc
+/remoting/** = authc, roles[b2bClient], perms["remote:invoke:lan,wan"]

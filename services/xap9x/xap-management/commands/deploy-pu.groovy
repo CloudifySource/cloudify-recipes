@@ -39,13 +39,11 @@ maxpermachine=context.attributes.thisInstance["deploy-pu-maxpermachine"]
 // find xap management
 mgmt_service=context.waitForService("xap-management",10,TimeUnit.SECONDS)
 assert mgmt_service!=null
-locators=""
-mgmt_service.instances.each{locators+="${it.hostAddress},"}
 
 
 // find gsm
-ip=context.getPrivateAddress()
-admin=new AdminFactory().useDaemonThreads(true).addLocators("${ip}:${config.lusPort}").createAdmin();
+lookuplocators = context.attributes.thisInstance["xaplookuplocators"]
+admin=new AdminFactory().useDaemonThreads(true).addLocators("${lookuplocators}").createAdmin();
 gsm=admin.gridServiceManagers.waitForAtLeastOne(1,TimeUnit.MINUTES)
 assert gsm!=null
 

@@ -35,12 +35,13 @@ def config = new ConfigSlurper().parse(new File("tomcat-service.properties").toU
     if( newStr.length() < 6){
         newStr = "" + context.attributes.global["SPACE_URL"]
     }
-    else if( newStr.length() < 6) {
+    if( newStr.length() < 6) {
         newStr = "jini://*/*/cloudifyManagementSpace?locators="+ System.getenv('LOOKUPLOCATORS')
     }    
     println("Using space URL " + newStr + " as the space for the Tomcat session managment")
     iniFileText = iniFileText.replace(replacementStr,newStr)
     iniFile.write(iniFileText)
+
     println("before AntBuilder().sequential")
     new AntBuilder().sequential{
             echo(message:"Getting ${config.HttpSessionClassesAndJarPath} to ${installDir}/${config.HttpSessionClassesAndJarZipName}")
@@ -49,4 +50,5 @@ def config = new ConfigSlurper().parse(new File("tomcat-service.properties").toU
             unzip(src:"${installDir}/${config.HttpSessionClassesAndJarZipName}", dest:"${applicationWar}/WEB-INF/", overwrite:true)
     }
     println("after AntBuilder().sequential")
+
 

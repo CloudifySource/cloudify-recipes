@@ -36,7 +36,7 @@ if(config.license!=null && config.license.size()>0){
 	def engine = new SimpleTemplateEngine()
 	def gslicense = new File("${context.serviceDirectory}/overwrite/gslicense.xml")
 	def template = engine.createTemplate(gslicense).make(binding)
-	
+
 	new File("${context.serviceDirectory}/${config.installDir}/${config.xapDir}/gslicense.xml").withWriter{ out->
   		out.write(template.toString())
 	}

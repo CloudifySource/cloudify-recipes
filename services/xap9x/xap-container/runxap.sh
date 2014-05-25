@@ -1,3 +1,4 @@
+# These are essentials for cleaning the environment of Cloudify
 CLASSPATH=
 bootclasspath=
 CLASS=
@@ -29,4 +30,4 @@ options=
 ulimit -n 32000
 ulimit -u 32000
 
-$XAPDIR/bin/gs-agent.sh gsa.global.lus=0 gsa.global.gsm=0 gsa.gsc=1
+$XAPDIR/bin/gs-agent.sh gsa.global.lus=0 gsa.lus=0 gsa.global.gsm=0 gsa.gsc=1
