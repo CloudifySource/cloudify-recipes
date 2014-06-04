@@ -38,7 +38,7 @@ def static invokeLocal(context,name,args){
 //Puts quotes around alpha-num substrings in parameter
 
 def static quoteAlnum(unquoted){
-	def p=Pattern.compile('([a-zA-Z0-9_\\.]+)')
+	def p=Pattern.compile('([a-zA-Z0-9_\\-\\.]+)')
 	def m=p.matcher(unquoted)
 	return m.replaceAll("\"\$1\"")
 }

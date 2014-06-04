@@ -46,3 +46,14 @@ if (!context.isLocalCloud()) {
         }
     }
 }
+
+
+//add logging properties
+
+if(config.logLines!=null){
+       new File("${context.serviceDirectory}/${config.installDir}/${config.name}/config/gs_logging.properties").withWriterAppend{ out ->
+               config.logLines.each{
+                       out.write("${it}\n")
+					}
+			}
+}

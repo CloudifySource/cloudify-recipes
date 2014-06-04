@@ -12,7 +12,9 @@ assert (mgmtService!=null),"No management services found"
 mgmtservices = mgmtService.waitForInstances(1, 1, TimeUnit.MINUTES)
 assert (mgmtservices != null), "Unable to find 1 instance of management services"
 
-println "invoking deploy-grid-basic with myDataGrid"
-def params = new Object[1]
-params[0] = "myDataGrid"
-mgmtService.invoke("deploy-grid-basic", params, 3, TimeUnit.MINUTES)
+if(config.deployDefaultSpace){
+	println "invoking deploy-grid-basic with myDataGrid"
+	def params = new Object[1]
+	params[0] = "myDataGrid"
+	mgmtService.invoke("deploy-grid-basic", params, 3, TimeUnit.MINUTES)
+}
