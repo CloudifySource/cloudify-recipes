@@ -33,18 +33,10 @@ context=ServiceContextFactory.serviceContext
 config = new ConfigSlurper().parse(new File(context.serviceName+"-service.properties").toURL())
 
 name=context.attributes.thisInstance["deploy-grid-name"]
-//schema=context.attributes.thisInstance["deploy-grid-schema"]
 partitions=context.attributes.thisInstance["deploy-grid-partitions"]
-//backups=context.attributes.thisInstance["deploy-grid-backups"]
-//maxpervm=context.attributes.thisInstance["deploy-grid-maxpervm"]
-//maxpermachine=context.attributes.thisInstance["deploy-grid-maxpermachine"]
 
 if(name==null)name ="mySpace"
 if(partitions==null||partitions.toInteger()<=0)partitions ="13"
-//if(backups==null||backups.toInteger()<0)backups="1"
-//if(schema==null||schema=="")schema="partitioned-sync2backup"
-//if(maxpervm==null||maxpervm.toInteger()<=0)maxpervm="0"
-//if(maxpermachine==null||maxpermachine.toInteger()<=0)maxpermachine="0"
 
 //DEPLOY
 println "DEPLOYING GRID"
@@ -59,6 +51,10 @@ try{
    ProcessingUnit pu = gsm.deploy(
         new ElasticSpaceDeployment(name)
            .memoryCapacityPerContainer(500, MemoryUnit.MEGABYTES)
+           .addCommandLineArgument("-XX:+UseConcMarkSweepGC")
+	   .addCommandLineArgument("-XX:+UseParNewGC")
+           .addCommandLineArgument("-XX:CMSInitiatingOccupancyFraction=78")
+           .addCommandLineArgument("-XX:+UseCMSInitiatingOccupancyOnly")
            .numberOfPartitions(partitions.toInteger())
            .dedicatedMachineProvisioning(
                         new DiscoveredMachineProvisioningConfigurer()

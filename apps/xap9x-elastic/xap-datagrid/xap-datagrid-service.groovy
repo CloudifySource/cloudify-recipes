@@ -122,10 +122,10 @@ try{
         	                .max()
 
 			   jmxConnections = newJMXConnections
-			   return ["Memory usage":memoryUsage == null ? 0 : memoryUsage]
+			   return ["Memory usage":memoryUsage == null ? 0 : memoryUsage*100.0]
 }catch(Exception e){
 			e.printStackTrace()
-			return  ["Memory usage": 0.5]
+			return  ["Memory usage": 50]
 }
 		}
 	}
@@ -155,12 +155,12 @@ try{
       			}
  
 			highThreshold {
-			        value 0.8 
+			        value 80 
 				instancesIncrease 1
       			}
  
 			lowThreshold {
-        			value 0.2
+        			value 20
 				instancesDecrease 1
       			}
     		}
