@@ -55,7 +55,7 @@ service {
             		ServiceUtils.isPortOccupied(uiPort)
         	}
 
-/*		locator {
+		locator {
 			uuid=context.attributes.thisInstance.uuid
 			i=0
 			while (uuid==null){
@@ -83,8 +83,8 @@ service {
 
 			return pids
 		}
-*/
-		/*details {
+
+		details {
 			def currPublicIP = context.getPublicAddress()
 
 			if (  context.isLocalCloud()  ) {
@@ -109,9 +109,9 @@ service {
 		                        "Management UI":"<a href=\"${applicationURL}\" target=\"_blank\">${applicationURL}</a>"
                 		]
 		            }
-		}*/
+		}
 		
-		/*monitors {
+		monitors {
 			if(admin==null){
 
 		                ip=context.getPrivateAddress()
@@ -135,49 +135,13 @@ service {
 				"Heap Used GB":vmstats.memoryHeapUsedInGB,
 				"GC Collection Time":vmstats.gcCollectionTime
 				]
-		}*/
+		}
 	}
 
 	customCommands ([
 		//Public entry points
 
-/*		"deploy-pu": {puname, puurl,schema,partitions,backups,maxpervm,maxpermachine ->
-			util.invokeLocal(context,"_deploy-pu", [
-				"deploy-pu-puurl":puurl,
-				"deploy-pu-schema":schema,
-				"deploy-pu-partitions":partitions,
-				"deploy-pu-backups":backups,
-				"deploy-pu-maxpervm":maxpervm,
-				"deploy-pu-maxpermachine":maxpermachine,
-				"deploy-pu-puname":puname
-			])
-		 },
-		"deploy-pu-basic": {puurl->
-			util.invokeLocal(context,"_deploy-pu", [
-				"deploy-pu-puurl":puurl,
-				"deploy-pu-schema":"partitioned-sync2backup",
-				"deploy-pu-partitions":1,
-				"deploy-pu-backups":0,
-				"deploy-pu-maxpervm":1,
-				"deploy-pu-maxpermachine":1,
-				"deploy-pu-puname":(new File(puurl).name)
-			])
-		},
-		//usage examples:
-        //invoke xap-management  deploy-grid myIMDG partitioned-sync2backup 1 0 0 0 - deploy single space without backup
-        //invoke xap-management  deploy-grid myIMDG partitioned-sync2backup 1 1 0 0 - deploy primary backup space
-		"deploy-grid"	: {name,schema,partitions,backups,maxpervm,maxpermachine->
-			util.invokeLocal(context,"_deploy-grid", [
-				"deploy-grid-name":name,
-				"deploy-grid-schema":schema,
-				"deploy-grid-partitions":partitions,
-				"deploy-grid-backups":backups,
-				"deploy-grid-maxpervm":maxpervm,
-				"deploy-grid-maxpermachine":maxpermachine
-			])
-		},*/
-        //usage examples:
-        //invoke xap-management  deploy-grid-basic myIMDG - deploy primary backup space
+        //invoke xap-management  deploy-grid-elastic myIMDG - deploy primary backup space
         "deploy-grid-elastic"	: {name="mySpace", partitions=13->
             util.invokeLocal(context,"_deploy-grid", [
                 "deploy-grid-name":name,
@@ -190,21 +154,19 @@ service {
         },
         //usage examples:
         //invoke xap-management  undeploy-grid myIMDG - undeploy space
-	/*	"undeploy-grid" : { name ->
+		"undeploy-grid" : { name ->
 			util.invokeLocal(context,"_undeploy-grid", [
 				"undeploy-grid-name":name
 			])
 		},
 
-*/
 		//Actual parameterized calls
 //		"_deploy-pu"	: "commands/deploy-pu.groovy",
 		"_deploy-grid"	: "commands/deploy-grid.groovy"
-//		"_undeploy-grid": "commands/undeploy-grid.groovy",
+		"_undeploy-grid": "commands/undeploy-grid.groovy",
 
 	])
 
-/*
 	userInterface {
 		metricGroups = ([
 			metricGroup {
@@ -287,8 +249,8 @@ service {
 				])
 			}
 		])
-    }*/
-    /*network {
+    }
+    network {
         template "APPLICATION_NET"
         accessRules {
             incoming ([
@@ -314,5 +276,5 @@ service {
                     }
             ])
         }
-    }*/
+    }
 }
