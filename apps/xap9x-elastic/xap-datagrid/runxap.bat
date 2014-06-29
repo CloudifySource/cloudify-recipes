@@ -4,7 +4,7 @@ SET CLASS=
 SET COMMAND=
 SET CP=
 SET EXT_JARS=
-SET EXT_JAVA_OPTIONS=
+SET EXT_JAVA_OPTIONS=-Dcom.gs.zones=elasticZone
 SET GS_JARS=
 SET GS_LIB=
 SET GS_LOGGING_CONFIG_FILE=
@@ -26,4 +26,4 @@ SET startParm=
 SET launchTarget=
 SET options=
 
-cmd /c %XAPDIR%\bin\gs-agent.bat gsa.global.lus=0 gsa.global.gsm=0 gsa.gsc=1
+cmd /c %XAPDIR%\bin\gs-agent.bat gsa.global.lus=0 gsa.global.gsm=0 gsa.gsc=0
