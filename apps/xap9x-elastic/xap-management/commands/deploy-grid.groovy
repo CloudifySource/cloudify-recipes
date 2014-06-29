@@ -35,9 +35,12 @@ config = new ConfigSlurper().parse(new File(context.serviceName+"-service.proper
 name=context.attributes.thisInstance["deploy-grid-name"]
 partitions=context.attributes.thisInstance["deploy-grid-partitions"]
 memoryCapacityPerContainer=context.attributes.thisInstance["memory-capacity-container"]
+gridZone=context.attributes.thisInstance["grid-zone"]
 
 if(name==null)name ="mySpace"
 if(partitions==null||partitions.toInteger()<=0)partitions ="13"
+if(gridZone==null)gridZone="elasticZone"
+
 
 //DEPLOY
 println "DEPLOYING GRID"
@@ -59,7 +62,7 @@ try{
            .numberOfPartitions(partitions.toInteger())
            .dedicatedMachineProvisioning(
                         new DiscoveredMachineProvisioningConfigurer()
-                           .addGridServiceAgentZone("zone1")
+                           .addGridServiceAgentZone(gridZone)
                            .removeGridServiceAgentsWithoutZone()
                            .create())
             .scale(new EagerScaleConfigurer().create())

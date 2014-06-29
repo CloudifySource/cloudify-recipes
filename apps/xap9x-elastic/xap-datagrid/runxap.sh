@@ -4,7 +4,7 @@ CLASS=
 COMMAND=
 CP=
 EXT_JARS=
-EXT_JAVA_OPTIONS=-Dcom.gs.zones=zone1
+EXT_JAVA_OPTIONS=-Dcom.gs.zones=elasticZone
 GS_JARS=
 GS_LIB=
 GS_LOGGING_CONFIG_FILE=

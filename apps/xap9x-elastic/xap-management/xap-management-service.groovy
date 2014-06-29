@@ -162,7 +162,6 @@ service {
 		},
 
 		//Actual parameterized calls
-//		"_deploy-pu"	: "commands/deploy-pu.groovy",
 		"_deploy-grid"	: "commands/deploy-grid.groovy",
 		"_undeploy-grid": "commands/undeploy-grid.groovy",
 

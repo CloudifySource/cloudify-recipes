@@ -19,15 +19,16 @@ import javax.management.remote.*
 
 
 service {
-///	def maxinstances=context.isLocalCloud()?1:200
+	def maxinstances=context.isLocalCloud()?1:200
+	def mininstances=context.isLocalCloud()?1:2
 
 	name "xap-datagrid"
 	type "APP_SERVER"
 	icon "xap.png"
 	elastic true
 	numInstances containerCount
-	minAllowedInstances 2 
-	maxAllowedInstances 200
+	minAllowedInstances mininstances 
+	maxAllowedInstances maxinstances 
 
 
 	compute {
