@@ -78,7 +78,6 @@ service {
 			return pids
 		}
 		monitors {
-try{
 			if(!toolsLoaded){
 				this.getClass().classLoader.addClasspath(System.getProperty( 'java.home') + '/../lib/tools.jar')
                               	this.getClass().classLoader.addClasspath(System.getProperty( 'java.home') + '/lib/tools.jar')
@@ -123,10 +122,6 @@ try{
 
 			   jmxConnections = newJMXConnections
 			   return ["Memory usage":memoryUsage == null ? 0 : memoryUsage*100.0]
-}catch(Exception e){
-			e.printStackTrace()
-			return  ["Memory usage": 50]
-}
 		}
 	}
 
@@ -200,7 +195,7 @@ try{
 		)
 	}
 */
-  /*  network {
+    network {
         template "APPLICATION_NET"
         accessRules {
             incoming ([
@@ -210,7 +205,7 @@ try{
                     }
             ])
         }
-    }*/
+    }
 }
 
 

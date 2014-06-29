@@ -145,6 +145,7 @@ service {
         "deploy-grid-elastic"	: {name="mySpace", partitions=13->
             util.invokeLocal(context,"_deploy-grid", [
                 "deploy-grid-name":name,
+		"memory-capacity-container":500,
                 //"deploy-grid-schema":"partitioned-sync2backup",
                 "deploy-grid-partitions":partitions,
                 //"deploy-grid-backups":1,

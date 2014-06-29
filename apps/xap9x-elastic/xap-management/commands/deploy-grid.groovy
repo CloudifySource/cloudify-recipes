@@ -34,6 +34,7 @@ config = new ConfigSlurper().parse(new File(context.serviceName+"-service.proper
 
 name=context.attributes.thisInstance["deploy-grid-name"]
 partitions=context.attributes.thisInstance["deploy-grid-partitions"]
+memoryCapacityPerContainer=context.attributes.thisInstance["memory-capacity-container"]
 
 if(name==null)name ="mySpace"
 if(partitions==null||partitions.toInteger()<=0)partitions ="13"
@@ -50,7 +51,7 @@ assert gsm!=null, "No management services found"
 try{
    ProcessingUnit pu = gsm.deploy(
         new ElasticSpaceDeployment(name)
-           .memoryCapacityPerContainer(500, MemoryUnit.MEGABYTES)
+           .memoryCapacityPerContainer(memoryCapacityPerContainer, MemoryUnit.MEGABYTES)
            .addCommandLineArgument("-XX:+UseConcMarkSweepGC")
 	   .addCommandLineArgument("-XX:+UseParNewGC")
            .addCommandLineArgument("-XX:CMSInitiatingOccupancyFraction=78")
