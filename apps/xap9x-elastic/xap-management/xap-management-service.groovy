@@ -31,7 +31,7 @@ service {
 	type "APP_SERVER"
 	icon "xap.png"
 	elastic false
-	numInstances (context.isLocalCloud()?1:2 )
+	numInstances 1
 	minAllowedInstances 1
 	maxAllowedInstances 2
 
@@ -95,20 +95,9 @@ service {
 			}
 
 			def applicationURL = "http://${currPublicIP}:${currPort}"
-		            def xapInstallationDir = "${context.serviceDirectory}/${installDir}/${name}/"
-		            def interactiveShellURL = "http://${currPublicIP}:8081/wd/${xapInstallationDir}/bin"
-		            def xapShellURL = "http://${currPublicIP}:8081/wd/${xapInstallationDir}/tools/groovy/bin"
-		            if (butterflyEnabled) {
-                			return [
-			                        "Management UI":"<a href=\"${applicationURL}\" target=\"_blank\">${applicationURL}</a>",
-                        			"GigaSpaces Interactive Shell URL":"<a href=\"${interactiveShellURL}\" target=\"_blank\">${interactiveShellURL}</a>",
-			                        "Groovy Interactive Shell URL":"<a href=\"${xapShellURL}\" target=\"_blank\">${xapShellURL}</a>"
-			                ]
-		            } else {
                 		return [
 		                        "Management UI":"<a href=\"${applicationURL}\" target=\"_blank\">${applicationURL}</a>"
                 		]
-		            }
 		}
 		
 		monitors {

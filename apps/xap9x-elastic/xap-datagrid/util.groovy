@@ -31,6 +31,7 @@ def static invokeLocal(context,name,args){
 			context.attributes.thisInstance[key] = val
 	}
 	println "calling getThisService"
-	getThisService(context).invoke(name)
+    def params = new Object[0]
+    getThisService(context).invoke(name, params, 5, TimeUnit.MINUTES)
 }
 

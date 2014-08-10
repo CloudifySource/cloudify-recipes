@@ -47,7 +47,7 @@ println "DEPLOYING GRID"
 // find gsm
 ip=context.getPrivateAddress()
 admin=new AdminFactory().useDaemonThreads(true).addLocators("${ip}:${config.lusPort}").createAdmin();
-print "will wait 2 minute for finding gsm..."
+print "will wait 3 minute for finding gsm..."
 gsm=admin.gridServiceManagers.waitForAtLeastOne(3,TimeUnit.MINUTES)
 assert gsm!=null, "No management services found"
 
@@ -57,18 +57,20 @@ try{
            .memoryCapacityPerContainer(memoryCapacityPerContainer, MemoryUnit.MEGABYTES)
            .addCommandLineArgument("-XX:+UseConcMarkSweepGC")
 	   .addCommandLineArgument("-XX:+UseParNewGC")
-           .addCommandLineArgument("-XX:CMSInitiatingOccupancyFraction=78")
+           .addCommandLineArgument("-XX:CMSInitiatingOccupancyFraction=35")
            .addCommandLineArgument("-XX:+UseCMSInitiatingOccupancyOnly")
            .numberOfPartitions(partitions.toInteger())
            .dedicatedMachineProvisioning(
                         new DiscoveredMachineProvisioningConfigurer()
                            .addGridServiceAgentZone(gridZone)
                            .removeGridServiceAgentsWithoutZone()
+                           .reservedMemoryCapacityPerMachine(2000, MemoryUnit.MEGABYTES)
                            .create())
             .scale(new EagerScaleConfigurer().create())
    );
-   assert (pu.waitFor(1,3,TimeUnit.MINUTES)),"deployment failed"
+   assert (pu.waitFor(1,5,TimeUnit.MINUTES)),"deployment failed"
 }catch(org.openspaces.admin.pu.ProcessingUnitAlreadyDeployedException ex){
+    println "ProcessingUnitAlreadyDeployedException is thrown!!"
    //ignore this error --> not the first instance.
 }finally{
   admin.close()

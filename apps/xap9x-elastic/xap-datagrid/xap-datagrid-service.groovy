@@ -19,16 +19,14 @@ import javax.management.remote.*
 
 
 service {
-	def maxinstances=context.isLocalCloud()?1:200
-	def mininstances=context.isLocalCloud()?1:2
 
 	name "xap-datagrid"
 	type "APP_SERVER"
 	icon "xap.png"
 	elastic true
-	numInstances containerCount
-	minAllowedInstances mininstances 
-	maxAllowedInstances maxinstances 
+	numInstances 2
+	minAllowedInstances 2
+	maxAllowedInstances 20
 
 
 	compute {
@@ -37,7 +35,7 @@ service {
 
 	def instanceId=context.instanceId
         def toolsLoaded=false
-	def jmxConnections = [:] 
+	def jmxConnections = [:]
 	lifecycle{
 
 
@@ -46,8 +44,6 @@ service {
 		start "xap_start.groovy"
 
 	        postStart "xap_postStart.groovy"
-
-	        preStop "xap_preStop.groovy"
 
 	        postStop "xap_postStop.groovy"
 
@@ -83,46 +79,47 @@ service {
 				this.getClass().classLoader.addClasspath(System.getProperty( 'java.home') + '/../lib/tools.jar')
                               	this.getClass().classLoader.addClasspath(System.getProperty( 'java.home') + '/lib/tools.jar')
 				toolsLoaded=true
-			}
+                }
 
-			CONNECTOR_ADDRESS = "com.sun.management.jmxremote.localConnectorAddress"
- 			jps = 'jps -m'.execute()
-                	jps.waitFor()
-			vmClass = Class.forName('com.sun.tools.attach.VirtualMachine', true, this.getClass().classLoader)
-                        vmAttach = vmClass.getMethod('attach', java.lang.String.class)
-			newJMXConnections = [:]
+                CONNECTOR_ADDRESS = "com.sun.management.jmxremote.localConnectorAddress"
+                jps = 'jps -vml'.execute()
+                jps.waitFor()
+                vmClass = Class.forName('com.sun.tools.attach.VirtualMachine', true, this.getClass().classLoader)
+                vmAttach = vmClass.getMethod('attach', java.lang.String.class)
+                newJMXConnections = [:]
  			memoryUsage =  jps.in.text
-                        	.split('\n')
+                        .split('\n')
                         	.grep({ it.contains('com.gigaspaces.start.services="GSC"')})
+                            .grep({ it.contains('elasticZone')})
 	                        .collect({ it.split(' ')[0]})
-        	                .collect({
-					vm = vmAttach.invoke(null, it);
+                        .collect({
+                    vm = vmAttach.invoke(null, it);
                         	        try{
-                                	        connectorAddress = vm.getAgentProperties().getProperty(CONNECTOR_ADDRESS);
-                                        	if (connectorAddress == null) {
-                                                	agent = vm.getSystemProperties().getProperty("java.home") + File.separator + "lib" + File.separator + "management-agent.jar";
-	                                                vm.loadAgent(agent);
-        	                                        connectorAddress = vm.getAgentProperties().getProperty(CONNECTOR_ADDRESS);
-                	                        }
+                        connectorAddress = vm.getAgentProperties().getProperty(CONNECTOR_ADDRESS);
+                        if (connectorAddress == null) {
+                            agent = vm.getSystemProperties().getProperty("java.home") + File.separator + "lib" + File.separator + "management-agent.jar";
+                            vm.loadAgent(agent);
+                            connectorAddress = vm.getAgentProperties().getProperty(CONNECTOR_ADDRESS);
+                        }
 
-                        	                return new JMXServiceURL(connectorAddress);
-                                	} finally {
-                                        	vm.detach()
-	                                }
-                        	})
-	                        .collect({
-					serverConnection = jmxConnections[it]
+                        return new JMXServiceURL(connectorAddress);
+                    } finally {
+                        vm.detach()
+                    }
+                })
+                        .collect({
+                    serverConnection = jmxConnections[it]
 					if(serverConnection == null){
-						serverConnection = JMXConnectorFactory.connect(it).getMBeanServerConnection()
-					} 
-					newJMXConnections[it] = serverConnection
+                        serverConnection = JMXConnectorFactory.connect(it).getMBeanServerConnection()
+                    }
+                    newJMXConnections[it] = serverConnection
         	                        heap = serverConnection.getAttribute(new ObjectName("java.lang:type=Memory"), "HeapMemoryUsage")
                             		heap.get("used")/heap.get("max")
 	                        })
         	                .max()
 
 			   jmxConnections = newJMXConnections
-			   return ["Memory usage":memoryUsage == null ? 0 : memoryUsage*100.0]
+                return ["Memory usage":memoryUsage == null ? 0 : memoryUsage*100.0]
 		}
 	}
 
@@ -141,7 +138,10 @@ service {
 		"_update-hosts"	: "commands/update-hosts.groovy"
 
 	])
-         
+
+    scaleCooldownInSeconds 600
+    samplingPeriodInSeconds 1
+
 	scalingRules ([
     		scalingRule {
 			serviceStatistics {
@@ -151,12 +151,12 @@ service {
       			}
  
 			highThreshold {
-			        value 80 
+			        value 75
 				instancesIncrease 1
       			}
  
 			lowThreshold {
-        			value 20
+        			value 35
 				instancesDecrease 1
       			}
     		}

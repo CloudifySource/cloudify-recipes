@@ -3,7 +3,7 @@
 	<j_spaces>
 		<kernel>
 			<!-- can also be set via system property using -Dcom.gs.licensekey -->
-			<licensekey>Jun 4, 2014~guy$gigaspaces.com@WGYKSVROADPkZzz8me7S#EVALUATION^9.0XAPPremium%UNBOUND+UNLIMITED//WAN//EMT</licensekey>
+			<licensekey>${license}</licensekey>
 		</kernel>
 	</j_spaces>
 </com>
