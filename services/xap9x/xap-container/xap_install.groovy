@@ -45,4 +45,11 @@ if (!context.isLocalCloud()) {
             delete(file: "${config.installDir}/${config.xapDir}/gslicense.xml")
         }
     }
+
+    //xap-overrides
+    new AntBuilder().sequential {
+        copy(todir:"${config.installDir}/${config.xapDir}/", overwrite:true) {
+            fileset(dir:"${context.serviceDirectory}/xap-overrides/")
+        }
+    }
 }

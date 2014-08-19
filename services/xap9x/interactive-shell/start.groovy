@@ -49,10 +49,10 @@ new AntBuilder().sequential {
         env(key:"NIC_ADDR",value:"${ip}")
         env(key:"EXT_JAVA_OPTIONS", value:"-DUUID=${uuid} -Dcom.gs.multicast.enabled=false -Dcom.gs.multicast.discoveryPort=${config.lusPort} -Dcom.sun.jini.reggie.initialUnicastDiscoveryPort=${config.lusPort} -Dcom.gigaspaces.start.httpPort=${config.httpPort} -Dcom.gigaspaces.system.registryPort=${config.registryPort} -Dcom.gs.transport_protocol.lrmi.bind-port=${config.bindPort}")
         env(key:"RMI_OPTIONS", value:"-Djava.rmi.server.hostname=${ip}")
-        env(key:"BF_WORKING_DIRECTORY", value:"${context.serviceDirectory}")
+        env(key:"BF_WORKING_DIRECTORY", value:"${context.serviceDirectory}/XAP-Interactive-Tutorial/")
         env(key:"BF_UI_PORT", value:"${config.bf_uiPort}")
-        env(key:"GS_GROOVY_HOME", value:"${config.installDir}/${config.xapDir}/tools/groovy/")
-        env(key:"BF_SCRIPT",value:"/bin/bash -i ${context.serviceDirectory}/start_tutorial.sh")
+        env(key:"GS_HOME", value:"${config.installDir}/${config.xapDir}")
+        env(key:"BF_SCRIPT",value:"/bin/bash -i ${context.serviceDirectory}/XAP-Interactive-Tutorial/start_tutorial.sh")
         env(key:"PATH", value:"${system_path}")
         env(key:"UUID", value:"${uuid}")
     }

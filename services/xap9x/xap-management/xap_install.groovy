@@ -64,6 +64,13 @@ if (config.license != null && config.license.size() > 0) {
     }
 }
 
+//xap-overrides
+new AntBuilder().sequential {
+    copy(todir:"${config.installDir}/${config.xapDir}/", overwrite:true) {
+        fileset(dir:"${context.serviceDirectory}/xap-overrides/")
+    }
+}
+
 //install butterfly if enabled
 if (config.butterflyEnabled) {
     new AntBuilder().sequential {

@@ -4,14 +4,6 @@ import org.cloudifysource.utilitydomain.context.ServiceContextFactory
 context = ServiceContextFactory.serviceContext
 config = new ConfigSlurper().parse(new File(context.serviceName + "-service.properties").toURL())
 
-if (!new File("${context.serviceDirectory}/DemoScript.zip").exists()) {
-    new AntBuilder().sequential {
-        get(src: config.demoPath, dest: "${context.serviceDirectory}", skipexisting: true)
-        unzip(src: "${context.serviceDirectory}/DemoScript.zip", dest: "${context.serviceDirectory}/", overwrite: true)
-        chmod(dir: "${context.serviceDirectory}/", perm: "+x", excludes: "*.bat")
-    }
-}
-
 if (!context.isLocalCloud()) {
     new AntBuilder().sequential {
         mkdir(dir: "${config.installDir}")
@@ -37,6 +29,13 @@ if (!context.isLocalCloud()) {
             delete(file: "${config.installDir}/${config.xapDir}/gslicense.xml")
         }
     }
+
+    //xap-overrides
+    new AntBuilder().sequential {
+        copy(todir:"${config.installDir}/${config.xapDir}/", overwrite:true) {
+            fileset(dir:"${context.serviceDirectory}/xap-overrides/")
+        }
+    }
 }
 
 //Download butterfly
@@ -46,5 +45,7 @@ new AntBuilder().sequential {
             output: "install.${System.currentTimeMillis()}.out",
             error: "install.${System.currentTimeMillis()}.err",
             failonerror: "true"
-    )
+    ) {
+        env(key:"SERVICE_DIR", value:"${context.serviceDirectory}")
+    }
 }
