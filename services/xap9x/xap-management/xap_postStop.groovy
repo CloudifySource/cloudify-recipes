@@ -23,7 +23,7 @@ new AntBuilder().sequential {
 
 }
 /*
-
+There is no need to kill butterfly this way as a UUID is attached to the arguments (see butterfly_start.sh) so Cloudify will terminate this process (see locator section in xap-management-service.groovy)
 //Stop butterfly if enabled
 if (config.butterflyEnabled) {
     new AntBuilder().sequential {
